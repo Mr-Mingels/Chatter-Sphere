@@ -1,4 +1,200 @@
-.signUpWrapper {
-    min-height: 100vh;
+.authWrapper {
+    height: 100%;
+    width: 100%;
+}
+
+.authContentWrapper {
+    display: flex;
+    width: 100%;
     padding: 10px;
+}
+
+.authLeftSideWrapper {
+    width: 50%;
+    padding: 40px;
+}
+
+.logo-txt-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.authPageLogoWrapper {
+    display: flex;
+}
+
+.authPageLogo {
+    width: 30px;
+    height: 30px;
+}
+
+.authLogoTitle {
+    font-weight: 400;
+    font-size: 22px;
+    color: rgb(40, 40, 40);
+}
+
+.authLeftSideContentWrapper {
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.authCreateAccountTitle {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 50px;
+}
+
+.authFormWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+}
+
+.authForm {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+.authLabel {
+    font-weight: 500;
+    height: 30px;
+    display: flex;
+    align-items: flex-end;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.authRequireTag {
+    color: rgb(255, 116, 116);
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.authFormEmailInput, .authFormUserNameInput, .authFormPassWordInput {
+    outline: none;
+    padding: 12px 15px;
+    border: 1px solid gray;
+    border-radius: 20px;
+    transition: all 0.2s ease-in-out;
+}
+
+.authFormEmailInput.field::placeholder, .authFormUserNameInput.field::placeholder, .authFormPassWordInput.field::placeholder {
+    color: rgb(255, 0, 0);
+}
+
+.authFormEmailInput:focus, .authFormUserNameInput:focus, .authFormPassWordInput:focus {
+    border-color: black;
+}
+
+.authConfirmBtn {
+    border: none;
+    color: white;
+    font-weight: 500;
+    border-radius: 30px;
+    padding: 16px;
+    margin-top: 22px;
+    background-color: #222222;
+    cursor: pointer;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.authFormQuestion {
+    margin-top: 12px;
+    font-weight: 400;
+}
+
+.authFormRedirectLink {
+    color: rgb(0, 103, 103);
+    text-decoration: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+
+
+
+
+.authRightSideWrapper {
+    width: 50%;
+    position: relative;
+}
+
+.authPageImg {
+    width: 100%;
+    object-fit: cover;
+    height: 736px;
+    border-radius: 20px;
+    filter: grayscale(100%);
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.authImgTxtWrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 40px 70px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    color: white;
+}
+
+.authImgSlogan {
+    font-size: 34px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.authImgParagraph {
+    font-size: 16px;
+    text-align: center;
+}
+
+.authImgIconWrapper {
+    display: flex;
+    gap: 16px;
+}
+
+.authImgIcon {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.authIconImg {
+    width: 20px;
+    height: 20px;
 }

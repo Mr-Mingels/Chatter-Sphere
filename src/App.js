@@ -1,8 +1,8 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import React, { lazy, Suspense  } from "react";
+import React, { lazy, Suspense, useEffect, useState  } from "react";
 
-const SignUp = lazy(() => import('./components/SignUp'));
+const Authenticate = lazy(() => import('./components/Authenticate'));
 const Main = lazy(() => import('./components/Main'))
 
 const App = () => {
@@ -20,7 +20,8 @@ const App = () => {
         <Suspense fallback={<div className='loadingScreenWrapper'><div className='loadingScreen'></div></div>}>
           <Routes>
             <Route path='/' element={<Main />}/>
-            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/sign-up" element={<Authenticate />} />
+            <Route path="/log-in" element={<Authenticate />} />
             <Route path='*' element={<RedirectToHome />}/>
           </Routes>
         </Suspense>
