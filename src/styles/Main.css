@@ -1,0 +1,189 @@
+.mainWrapper {
+    height: 100%;
+    width: 100%;
+}
+
+.messagesWrapper {
+    width: 40%;
+}
+
+.messagesContent {
+    width: 100%;
+}
+
+.messagesNavBar {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.hamburgerMenu {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    fill: rgb(169, 169, 169);
+    transition: all 0.2s ease-in-out;
+}
+
+.hamburgerMenu:hover {
+    fill: black;
+}
+
+.navSearchInput {
+    outline: none;
+    border: 2px solid rgb(240, 240, 240);
+    padding: 7px 12px;
+    background-color: rgb(240, 240, 240);
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+    width: 376.9px;
+}
+
+.navSearchInput:focus {
+    border-color: black;
+}
+
+
+
+
+
+
+.fullPageWrapper {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: transparent;
+    opacity: 1;
+    pointer-events: none;
+    transition: 0.5s ease-in-out;
+}
+
+.fullPageWrapper.open {
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.sideBarWrapper {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    z-index: 3;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: white;
+    transform: translateX(-100%);
+    transition: transform 0.5s ease-in-out;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.sideBarWrapper.open {
+    transform: translateX(0%);
+}
+
+.sideBarContent {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sideBarUserInfoWrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    gap: 16px;
+    border-bottom: 1px solid rgba(170, 170, 170, 0.5);
+}
+
+.sideBarDefaultProfileImg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: black;
+    color: white;
+    font-size: 22px;
+    font-weight: 600;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.sideBarUserName {
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.sideBarOptionsWrapper {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.optionWrapper {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.option:hover > .optionIconWrapper {
+    background-color: white;
+    fill: black;
+}
+
+.optionIconWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    width: 25px;
+    height: 25px;
+    background-color: black;
+    border-radius: 4px;
+    fill: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.optionIcon {
+    width: 14px;
+    height: 14px;
+}
+
+.sideBarFooterWrapper {
+    padding: 25px;
+    margin-top: auto;
+}
+
+.sideBarLogOutBtn {
+    border: 2px solid rgb(255, 100, 100);
+    color: rgb(255, 100, 100);
+    border-radius: 8px;
+    padding: 6px;
+    width: 100%;
+    cursor: pointer;
+    background-color: transparent;
+}

@@ -95,7 +95,7 @@ const ensureAuthentication = ((req, res, next) => {
 
 
 app.get('/', ensureAuthentication, (req, res) => {
-    console.log('hello')
+    res.json(req.user)
 })
 
 app.get('/sign-up', (req, res) => {
@@ -103,16 +103,11 @@ app.get('/sign-up', (req, res) => {
 
 app.post('/sign-up', async (req, res) => {
     try {
-        console.log('triggered sign up')
         const password = req.body.password
         const username = req.body.username.toUpperCase();
         const email = req.body.email.toUpperCase();
-        console.log(username)
-        console.log(email)
         const userByEmail = await User.findOne({ email: email });
         const userByUsername = await User.findOne({ username: username });
-        console.log(userByEmail)
-        console.log(userByUsername)
 
         if (userByEmail && userByUsername) {
             return res.status(400).send({ message: "Email and Username have already been taken" });
@@ -137,12 +132,12 @@ app.post('/sign-up', async (req, res) => {
             return res.status(200).send({ message: 'Created new User' })
         })
     } catch (err) {
-        console.log(err)
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
     }
 })
 
 app.post('/log-in', (req, res, next) => {
-    console.log('triggered log in');
     passport.authenticate("local", (err, user, info) => {
         if (err) { 
             console.error(`Error: ${err}`);
@@ -162,7 +157,142 @@ app.post('/log-in', (req, res, next) => {
     })(req, res, next);
 });
 
+app.get('/log-out', (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err)
+        }
+        return res.status(200).send({ message: 'Successfully logged out!' })
+    })
+})
 
+app.put('/send-friend-request', async (req, res) => {
+    try {
+        const requestedFriendUserId = req.body.friend.toString()
+        const userId = req.user._id.toString()
+        if (!mongoose.Types.ObjectId.isValid(requestedFriendUserId) || requestedFriendUserId === userId) {
+            return res.status(400).send({ message: `User not found`})
+        }
+        const userByFriendId = await User.findOne({ _id: requestedFriendUserId })
+        const checkSentRequests = userByFriendId.sentFriendRequests.find(id => id.toString() === userId)
+        const checkRecievedRequests = userByFriendId.receivedFriendRequests.find(id => id.toString() === userId)
+        const checkFriendsList = userByFriendId.friends.find(id => id.toString() === userId)
+        if (checkSentRequests) {
+            await User.updateOne({ _id: requestedFriendUserId }, { $pull: { sentFriendRequests: userId } });
+            await User.updateOne({ _id: userId }, { $pull: { receivedFriendRequests: requestedFriendUserId } });
+            await User.updateOne({ _id: userId }, { $push: { friends: requestedFriendUserId } });
+            await User.updateOne({ _id: requestedFriendUserId }, { $push: { friends: userId } });
+            return res.status(200).send({ message: 'Added'})
+        } else if (checkRecievedRequests) {
+            return res.status(400).send({ message: `You've already sent them a friend request`})
+        } else if (checkFriendsList) {
+            return res.status(400).send({ message: `They're already your friend`})
+        }
+        await User.updateOne({ _id: requestedFriendUserId }, { $push: { receivedFriendRequests: userId }})
+        await User.updateOne({ _id: userId }, { $push: { sentFriendRequests: requestedFriendUserId }})
+
+        res.status(200).send({ message: 'Request Sent! '})
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
+    }
+})
+
+app.get('/sent-friend-requests', async (req, res) => {
+    try {
+        const userId = req.user._id.toString()
+        const userById = await User.findOne({ _id: userId })
+        if (userById) {
+            let sentFriendRequestsInfo = []
+            for (let i = 0; i < userById.sentFriendRequests.length; i++) {
+                const userBySentId = await User.findOne({ _id: userById.sentFriendRequests[i] })
+                sentFriendRequestsInfo.push(userBySentId)
+            }
+            res.status(200).json(sentFriendRequestsInfo);
+        }
+    } catch {
+        res.status(500).json({ message: 'Server error' });
+        console.log(err);
+    }
+})
+
+app.get('/received-friend-requests', async (req, res) => {
+    try {
+        const userId = req.user._id.toString()
+        const userById = await User.findOne({ _id: userId })
+        if (userById) {
+            const usersReceivedRequests = await User.find({ _id: { $in: userById.receivedFriendRequests } });
+            res.status(200).json(usersReceivedRequests);
+        } else {
+            return res.status(404).send({ message: 'User not found' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+        console.log(err)
+    }
+})
+
+app.put('/accept-friend-request', async (req, res) => {
+    try {
+        console.log(req.body.requestedFriendId)
+        const receivedFriendUserId = req.body.requestedFriendId.toString()
+        const userId = req.user._id.toString()
+        const userById = await User.findOne({ _id: userId })
+        const recievedFriendUserById = await User.findOne({ _id: receivedFriendUserId })
+        const checkSentRequests = recievedFriendUserById.sentFriendRequests.find(id => id.toString() === userId)
+        const checkRecievedRequests = userById.receivedFriendRequests.find(id => id.toString() === receivedFriendUserId)
+        if (checkSentRequests || checkRecievedRequests) {
+            await User.updateOne({ _id: receivedFriendUserId }, { $pull: { sentFriendRequests: userId } });
+            await User.updateOne({ _id: userId }, { $pull: { receivedFriendRequests: receivedFriendUserId } });
+        } 
+
+        await User.updateOne({ _id: userId }, { $push: { friends: receivedFriendUserId } });
+        await User.updateOne({ _id: receivedFriendUserId }, { $push: { friends: userId } });
+
+        res.status(200).send({ message: 'Accepted!' })
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
+    }
+})
+
+app.put('/decline-friend-request', async (req, res) => {
+    try {
+        const receivedFriendUserId = req.body.requestedFriendId.toString()
+        const userId = req.user._id.toString()
+        const userById = await User.findOne({ _id: userId })
+        const recievedFriendUserById = await User.findOne({ _id: receivedFriendUserId })
+        const checkSentRequests = recievedFriendUserById.sentFriendRequests.find(id => id.toString() === userId)
+        const checkRecievedRequests = userById.receivedFriendRequests.find(id => id.toString() === receivedFriendUserId)
+        if (checkSentRequests || checkRecievedRequests) {
+            await User.updateOne({ _id: receivedFriendUserId }, { $pull: { sentFriendRequests: userId } });
+            await User.updateOne({ _id: userId }, { $pull: { receivedFriendRequests: receivedFriendUserId } });
+        } 
+        res.status(200).send({ message: 'Friend request has been declined' })
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
+    }
+})
+
+app.put('/unsend-friend-request', async (req, res) => {
+    try {
+        const receivedFriendUserId = req.body.requestedFriendId.toString()
+        const userId = req.user._id.toString()
+        const userById = await User.findOne({ _id: userId })
+        const recievedFriendUserById = await User.findOne({ _id: receivedFriendUserId })
+        const checkSentRequests = userById.sentFriendRequests.find(id => id.toString() === receivedFriendUserId)
+        const checkRecievedRequests = recievedFriendUserById.receivedFriendRequests.find(id => id.toString() === userId)
+        if (checkSentRequests || checkRecievedRequests) {
+            await User.updateOne({ _id: userId }, { $pull: { sentFriendRequests: receivedFriendUserId } });
+            await User.updateOne({ _id: receivedFriendUserId }, { $pull: { receivedFriendRequests: userId } });
+        } 
+        res.status(200).send({ message: 'Friend request has been unsent' })
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
+    }
+})
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

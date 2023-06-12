@@ -10,6 +10,7 @@ import laptop from '../assets/laptop.png'
 
 const Authenticate = () => {
     const [authConfig, setAuthConfig] = useState(null)
+    const [imgLoaded, setImgLoaded] = useState(false)
     const [redUserNamePlaceHolder, setRedUserNamePlaceHolder] = useState(false)
     const [redEmailPlaceHolder, setRedEmailPlaceHolder] = useState(false)
     const [redPasswordPlaceholder, setRedPasswordPlaceholder] = useState(false)
@@ -130,8 +131,17 @@ const Authenticate = () => {
         }
       }, [password.value])
 
+      const handleImageLoad = () => {
+        setImgLoaded(true)
+      }
+
     return (
         <section className="authWrapper">
+            {!imgLoaded && (
+                <div className="loaderWrapper">
+                    <span class="loader"></span>
+                </div>
+            )}
             <div className="authContentWrapper">
                 <div className="authLeftSideWrapper">
                     <div className="logo-txt-wrapper">
@@ -165,7 +175,8 @@ const Authenticate = () => {
                     </div>
                 </div>
                 <div className="authRightSideWrapper">
-                    <img alt="authentication page image" src={authConfig ? signUpImg : signInImg} className="authPageImg" onMouseDown={(e) => e.preventDefault()}/>
+                    <img alt="authentication page image" src={authConfig ? signUpImg : signInImg} className="authPageImg" 
+                    onMouseDown={(e) => e.preventDefault()} onLoad={handleImageLoad}/>
                     <div className="authImgTxtWrapper">
                         <h1 className="authImgSlogan">{authConfig ? 'Creating Connections, One Chat at a Time.' : 
                         `Your Gateway to Global Conversations.`}</h1>

@@ -1,0 +1,469 @@
+.modalWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.addFriendModalContent {
+    opacity: 1 !important;
+}
+
+.addFriendModalHeaderWrapper {
+    padding: 20px;
+}
+
+.addFriendModalMainContentWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.addFriendModalMainContent {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.addFriendModalInputLabel {
+    font-size: 14px;
+    height: 26px;
+}
+
+.addFriendModalInput {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid black;
+    outline: none;
+}
+
+.addFriendModalInput.field::placeholder {
+    color: rgb(255, 0, 0);
+}
+
+.addFriendModalFooterWrapper {
+    padding: 10px 20px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.modalContent, .addFriendModalContent {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+}
+
+.modalContent.render {
+    opacity: 1;
+}
+
+.modalContent.close {
+    display: none;
+}
+
+.modalHeaderWrapper {
+    display: flex;
+    border-bottom: 1px solid rgb(201, 201, 201);
+    flex-direction: column;
+    padding: 14px 20px;
+    gap: 26px;
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+}
+
+.groupModalMainContentWrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.groupModalMainContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.defaultGroupModalImg {
+    width: 80px;
+    height: 80px;
+    background-color: black;
+    border: 1px solid black;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    fill: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.defaultGroupModalImg:hover, .defaultProfilePicModalImg:hover {
+    fill: black;
+    background-color: white;
+}
+
+.groupModalImg {
+    width: 30px;
+    height: 30px;
+}
+
+.groupModalInput {
+    border: none;
+    border-bottom: 2px solid black;
+    padding: 5px;
+    font-size: 15px;
+    outline: none;
+}
+
+.groupModalFooterWrapper {
+    display: flex;
+    gap: 24px;
+    justify-content: end;
+}   
+
+.groupModalBtn, .friendModalBtn, .friendRequestsModalBtn, .profilePicModalBtn, .userIdModalBtn, .addFriendModalBtn {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 10px;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.groupModalBtn:hover, .friendModalBtn:hover, .friendRequestsModalBtn:hover, .profilePicModalBtn:hover, .userIdModalBtn:hover, .addFriendModalBtn:hover {
+    background-color: black;
+    color: white;
+}
+
+
+
+
+/* FRIENDS AND FRIEND REQUESTS MODAL CSS CODE */ /* FRIENDS AND FRIEND REQUESTS MODAL CSS CODE */ /* FRIENDS AND FRIEND REQUESTS MODAL CSS CODE */
+
+.friendsModalSearchInputWrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.friendsModalSearchIcon {
+    width: 15px;
+    height: 15px;
+    fill: rgb(140, 140, 140);
+}
+
+.friendsModalSearchInput {
+    outline: none;
+    border: none;
+    font-size: 15px;
+    width: 330px;
+}
+
+.friendModalMainContentWrapper, .friendRequestsModalMainContentWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.friendRequestsModalSelectBtnWrapper {
+    display: flex;
+}
+
+.friendRequestsModalSelectBtn {
+    width: 50%;
+    padding: 15px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border: 1px solid rgb(201, 201, 201);
+    border-bottom: 2px solid rgb(201, 201, 201);
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.friendRequestsModalSelectBtn.viewRecieved {
+    background-color: black;
+    color: white;
+}
+
+.friendRequestsModalSelectBtn.viewSent {
+    background-color: black;
+    color: white;
+}
+
+.friendRequestsModalSelectBtn:hover {
+    background-color: black;
+    color: white;
+}
+
+.friendModalMainContent, .friendRequestsModalMainContent {
+    max-height: 400px;
+    height: 400px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+.friendModalMainContent::-webkit-scrollbar, .friendRequestsModalMainContent::-webkit-scrollbar {
+    width: 0;
+}
+
+.friendModalFooterWrapper, .friendRequestsModalFooterWrapper {
+    border-top: 1px solid rgb(201, 201, 201);
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 20px;
+}
+
+.friendRequestsModalSentUserContentWrapper {
+    display: flex;
+    gap: 16px;
+    padding: 15px 25px;
+    align-items: center;
+}
+
+.friendRequestModalDefaultProfileImgWrapper {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-color: black;
+    border-radius: 50%;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.friendRequestsModalDefaultProfileImg {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.friendRequestsModalUserInfoWrapper {
+    display: flex;
+    gap: 6px;
+}
+
+.friendRequestsModalUserNameLabel {
+    font-weight: 400;
+}
+
+.friendRequestsModalUserName {
+
+}
+
+.friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn {
+    margin-left: auto;
+    background-color: transparent;
+    border: 2px solid rgb(255, 100, 100);
+    color: rgb(255, 100, 100);
+    border-radius: 8px;
+    padding: 4px 6px;
+    cursor: pointer;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.friendRequestsModalAcceptBtn {
+    border: 2px solid rgb(34, 204, 0);
+    color: rgb(34, 204, 0);
+}
+
+.friendRequestsModalBtnWrapper {
+    display: flex;
+    gap: 16px;
+    margin-left: auto;
+}
+
+
+/* ADD A PROFILE PICTURE CSS CODE */ /* ADD A PROFILE PICTURE CSS CODE */ /* ADD A PROFILE PICTURE CSS CODE */ /* ADD A PROFILE PICTURE CSS CODE */
+ 
+
+.profilePicModalMainContentWrapper {
+
+}
+
+.profilePicModalMainContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 24px;
+}
+
+.defaultProfilePicModalImg {
+    width: 120px;
+    height: 120px;
+    fill: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid black;
+}
+
+.profilePicModalImg {
+    width: 60px;
+    height: 60px;
+}
+
+.profilePicTxt {
+    font-weight: 200;
+}
+
+.profilePicModalFooterWrapper {
+    padding: 10px 20px 20px 20px;
+    display: flex;
+    justify-content: end;
+    gap: 24px
+}   
+
+
+/*  USER ID CSS CODE */
+
+
+.userIdModalMainContentWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.userIdModalMainContent {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.userIdModalInputWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.userIdModalInputLabel {
+    font-size: 14px;
+    height: 26px;
+}
+
+.userIdModalInput {
+    width: 100%;
+    padding: 10px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border: 1px solid black;
+    border-right: none;
+    outline: none;
+}
+
+.userIdModalIconImgWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 42.09px;
+    height: 37.6px;
+    border: 1px solid black;
+    background-color: black;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+    fill: white;
+    position: relative;
+}
+
+.userIdModalIconImgWrapper.copied {
+    border-color: rgb(0, 160, 0);
+    fill: rgb(0, 160, 0);
+}
+
+.userIdModalIconImgWrapper.copied::before {
+    position: absolute;
+    top: -31px;
+    right: -14px;
+    width: fit-content;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: rgb(48, 48, 48);
+    color: white;
+    content: 'Copied!';
+}
+
+.userIdModalIconImgWrapper.copied::after {
+    position: absolute;
+    content: '';
+    top: -12px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid rgb(48, 48, 48);
+}
+
+.userIdModalIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.userIdModalFooterWrapper {
+    display: flex;
+    justify-content: end;
+    padding: 10px 20px 20px 20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.emptySpace {
+    padding: 20px;
+    border: 2px solid rgb(169, 169, 255);
+    background-color: rgb(245, 158, 158);
+}

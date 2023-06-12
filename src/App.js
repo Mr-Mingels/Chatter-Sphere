@@ -17,7 +17,7 @@ const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
-        <Suspense fallback={<div className='loadingScreenWrapper'><div className='loadingScreen'></div></div>}>
+        <Suspense fallback={<div className="loaderWrapper"><span class="loader"></span></div>}>
           <Routes>
             <Route path='/' element={<Main />}/>
             <Route path="/sign-up" element={<Authenticate />} />
