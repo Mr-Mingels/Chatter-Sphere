@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import '../styles/Modal.css'
 
-const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
+const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModalOpen, setInformModalTxt, setInformModalColor, 
+    getFriendsListInfo}) => {
     const [modalHeaderTxt, setModalHeaderTxt] = useState(null)
     const [newGroupModal, setNewGroupModal] = useState(false)
     const [friendsListModal, setFriendsListModal] = useState(false)
@@ -18,6 +19,10 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
     const [viewRecievedFriendRequests, setViewRecievedFriendRequests] = useState(true)
     const [addFriendModal, setAddFriendModal] = useState(false)
     const [redAddFriendPlaceHolder, setRedAddFriendPlaceHolder] = useState(false)
+    const [searchedFriends, setSearchedFriends] = useState([]);
+    const [selectedProfileImgFile, setSelectedProfileImgFile] = useState(null);
+    const [selectedGroupImgFile, setSelectedGroupImgFile] = useState(null);
+    const [friendsList, setFriendsList] = useState()
     const [friendUserId, setFriendUserId] = useState({
         value: '',
         placeholder: 'Type your friends User ID here...'
@@ -35,11 +40,11 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
       }, [friendUserId.value])
 
     useEffect(() => {
-        console.log(modalConfig)
         if (modalConfig === 'new group') {
             setModalHeaderTxt('New Group')
             setNewGroupModal(true)
         } else if (modalConfig ==='friends') {
+            getFriendsList()
             setModalHeaderTxt('Friends List')
             setFriendsListModal(true)
         } else if (modalConfig ==='friend requests') {
@@ -75,16 +80,15 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
     }
 
     const sendFriendRequest = async () => {
-        // REMEMBER TO GET RID OF THE OBJECT AND JUST PASS ON THE { friendUserId } INSTEAD
         const friendRequestObject = {
             friend: friendUserId.value
         }
         try {
             const response = await axios.put('http://localhost:5000/send-friend-request', friendRequestObject, { withCredentials: true });
-            console.log(response)
-            // REMEMBER TO ADD SOME MORE TO THIS SO THAT WHEN ITS SUCCESSFUL IT CLOSES OUT THE MODAL AND IF IT'S NOT ADD SOME ERROR HANDLING
-            console.log(response.message)
             if (response.status === 200) {
+                setInformModalTxt(`Sent friend request!`)
+                setInformModalColor('green')
+                setInformModalOpen(true)
                 closeModal()
             }
           } catch (err) {
@@ -148,21 +152,30 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
         }
     }
 
-    const acceptFriendRequest = async (requestedFriendId) => {
+    const acceptFriendRequest = async (requestedFriendId, requestedFriendUserName) => {
         try {
             const response = await axios.put('http://localhost:5000/accept-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
+                setInformModalTxt(`Accepted ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
+                friend request!`)
+                setInformModalColor('green')
+                setInformModalOpen(true)
                 getRecievedRequestUserInfo()
+                getFriendsListInfo()
             }
         } catch (err) {
             console.log(err)
         }
     }
 
-    const declineFriendRequest = async (requestedFriendId) => {
+    const declineFriendRequest = async (requestedFriendId, requestedFriendUserName) => {
         try {
             const response = await axios.put('http://localhost:5000/decline-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
+                setInformModalTxt(`Declined ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
+                friend request!`)
+                setInformModalColor('green')
+                setInformModalOpen(true)
                 getRecievedRequestUserInfo()
             }
         } catch (err) {
@@ -175,13 +188,93 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
             const response = await axios.put('http://localhost:5000/unsend-friend-request', { requestedFriendId }, { withCredentials: true })
             console.log('triggered')
             if (response.status === 200) {
-                console.log('worked')
+                setInformModalTxt(`Unsent friend request!`)
+                setInformModalColor('green')
+                setInformModalOpen(true)
                 getSentRequestUserInfo()
             }
         } catch (err) {
             console.log(err)
         }
     }
+
+    const getFriendsList = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/friends-list', { withCredentials: true })
+            console.log(response.data)
+            if (response.status === 200 && response.data) {
+                setFriendsList(response.data)
+                setSearchedFriends(response.data)
+            } else {
+                setFriendsList([])
+                setSearchedFriends([])
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const removeFriend = async (friendId, friendUserName) => {
+        try {
+            const response = await axios.put('http://localhost:5000/remove-friend', { friendId }, { withCredentials: true })
+            console.log(response)
+            if (response.status === 200) {
+                setInformModalTxt(`Removed ${friendUserName.charAt(0) + friendUserName.slice(1).toLowerCase()} from your friends list!`)
+                setInformModalColor('green')
+                setInformModalOpen(true)
+                getFriendsList()
+                getFriendsListInfo()
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const handleFriendsListSearch = (event) => {
+        const value = event.target.value.toLowerCase();
+        setSearchedFriends(friendsList.filter(friend => friend.username.toLowerCase().includes(value)));
+    };
+
+    const handleProfileImgFileChange = (event) => {
+        setSelectedProfileImgFile(event.target.files[0]);
+    };
+
+    useEffect(() => {
+        console.log(selectedProfileImgFile)
+    },[selectedProfileImgFile])
+    
+    const addProfileImg = async () => {
+        if (selectedProfileImgFile.type !== 'image/jpeg' || selectedProfileImgFile.type === 'image/png') {
+            setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
+            setInformModalColor('red')
+            setInformModalOpen(true)
+            return;
+        }
+        const formData = new FormData(); 
+        formData.append('profilePicture', selectedProfileImgFile);
+        formData.append('userId', userInfo._id);
+        try {
+            const response = await axios.put(`http://localhost:5000/add-profile-picture`, formData, { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            console.log(response.message)
+            if (response.status === 200) {
+                setInformModalTxt('Profile picture updated!')
+                setInformModalColor('green')
+                setInformModalOpen(true)
+                closeModal()
+                getUserInfo()
+            } else if (response.status === 400) {
+
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    
 
 
     return (
@@ -205,7 +298,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
                     </div>
                 </div>
             )}
-            <div className={`modalContent ${(friendRequestsModal ? recievedFriendRequests : true) && 
+            <div className={`modalContent ${(friendRequestsModal ? recievedFriendRequests : true) && (friendsListModal ? friendsList : true) &&
             allConfig.some(config => config) ? 'render' : ''} 
             ${addFriendModal ? 'close' : ''}`}>
                 <div className="modalHeaderWrapper">
@@ -216,7 +309,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
                                 <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 
                                 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 
                                 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
-                                <input className="friendsModalSearchInput" placeholder="Search"></input>
+                                <input className="friendsModalSearchInput" placeholder="Search" onChange={handleFriendsListSearch}></input>
                         </div>
                     )}
                 </div>
@@ -238,8 +331,18 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
                     {friendsListModal && (
                         <div className="friendModalMainContentWrapper">
                             <div className="friendModalMainContent">
-                                <span className="emptySpace">ffadsfasdfasdf</span>
-                                <span className="emptySpace">ffadsfasdfasdf</span>
+                            {searchedFriends && searchedFriends.map((user, index) => (
+                                <div className="friendModalSentUserContentWrapper" key={index}>
+                                    {user.profilePicture ? <img src={`${user.profilePicture}`} 
+                                    className="friendModalProfileImg"/> : <div className="friendModalDefaultProfileImgWrapper">
+                                    <h3 className="friendModalDefaultProfileImg">{user.username.charAt(0)}</h3></div>}
+                                    <span className="friendModalUserName">
+                                        {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
+                                    </span>
+                                    <button className="friendModalRemoveBtn" 
+                                    onClick={() => removeFriend(user._id.toString(), user.username)}>Remove</button>
+                                </div>
+                            ))}
                             </div>
                             <div className="friendModalFooterWrapper">
                                 <button className="friendModalBtn" onClick={() => closeModal()}>Close</button>
@@ -258,7 +361,8 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
                             <div className="friendRequestsModalMainContent">
                             {(sentFriendRequests && viewSentFriendRequests) && sentFriendRequests.map((user, index) => (
                                 <div className="friendRequestsModalSentUserContentWrapper" key={index}>
-                                    {user.profilePicture ? <img /> : <div className="friendRequestModalDefaultProfileImgWrapper">
+                                    {user.profilePicture ? <img src={`${user.profilePicture}`} 
+                                    className="friendRequestsModalProfileImg"/> : <div className="friendRequestModalDefaultProfileImgWrapper">
                                     <h3 className="friendRequestsModalDefaultProfileImg">{user.username.charAt(0)}</h3></div>}
                                     <span className="friendRequestsModalUserName">
                                         {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
@@ -269,16 +373,17 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
                             ))}
                             {(recievedFriendRequests && viewRecievedFriendRequests) && recievedFriendRequests.map((user, index) => (
                                 <div className="friendRequestsModalSentUserContentWrapper" key={index}>
-                                    {user.profilePicture ? <img /> : <div className="friendRequestModalDefaultProfileImgWrapper">
+                                    {user.profilePicture ? <img src={`${user.profilePicture}`} 
+                                    className="friendRequestsModalProfileImg"/> : <div className="friendRequestModalDefaultProfileImgWrapper">
                                     <h3 className="friendRequestsModalDefaultProfileImg">{user.username.charAt(0)}</h3></div>}
                                     <span className="friendRequestsModalUserName">
                                         {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
                                     </span>
                                     <div className="friendRequestsModalBtnWrapper">
                                         <button className="friendRequestsModalAcceptBtn" 
-                                        onClick={() => acceptFriendRequest(user._id.toString())}>Accept</button>
+                                        onClick={() => acceptFriendRequest(user._id.toString(), user.username)}>Accept</button>
                                         <button className="friendRequestsModalDeclineBtn" 
-                                        onClick={() => declineFriendRequest(user._id.toString())}>Decline</button>
+                                        onClick={() => declineFriendRequest(user._id.toString(), user.username)}>Decline</button>
                                     </div>
                                 </div>
                             ))}
@@ -289,18 +394,22 @@ const Modal = ({ modalConfig, userInfo, setModalOpen }) => {
                             </div>
                         </div>
                     )}
-                    {addProfilePictureModal && (
+                    {addProfilePictureModal && (    
                         <div className="profilePicModalMainContentWrapper">
                             <div className="profilePicModalMainContent">
-                                {groupImg ? <img/> : <div className="defaultProfilePicModalImg"><svg xmlns="http://www.w3.org/2000/svg" 
-                                className="profilePicModalImg" viewBox="0 0 512 512"><path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 
+                                {selectedProfileImgFile ? <img src={URL.createObjectURL(selectedProfileImgFile)} className="profilePicModalImg" 
+                                onClick={() => document.getElementById('hiddenFileInput').click()}/> : 
+                                <div className="defaultProfilePicModalImg" onClick={() => document.getElementById('hiddenFileInput').click()}>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="profileDefaultPicModalImg" viewBox="0 0 512 512">
+                                <path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 
                                 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 
                                 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg></div>}
                                 <p className="profilePicTxt">Click the above icon to add an image</p>
+                                <input id='hiddenFileInput' type='file' onChange={handleProfileImgFileChange} style={{display: 'none'}} />
                             </div>
                             <div className="profilePicModalFooterWrapper">
                                 <button className="profilePicModalBtn" onClick={() => closeModal()}>Cancel</button>
-                                <button className="profilePicModalBtn">Add</button>
+                                <button className="profilePicModalBtn" onClick={() => addProfileImg()}>Add</button>
                             </div>
                         </div>
                     )}

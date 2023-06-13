@@ -81,7 +81,12 @@ const Authenticate = () => {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
                 console.error('Error message: ', error.response.data.message);
-                if (error.response.data.message === 'Incorrect email') {
+                if (error.response.data.message === 'Incorrect email and username') {
+                    setRedEmailPlaceHolder(true)
+                    setEmail({ ...email, value: '', placeholder: 'Incorrect email' })
+                    setRedUserNamePlaceHolder(true)
+                    setUserName({ ...userName, value: '', placeholder: 'Incorrect username' })
+                } else if (error.response.data.message === 'Incorrect email') {
                     setRedEmailPlaceHolder(true)
                     setEmail({ ...email, value: '', placeholder: 'Incorrect email' })
                 } else if (error.response.data.message === 'Incorrect username' || 

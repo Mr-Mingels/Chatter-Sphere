@@ -231,14 +231,19 @@
     padding: 12px 20px;
 }
 
-.friendRequestsModalSentUserContentWrapper {
+.friendRequestsModalSentUserContentWrapper, .friendModalSentUserContentWrapper {
     display: flex;
     gap: 16px;
     padding: 15px 25px;
     align-items: center;
+    cursor: pointer;
 }
 
-.friendRequestModalDefaultProfileImgWrapper {
+.friendRequestsModalSentUserContentWrapper:hover, .friendModalSentUserContentWrapper:hover {
+    background-color: rgb(240, 240, 240);
+}
+
+.friendRequestModalDefaultProfileImgWrapper, .friendModalDefaultProfileImgWrapper, .friendRequestsModalProfileImg, .friendModalProfileImg {
     width: 45px;
     height: 45px;
     display: flex;
@@ -251,9 +256,10 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
+    object-fit: cover;
 }
 
-.friendRequestsModalDefaultProfileImg {
+.friendRequestsModalDefaultProfileImg, .friendModalDefaultProfileImg {
     font-size: 20px;
     font-weight: 500;
 }
@@ -267,11 +273,11 @@
     font-weight: 400;
 }
 
-.friendRequestsModalUserName {
+.friendRequestsModalUserName, .friendModalUserName {
 
 }
 
-.friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn {
+.friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn, .friendModalRemoveBtn {
     margin-left: auto;
     background-color: transparent;
     border: 2px solid rgb(255, 100, 100);
@@ -313,7 +319,7 @@
     gap: 24px;
 }
 
-.defaultProfilePicModalImg {
+.defaultProfilePicModalImg, .profilePicModalImg {
     width: 120px;
     height: 120px;
     fill: white;
@@ -325,9 +331,10 @@
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     border: 1px solid black;
+    object-fit: cover;
 }
 
-.profilePicModalImg {
+.profileDefaultPicModalImg {
     width: 60px;
     height: 60px;
 }

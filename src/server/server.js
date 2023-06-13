@@ -5,9 +5,16 @@ const bcrypt = require('bcrypt');
 const session = require('express-session')
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
-const User = require('./user')
+const User = require('./models/user')
+const Chat = require('./models/chat');
+const Message = require('./models/messages');
 const cors = require('cors');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const path = require('path');
 const app = express()
+
 
 const mongoDbUrl = process.env.MONGODB_URL
 const PORT = process.env.PORT || 5000;
@@ -25,6 +32,7 @@ const connectToMongoDb = async () => {
 
 connectToMongoDb()
 
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: false}))
@@ -93,6 +101,15 @@ const ensureAuthentication = ((req, res, next) => {
     res.status(401).send('Unauthorized');
 })
 
+const s3Client = new S3Client({
+    region: 'eu-north-1',
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+});
+
+const upload = multer();
 
 app.get('/', ensureAuthentication, (req, res) => {
     res.json(req.user)
@@ -249,7 +266,15 @@ app.put('/accept-friend-request', async (req, res) => {
         await User.updateOne({ _id: userId }, { $push: { friends: receivedFriendUserId } });
         await User.updateOne({ _id: receivedFriendUserId }, { $push: { friends: userId } });
 
-        res.status(200).send({ message: 'Accepted!' })
+        const memberIds = [userId, receivedFriendUserId]
+        const usersAlreadyHaveAChat = await Chat.findOne({ members: { $all: memberIds } });
+
+        if (usersAlreadyHaveAChat) {
+            return res.status(200).send({ message: 'Accepted!' })
+        } 
+        const chat = new Chat({ members: memberIds })
+        await chat.save()
+        res.status(200).send({ message: 'Accepted request and made a new chat!' })
     } catch (err) {
         console.log(err);
         res.status(500).send({ message: 'Server error' });
@@ -293,6 +318,76 @@ app.put('/unsend-friend-request', async (req, res) => {
         res.status(500).send({ message: 'Server error' });
     }
 })
+
+app.get('/friends-list', async (req, res) => {
+    try {
+        const userId = req.user._id.toString()
+        const userById = await User.findOne({ _id: userId })
+        if (userById) {
+            const usersFriendsList = await User.find({ _id: { $in: userById.friends } });
+            res.status(200).json(usersFriendsList);
+        } else {
+            return res.status(404).send({ message: 'User not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
+    }
+})
+
+app.put('/remove-friend', async (req, res) => {
+    try {
+        const friendUserId = req.body.friendId.toString()
+        const userId = req.user._id.toString()
+        const userById = await User.findOne({ _id: userId })
+        const friendUserById = await User.findOne({ _id: friendUserId })
+        if (userById && friendUserById) {
+            await User.updateOne({ _id: userId }, { $pull: { friends: friendUserId } });
+            await User.updateOne({ _id: friendUserId }, { $pull: { friends: userId } });
+        }
+        res.status(200).send({ message: 'Friend removed from friends list' })
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
+    }
+})
+
+app.put('/add-profile-picture', upload.single('profilePicture'), async (req, res) => {
+    try {
+        const oldProfilePicUrl = req.user.profilePicture;
+        if (oldProfilePicUrl) {
+            const oldImageKey = oldProfilePicUrl.split('/').pop(); // This gets the key of the old image file
+        
+            const deleteParams = {
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldImageKey
+            };
+        
+            await s3Client.send(new DeleteObjectCommand(deleteParams));
+        }
+
+        // Use the buffer property attached by multer
+        const fileBuffer = req.file.buffer;
+
+        const uploadParams = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: new Date().toISOString().replace(/:/g, '-') + req.file.originalname,
+            Body: fileBuffer,
+        };
+        
+        const result = await s3Client.send(new PutObjectCommand(uploadParams));
+
+        const profilePictureUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`; 
+
+        const userId = req.user._id.toString();
+        await User.updateOne({ _id: userId }, { profilePicture: profilePictureUrl });
+        res.status(200).send({ message: 'Profile Picture updated', url: profilePictureUrl });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Server error' });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

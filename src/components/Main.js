@@ -9,26 +9,51 @@ const Main = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [userInfo, setUserInfo] = useState()
   const [modalConfig, setModalConfig] = useState(null)
+  const [informModalTxt, setInformModalTxt] = useState('')
+  const [informModalOpen, setInformModalOpen] = useState(false)
+  const [informModalColor, setInformModalColor] = useState('')
+  const [friendsListInfo, setFriendsListInfo] = useState()
+  const [searchedFriendsListInfo, setSearchedFriendsListInfo] = useState([])
 
     const navigate = useNavigate();
 
+    const getUserInfo = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/', { credentials: 'include' });
+        // check for user authentication
+        if (response.status === 401) {
+          navigate('/sign-up');
+        } else {
+          const userData = await response.json()
+          setUserInfo(userData)
+          console.log(userData)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    const getFriendsListInfo = async () => {
+      try {
+          const response = await axios.get('http://localhost:5000/friends-list', { withCredentials: true })
+          console.log(response.data)
+          if (response.status === 200 && response.data) {
+            setFriendsListInfo(response.data)
+            setSearchedFriendsListInfo(response.data)
+            console.log('passed if')
+          } else {
+              setFriendsListInfo([])
+              setSearchedFriendsListInfo([])
+          }
+      } catch (err) {
+          console.log(err)
+      }
+  }
+
     useEffect(() => {
-        const getUserInfo = async () => {
-            try {
-              const response = await fetch('http://localhost:5000/', { credentials: 'include' });
-              // check for user authentication
-              if (response.status === 401) {
-                navigate('/sign-up');
-              } else {
-                const userData = await response.json()
-                setUserInfo(userData)
-              }
-            } catch (error) {
-              console.log(error)
-            }
-          };
-          getUserInfo()
-    }, [navigate]);
+      getUserInfo()
+      getFriendsListInfo()
+    }, [navigate])
 
     const logOut = async () => {
       try {
@@ -56,6 +81,25 @@ const Main = () => {
     setModalOpen(true)
   }
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setInformModalOpen(false);
+    }, 5000);
+    return () => clearTimeout(timeoutId);
+  },[informModalOpen, informModalTxt])
+
+  const handleFriendsListInfoSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchedFriendsListInfo(friendsListInfo.filter(friend => friend.username.toLowerCase().includes(value)));
+  };
+
+  const getChatInfo = async (friendId) => {
+    try {
+   /*   const response = await axios.post('http://localhost:5000/chats', { friendId }, { withCredentials: true }) */
+    } catch (err) {
+      console.log(err)
+    }
+  } 
 
     if (!userInfo) {
       return <div className="loaderWrapper"><span class="loader"></span></div>
@@ -66,12 +110,18 @@ const Main = () => {
         <section className='messagesWrapper'>
         <div className={`fullPageWrapper ${sideBarOpen || modalOpen ? 'open' : ''}`} onClick={() => handleCloseSideBar()}>
         {modalOpen &&(
-          <Modal modalConfig={modalConfig} userInfo={userInfo} setModalOpen={setModalOpen}/>
+          <Modal modalConfig={modalConfig} userInfo={userInfo} setModalOpen={setModalOpen} getUserInfo={getUserInfo} 
+          setInformModalTxt={setInformModalTxt} setInformModalOpen={setInformModalOpen} setInformModalColor={setInformModalColor}
+          getFriendsListInfo={getFriendsListInfo}/>
         )}
+          <div className={`informModalWrapper ${informModalColor === 'red' ? 'redColor' : 'greenColor'} ${informModalOpen ? 'open' : ''}`}>
+            <h3 className='informModalTxt'>{informModalColor === 'red' ? 'Error: ' : ''}{informModalTxt}</h3>
+          </div>
                 <div className={`sideBarWrapper ${sideBarOpen ? 'open' : ''}`} onClick={event => event.stopPropagation()}>
                     <div className="sideBarContent">
                       <div className="sideBarUserInfoWrapper">
-                          {userInfo.profileImg ? <img /> : 
+                          {userInfo.profilePicture ? <img src={`${userInfo.profilePicture}`} 
+                          className="sideBarProfileImg" onMouseDown={(e) => e.preventDefault()}/> : 
                           <div className="sideBarDefaultProfileImg">{userInfo.username.charAt(0)}</div>}
                           <h6 className="sideBarUserName">{userInfo.username}</h6>
                       </div>
@@ -139,8 +189,22 @@ const Main = () => {
                   <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 
                   14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 
                   0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
-                  <input className='navSearchInput' placeholder='Search Messages...' />
+                  <input className='navSearchInput' placeholder='Search Messages...' onChange={handleFriendsListInfoSearch}/>
                 </nav>
+                <div className="friendAndGroupMessagesWrapper">
+                    <div className="friendAndGroupMessagesContent">
+                        {searchedFriendsListInfo.map((user, index) =>
+                          <div className="chatWrapper" key={index} onClick={() => getChatInfo(user._id)}>
+                              {user.profilePicture ? <img src={`${user.profilePicture}`} 
+                              className="chatImg"/> : <div className="chatDefaultImgWrapper">
+                              <h3 className="chatDefaultImg">{user.username.charAt(0)}</h3></div>}
+                              <span className="chatName">
+                                {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
+                              </span>
+                          </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </section>
       </div>
