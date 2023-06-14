@@ -1,9 +1,10 @@
 .mainWrapper {
     height: 100%;
     width: 100%;
+    display: flex;
 }
 
-.messagesWrapper {
+.chatsWrapper {
     width: 40%;
 }
 
@@ -37,13 +38,13 @@
     font-weight: 400;
 }
 
-.messagesContent {
+.chatsContent {
     width: 100%;
     height: 100vh;
     border-right: 1px solid rgb(210, 210, 210);
 }
 
-.messagesNavBar {
+.chatsNavBar {
     padding: 10px 8px 10px 16px;
     display: flex;
     align-items: center;
@@ -223,17 +224,17 @@
     background-color: transparent;
 }
 
-.friendAndGroupMessagesWrapper {
+.friendAndGroupChatsWrapper {
     width: 100%;
     overflow-y: scroll;
     height: 706px;
 }
 
-.friendAndGroupMessagesWrapper::-webkit-scrollbar {
+.friendAndGroupChatsWrapper::-webkit-scrollbar {
     width: 0;
 }
 
-.friendAndGroupMessagesContent {
+.friendAndGroupChatsContent {
     display: flex;
     flex-direction: column;
 }
@@ -244,9 +245,16 @@
     align-items: center;
     gap: 16px;
     cursor: pointer;
+    text-decoration: none;
+    color: black;
 }
 
-.chatWrapper:hover {
+.chatWrapper.inChat {
+    background-color: black;
+    color: white;
+}
+
+.chatWrapper:not(.inChat):hover {
     background-color: rgb(240, 240, 240);
 }   
 
@@ -262,6 +270,11 @@
     color: white;
 }
 
+.chatWrapper.inChat .chatDefaultImgWrapper {
+    background-color: white;
+    color: black;
+}
+
 .chatDefaultImg {
     font-size: 20px;
     font-weight: 500;
@@ -269,6 +282,12 @@
 
 .chatName {
 
+}
+
+.chatMessagesSectionWrapper {
+    width: 60%;
+    position: relative;
+    background-color: rgb(20, 20, 20);
 }
 
 .mainEmptySpace {

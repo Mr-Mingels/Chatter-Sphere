@@ -1,0 +1,140 @@
+.messagesWrapper {
+
+}
+
+.messagesContent {
+    max-height: 715px;
+    overflow-y: scroll;
+}
+
+.messagesContent::-webkit-scrollbar {
+    width: 0;
+}
+
+.messagesFooterWrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 45px;
+    width: 100%;
+    border-top: 1px solid rgb(210, 210, 210);
+    background-color: white;
+}
+
+.messagesFooterContent {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding: 10px 10px 10px 20px;
+}
+
+.messagesFooterForm {
+    width: 100%;
+    height: 100%;
+}
+
+.messagesFooterInput {
+    width: 100%;
+    border: none;
+    outline: none;
+    height: 100%;
+}
+
+.chatMessageWrapper {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    gap: 12px;
+    position: relative;
+}
+
+.messageSenderImg, .messageSenderDefaultImgWrapper {
+    min-width: 35px;
+    min-height: 35px;
+    max-width: 35px;
+    max-height: 35px;
+    object-fit: cover;
+    border-radius: 50%;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.messageSenderDefaultImgWrapper {
+
+}
+
+.messageSenderDefaultImg {
+
+}
+
+.messageTxtWrapper {
+    background-color: white;
+    padding: 10px;
+    max-width: 500px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.messageTxt {
+    background-color: white;
+    padding: 10px;
+    max-width: 500px;
+    border-radius: 8px;
+}
+
+.messageInfoWrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: end;
+    font-size: 12px;
+    gap: 4px;
+    color: rgb(150, 150, 150);
+    font-weight: 400;
+}
+
+.messageSenderUserName {
+
+}
+
+.messageDate {
+
+}
+
+
+
+
+
+.messagesLoaderWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    z-index: 1000;
+    background-color: rgb(20, 20, 20);
+}
+
+.messagesLoader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #000000;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

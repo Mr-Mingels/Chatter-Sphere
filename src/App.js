@@ -4,6 +4,7 @@ import React, { lazy, Suspense, useEffect, useState  } from "react";
 
 const Authenticate = lazy(() => import('./components/Authenticate'));
 const Main = lazy(() => import('./components/Main'))
+const Messages = lazy(() => import('./components/Messages'))
 
 const App = () => {
 
@@ -17,13 +18,15 @@ const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
-        <Suspense fallback={<div className="loaderWrapper"><span class="loader"></span></div>}>
-          <Routes>
-            <Route path='/' element={<Main />}/>
-            <Route path="/sign-up" element={<Authenticate />} />
-            <Route path="/log-in" element={<Authenticate />} />
-            <Route path='*' element={<RedirectToHome />}/>
-          </Routes>
+        <Suspense fallback={<div className="loaderWrapper"><span className="loader"></span></div>}>
+            <Routes>
+              <Route path="/sign-up" element={<Authenticate />} />
+              <Route path="/log-in" element={<Authenticate />} />
+              <Route path="/" element={<Main />}>
+                <Route path="chats/:chatId/messages" element={<Messages />} />
+              </Route>
+              <Route path='*' element={<RedirectToHome />}/>
+            </Routes>
         </Suspense>
       </BrowserRouter>
     </div>

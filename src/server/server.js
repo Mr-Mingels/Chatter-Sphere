@@ -15,6 +15,15 @@ const { S3Client, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/cl
 const path = require('path');
 const app = express()
 
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"],
+      credentials: true
+    }
+  });
+app.locals.io = io;
 
 const mongoDbUrl = process.env.MONGODB_URL
 const PORT = process.env.PORT || 5000;
@@ -111,9 +120,98 @@ const s3Client = new S3Client({
 
 const upload = multer();
 
+io.on('connection', (socket) => {
+    console.log('A user connected');
+  
+    // Join a room based on the chatId
+    socket.on('joinChat', (chatId) => {
+      socket.join(chatId);
+    });
+  
+    // Handle sending and receiving messages
+    socket.on('sendMessage', (data) => {
+        console.log(data)
+      const { chatId, message } = data;
+      console.log(message)
+      // Save the message to the database
+  
+    // Emit the message to all connected clients in the same room except the sender
+    socket.broadcast.to(chatId).emit('messageReceived', message);
+    });
+  
+    // Handle other events and message types
+  
+    // Disconnect event
+    socket.on('disconnect', () => {
+      console.log('A user disconnected');
+    });
+  });
+  
+
 app.get('/', ensureAuthentication, (req, res) => {
     res.json(req.user)
 })
+
+app.get('/users/chats', async (req, res) => {
+    try {
+        const userId = req.user._id.toString();
+        let chats = await Chat.find({ members: userId }).populate('members', 'username profilePicture');
+        chats = chats.map(chat => {
+            // if it's a group chat, send chat details as is
+            if (chat.isGroupChat) {
+                return chat;
+            }
+            // if it's a 2-person chat, send friend's details
+            const friend = chat.members.find(member => member.id !== userId);
+            return {
+                ...chat.toObject(),
+                friend
+            };
+        });
+        res.status(200).json(chats);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/chats/:chatId/messages', async (req, res) => {
+    try {
+        const chatId = req.params.chatId
+        console.log(chatId)
+        if (chatId) {
+            console.log(chatId)
+            const messages = await Message.find({ chat: chatId }).populate('sender', 'username profilePicture');
+            res.status(200).json(messages);
+        } else {
+            res.status(400).send({ message: 'Chat Not Found!'})
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/messages', async (req, res) => {
+    try {
+      const chatId = req.body.idInfo.chatId;
+      const senderId = req.user._id.toString();
+      const message = req.body.idInfo.message;
+      const newMessage = new Message({ chat: chatId, sender: senderId, message: message });
+  
+      await newMessage.save();
+  
+      await newMessage.populate('sender', 'username profilePicture')
+      // Emit the new message to all connected clients in the same room
+      io.to(chatId).emit('messageReceived', newMessage);
+  
+      res.status(200).json(newMessage);
+    } catch (err) {
+    console.log(err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
 
 app.get('/sign-up', (req, res) => {
 })
@@ -389,6 +487,6 @@ app.put('/add-profile-picture', upload.single('profilePicture'), async (req, res
 });
 
 
-app.listen(PORT, () => {
+http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

@@ -4,7 +4,7 @@ import axios from 'axios';
 import '../styles/Modal.css'
 
 const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModalOpen, setInformModalTxt, setInformModalColor, 
-    getFriendsListInfo}) => {
+    getChatListInfo}) => {
     const [modalHeaderTxt, setModalHeaderTxt] = useState(null)
     const [newGroupModal, setNewGroupModal] = useState(false)
     const [friendsListModal, setFriendsListModal] = useState(false)
@@ -156,12 +156,13 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         try {
             const response = await axios.put('http://localhost:5000/accept-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
+                setRecievedFriendRequests(prevRequests => prevRequests.filter(user => user._id.toString() !== requestedFriendId));
                 setInformModalTxt(`Accepted ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
                 getRecievedRequestUserInfo()
-                getFriendsListInfo()
+                getChatListInfo()
             }
         } catch (err) {
             console.log(err)
@@ -172,6 +173,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         try {
             const response = await axios.put('http://localhost:5000/decline-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
+                setRecievedFriendRequests(prevRequests => prevRequests.filter(user => user._id.toString() !== requestedFriendId));
                 setInformModalTxt(`Declined ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
                 setInformModalColor('green')
@@ -188,10 +190,10 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             const response = await axios.put('http://localhost:5000/unsend-friend-request', { requestedFriendId }, { withCredentials: true })
             console.log('triggered')
             if (response.status === 200) {
+                setSentFriendRequests(prevRequests => prevRequests.filter(user => user._id.toString() !== requestedFriendId));
                 setInformModalTxt(`Unsent friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
-                getSentRequestUserInfo()
             }
         } catch (err) {
             console.log(err)
@@ -222,8 +224,8 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                 setInformModalTxt(`Removed ${friendUserName.charAt(0) + friendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
-                getFriendsList()
-                getFriendsListInfo()
+                setSearchedFriends(prevFriends => prevFriends.filter(user => user._id.toString() !== friendId));
+                getChatListInfo()
             }
         } catch (err) {
             console.log(err)
