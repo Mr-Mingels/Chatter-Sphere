@@ -11,6 +11,14 @@ const chatSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isOwner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    groupPicture: {
+        type: String,
+        required: false
+    },
     chatName: { // Optional, for group chats
         type: String
     },

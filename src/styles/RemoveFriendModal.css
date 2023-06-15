@@ -1,0 +1,54 @@
+.removeFriendModalContent {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    width: 350px;
+}
+
+.removeFriendModalMainContentWrapper {
+    padding: 40px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.removeFriendModalMainContent {
+
+}
+
+.removeFriendModalTxt {
+    font-size: 14px;
+}
+
+.removeFriendModalFooterWrapper {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.removeFriendModalBtn {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 10px;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.removeFriendModalBtn.red {
+    color: rgb(255, 100, 100);
+}
+
+.removeFriendModalBtn.red:hover {
+    color: rgb(255, 100, 100);
+    background-color: rgb(255, 100, 100);
+    color: white;
+}
+
+.removeFriendModalBtn:hover {
+    background-color: black;
+    color: white;
+}

@@ -145,42 +145,53 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
       console.log('A user disconnected');
     });
-  });
+});
   
-
 app.get('/', ensureAuthentication, (req, res) => {
     res.json(req.user)
 })
 
 app.get('/users/chats', async (req, res) => {
     try {
-        const userId = req.user._id.toString();
-        let chats = await Chat.find({ members: userId }).populate('members', 'username profilePicture');
-        chats = chats.map(chat => {
-            // if it's a group chat, send chat details as is
-            if (chat.isGroupChat) {
-                return chat;
-            }
-            // if it's a 2-person chat, send friend's details
-            const friend = chat.members.find(member => member.id !== userId);
+      const userId = req.user._id.toString();
+      let chats = await Chat.find({ members: userId }).populate('members', 'username profilePicture friends');
+  
+      chats = chats.map(chat => {
+        if (chat.isGroupChat) {
+          // If it's a group chat, send chat details as is
+          return chat;
+        } else {
+          // If it's a two-person chat, check if the user is friends with the other person
+          const friend = chat.members.find(member => member.id !== userId);
+  
+          if (friend && friend.friends.includes(userId)) {
+            // If the user is friends with the other person, include the chat with friend's details
             return {
-                ...chat.toObject(),
-                friend
+              ...chat.toObject(),
+              friend
             };
-        });
-        res.status(200).json(chats);
+          } else {
+            // If the user is not friends with the other person, exclude the chat
+            return null;
+          }
+        }
+      });
+  
+      // Remove any null entries (chats that were excluded)
+      chats = chats.filter(chat => chat !== null);
+  
+      res.status(200).json(chats);
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: err.message });
+      console.log(err);
+      res.status(500).json({ message: err.message });
     }
-});
+  });
+  
 
 app.get('/chats/:chatId/messages', async (req, res) => {
     try {
         const chatId = req.params.chatId
-        console.log(chatId)
         if (chatId) {
-            console.log(chatId)
             const messages = await Message.find({ chat: chatId }).populate('sender', 'username profilePicture');
             res.status(200).json(messages);
         } else {
@@ -191,6 +202,43 @@ app.get('/chats/:chatId/messages', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+app.post('/create-group', async (req, res) => {
+    try {
+        const groupChatName = req.body.newGroupName
+        const groupChat = new Chat({ isGroupChat: true, chatName: groupChatName, members: req.user._id.toString(), 
+            isOwner: req.user._id.toString() })
+        await groupChat.save()
+        res.status(200).send({ message: 'Group Created!' })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
+    }
+})
+
+app.delete('/delete-group', async (req, res) => {
+    try {
+      if (req.body.currentChatId) {
+        const chatId = req.body.currentChatId;
+        const deletedChat = await Chat.findOneAndDelete({ _id: chatId });
+        
+        if (deletedChat) {
+          // Emit 'chatDeleted' event to all connected clients in the group chat
+          io.to(chatId).emit('chatDeleted');
+          await Message.deleteMany({ chat: chatId })
+          res.status(200).json({ message: 'Chat deleted' });
+        } else {
+          res.status(404).json({ message: 'Chat not found' });
+        }
+      } else {
+        res.status(400).json({ message: 'Invalid chat ID' });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
 
 app.post('/messages', async (req, res) => {
     try {
@@ -366,8 +414,8 @@ app.put('/accept-friend-request', async (req, res) => {
 
         const memberIds = [userId, receivedFriendUserId]
         const usersAlreadyHaveAChat = await Chat.findOne({ members: { $all: memberIds } });
-
-        if (usersAlreadyHaveAChat) {
+        console.log(usersAlreadyHaveAChat)
+        if (usersAlreadyHaveAChat && !usersAlreadyHaveAChat.isGroupChat) {
             return res.status(200).send({ message: 'Accepted!' })
         } 
         const chat = new Chat({ members: memberIds })
@@ -435,7 +483,7 @@ app.get('/friends-list', async (req, res) => {
 
 app.put('/remove-friend', async (req, res) => {
     try {
-        const friendUserId = req.body.friendId.toString()
+        const friendUserId = req.body.addedFriendId.toString()
         const userId = req.user._id.toString()
         const userById = await User.findOne({ _id: userId })
         const friendUserById = await User.findOne({ _id: friendUserId })

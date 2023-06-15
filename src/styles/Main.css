@@ -19,6 +19,7 @@
     color: white;
     transform: translateX(500px);
     transition: transform 0.5s ease-in-out;
+    z-index: 9999;
 }
 
 .informModalWrapper.open {
@@ -49,6 +50,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    height: 53.4px;
 }
 
 .hamburgerMenu {
@@ -222,6 +224,12 @@
     width: 100%;
     cursor: pointer;
     background-color: transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.sideBarLogOutBtn:hover {
+    background-color: rgb(255, 100, 100);
+    color: white;
 }
 
 .friendAndGroupChatsWrapper {
@@ -247,6 +255,10 @@
     cursor: pointer;
     text-decoration: none;
     color: black;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
 }
 
 .chatWrapper.inChat {
@@ -287,15 +299,12 @@
 .chatMessagesSectionWrapper {
     width: 60%;
     position: relative;
-    background-color: rgb(20, 20, 20);
 }
 
 .mainEmptySpace {
     background-color: aquamarine;
     padding: 10px;
 }
-
-
-
+  
 
 

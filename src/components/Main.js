@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate, Routes, Route, Outlet, Link } from "react-router-dom";
 import axios from 'axios';
 import '../styles/Main.css'
 import Modal from './Modal'
+import ParticleBackGround from "./ParticleBackGround";
 
-const Main = () => {
+const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction }) => {
   const [sideBarOpen, setSideBarOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [userInfo, setUserInfo] = useState()
@@ -41,6 +42,7 @@ const Main = () => {
           if (response.status === 200 && response.data) {
             setChatsListInfo(response.data)
             setsearchedChatsListInfo(response.data)
+            console.log(response.data)
           } else {
               setChatsListInfo([])
               setsearchedChatsListInfo([])
@@ -50,10 +52,22 @@ const Main = () => {
       }
   }
 
+  useEffect(() => {
+    getChatListInfoFunction(getChatListInfo)
+  },[])
+
     useEffect(() => {
       getUserInfo()
       getChatListInfo()
     }, [])
+
+    useEffect(() => {
+      setExtractedUserInfo(userInfo)
+    },[userInfo])
+
+    useEffect(() => {
+      setExtractedChatsListInfo(chatsListInfo)
+    },[chatsListInfo])
 
     const logOut = async () => {
       try {
@@ -93,20 +107,15 @@ const Main = () => {
     setsearchedChatsListInfo(chatsListInfo.filter(chat => chat.friend.username.toLowerCase().includes(value)));
   };
 
-  const getChatMessages = async (friendId) => {
-    try {
-   /*   const response = await axios.post('http://localhost:5000/chats', { friendId }, { withCredentials: true }) */
-    } catch (err) {
-      console.log(err)
-    }
-  } 
-
     if (!userInfo) {
       return <div className="loaderWrapper"><span class="loader"></span></div>
     }
 
     return (
       <div className='mainWrapper'>
+        <div className={`informModalWrapper ${informModalColor === 'red' ? 'redColor' : 'greenColor'} ${informModalOpen ? 'open' : ''}`}>
+            <h3 className='informModalTxt'>{informModalColor === 'red' ? 'Error: ' : ''}{informModalTxt}</h3>
+        </div>
         <section className='chatsWrapper'>
         <div className={`fullPageWrapper ${sideBarOpen || modalOpen ? 'open' : ''}`} onClick={() => handleCloseSideBar()}>
         {modalOpen &&(
@@ -114,9 +123,6 @@ const Main = () => {
           setInformModalTxt={setInformModalTxt} setInformModalOpen={setInformModalOpen} setInformModalColor={setInformModalColor}
           getChatListInfo={getChatListInfo}/>
         )}
-          <div className={`informModalWrapper ${informModalColor === 'red' ? 'redColor' : 'greenColor'} ${informModalOpen ? 'open' : ''}`}>
-            <h3 className='informModalTxt'>{informModalColor === 'red' ? 'Error: ' : ''}{informModalTxt}</h3>
-          </div>
                 <div className={`sideBarWrapper ${sideBarOpen ? 'open' : ''}`} onClick={event => event.stopPropagation()}>
                     <div className="sideBarContent">
                       <div className="sideBarUserInfoWrapper">
@@ -195,13 +201,27 @@ const Main = () => {
                     <div className="friendAndGroupChatsContent">
                     {searchedChatsListInfo.map((chat, index) =>
                           <Link className={`chatWrapper ${location.pathname.split("/")[2] === chat._id ? 'inChat' : ''}`} 
-                          key={index} to={`/chats/${chat._id}/messages`}>
+                          key={index} to={`/chats/${chat._id}/messages`} onMouseDown={(e) => e.preventDefault()}>
+                          {chat.friend && (
+                            <>
                               {chat.friend.profilePicture ? <img src={`${chat.friend.profilePicture}`} 
                               className="chatImg"/> : <div className="chatDefaultImgWrapper">
                               <h3 className="chatDefaultImg">{chat.friend.username.charAt(0)}</h3></div>}
                               <span className="chatName">
                                 {chat.friend.username.charAt(0) + chat.friend.username.slice(1).toLowerCase()}
                               </span>
+                            </>
+                          )}
+                          {chat.isGroupChat && (
+                            <>
+                              {chat.groupPicture ? <img src={`${chat.groupPicture}`} 
+                              className="chatImg"/> : <div className="chatDefaultImgWrapper">
+                              <h3 className="chatDefaultImg">{chat.chatName.charAt(0)}</h3></div>}
+                              <span className="chatName">
+                                {chat.chatName.charAt(0) + chat.chatName.slice(1).toLowerCase()}
+                              </span>
+                            </>
+                          )}
                           </Link>
                         )}
                     </div>
@@ -209,6 +229,7 @@ const Main = () => {
             </div>
         </section>
         <section className="chatMessagesSectionWrapper">
+          <ParticleBackGround />
           <Outlet />
         </section>
       </div>

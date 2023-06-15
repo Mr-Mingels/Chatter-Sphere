@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import RemoveFriendModal from "./RemoveFriendModal";
+import AddFriendModal from "./AddFriendModal";
 import axios from 'axios';
 import '../styles/Modal.css'
 
@@ -18,11 +20,15 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const [viewSentFriendRequests, setViewSentFriendRequests] = useState(false)
     const [viewRecievedFriendRequests, setViewRecievedFriendRequests] = useState(true)
     const [addFriendModal, setAddFriendModal] = useState(false)
+    const [removeFriendModal, setRemoveFriendModal] = useState(false)
     const [redAddFriendPlaceHolder, setRedAddFriendPlaceHolder] = useState(false)
     const [searchedFriends, setSearchedFriends] = useState([]);
     const [selectedProfileImgFile, setSelectedProfileImgFile] = useState(null);
     const [selectedGroupImgFile, setSelectedGroupImgFile] = useState(null);
+    const [addedFriendUserName, setAddedFriendUserName] = useState()
+    const [addedFriendId, setAddedFriendId] = useState()
     const [friendsList, setFriendsList] = useState()
+    const [newGroupName, setNewGroupName] = useState('')
     const [friendUserId, setFriendUserId] = useState({
         value: '',
         placeholder: 'Type your friends User ID here...'
@@ -69,6 +75,8 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     }
 
     const closeModal = () => {
+        setAddedFriendId('')
+        setAddedFriendUserName('')
         setModalOpen(false)
     }
 
@@ -76,7 +84,14 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         setFriendRequestsModal(false)
         setFriendsListModal(false)
         setAddFriendModal(true)
-        console.log(friendUserId.placeholder)
+    }
+
+    const openRemoveFriendModal = (friendId, friendUserName) => {
+        setAddedFriendUserName(friendUserName)
+        setAddedFriendId(friendId)
+        setFriendRequestsModal(false)
+        setFriendsListModal(false)
+        setRemoveFriendModal(true)
     }
 
     const sendFriendRequest = async () => {
@@ -216,16 +231,16 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         }
     }
 
-    const removeFriend = async (friendId, friendUserName) => {
+    const removeFriend = async () => {
         try {
-            const response = await axios.put('http://localhost:5000/remove-friend', { friendId }, { withCredentials: true })
+            const response = await axios.put('http://localhost:5000/remove-friend', { addedFriendId }, { withCredentials: true })
             console.log(response)
             if (response.status === 200) {
-                setInformModalTxt(`Removed ${friendUserName.charAt(0) + friendUserName.slice(1).toLowerCase()} from your friends list!`)
+                setInformModalTxt(`Removed ${addedFriendUserName.charAt(0) + addedFriendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
-                setSearchedFriends(prevFriends => prevFriends.filter(user => user._id.toString() !== friendId));
                 getChatListInfo()
+                closeModal()
             }
         } catch (err) {
             console.log(err)
@@ -240,10 +255,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const handleProfileImgFileChange = (event) => {
         setSelectedProfileImgFile(event.target.files[0]);
     };
-
-    useEffect(() => {
-        console.log(selectedProfileImgFile)
-    },[selectedProfileImgFile])
     
     const addProfileImg = async () => {
         if (selectedProfileImgFile.type !== 'image/jpeg' || selectedProfileImgFile.type === 'image/png') {
@@ -277,32 +288,32 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         }
     }
     
+    const createGroup = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/create-group', { newGroupName }, { withCredentials: true })
+            console.log(response)
+            if (response.status === 200) {
+                getChatListInfo()
+                closeModal()
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
 
     return (
         <section className="modalWrapper">
             {addFriendModal &&(
-                <div className="addFriendModalContent">
-                    <div className="addFriendModalHeaderWrapper">
-                        <h3 className="addFriendModalHeader">Add a Friend</h3>
-                    </div>
-                    <div className="addFriendModalMainContentWrapper">
-                            <div className="addFriendModalMainContent">
-                                <label className="addFriendModalInputLabel">User ID:</label>
-                                <input name="friendRequest" className={`addFriendModalInput ${redAddFriendPlaceHolder ? 'field' : ''}`} 
-                                value={friendUserId.value} onChange={(e) => setFriendUserId({ ...friendUserId, value: e.target.value })}
-                                placeholder={friendUserId.placeholder} />   
-                            </div>
-                        <div className="addFriendModalFooterWrapper">
-                            <button className="addFriendModalBtn" onClick={() => closeModal()}>Close</button>
-                            <button className="addFriendModalBtn" onClick={() => sendFriendRequest()}>Send</button>
-                        </div>
-                    </div>
-                </div>
+                <AddFriendModal friendUserId={friendUserId} setFriendUserId={setFriendUserId} sendFriendRequest={sendFriendRequest} 
+                redAddFriendPlaceHolder={redAddFriendPlaceHolder} closeModal={closeModal}/>
+            )}
+            {removeFriendModal &&(
+                <RemoveFriendModal closeModal={closeModal} removeFriend={removeFriend}/>
             )}
             <div className={`modalContent ${(friendRequestsModal ? recievedFriendRequests : true) && (friendsListModal ? friendsList : true) &&
             allConfig.some(config => config) ? 'render' : ''} 
-            ${addFriendModal ? 'close' : ''}`}>
+            ${(addFriendModal || removeFriendModal) ? 'close' : ''}`}>
                 <div className="modalHeaderWrapper">
                     <h3 className="modalHeader">{modalHeaderTxt}</h3>
                     {friendsListModal &&(
@@ -322,11 +333,12 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                                 className="groupModalImg" viewBox="0 0 512 512"><path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 
                                 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 
                                 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg></div>}
-                                <input name="groupName" className="groupModalInput" placeholder="Group name"/>
+                                <input name="groupName" className="groupModalInput" placeholder="Group name"
+                                value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)}/>
                             </div>
                             <div className="groupModalFooterWrapper">
                                 <button className="groupModalBtn" onClick={() => closeModal()}>Cancel</button>
-                                <button className="groupModalBtn">Create</button>
+                                <button className="groupModalBtn" onClick={() => createGroup()}>Create</button>
                             </div>
                         </div>
                     )}
@@ -342,7 +354,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                                         {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
                                     </span>
                                     <button className="friendModalRemoveBtn" 
-                                    onClick={() => removeFriend(user._id.toString(), user.username)}>Remove</button>
+                                    onClick={() => openRemoveFriendModal(user._id.toString(), user.username)}>Remove</button>
                                 </div>
                             ))}
                             </div>

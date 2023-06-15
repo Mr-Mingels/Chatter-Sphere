@@ -11,8 +11,10 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.12.1",
     "react-scripts": "5.0.1",
+    "react-tsparticles": "^2.10.1",
     "socket.io": "^4.6.2",
     "socket.io-client": "^4.6.2",
+    "tsparticles": "^2.10.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
