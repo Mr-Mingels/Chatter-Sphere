@@ -4,6 +4,9 @@ import axios from 'axios';
 import '../styles/Main.css'
 import Modal from './Modal'
 import ParticleBackGround from "./ParticleBackGround";
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction }) => {
   const [sideBarOpen, setSideBarOpen] = useState(false)
@@ -18,6 +21,13 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const navigate = useNavigate();
     const location = useLocation()
+
+    useEffect(() => {
+      // Join the user's socket room
+      if (userInfo) {
+        socket.emit('joinUser', userInfo._id);
+      }
+    }, [userInfo]);
 
     const getUserInfo = async () => {
       try {
@@ -104,7 +114,12 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
   const handleFriendsListInfoSearch = (event) => {
     const value = event.target.value.toLowerCase();
-    setsearchedChatsListInfo(chatsListInfo.filter(chat => chat.friend.username.toLowerCase().includes(value)));
+  
+    setsearchedChatsListInfo(chatsListInfo.filter(chat => {
+        // For non-group chats, include if the search term matches the friend's username or the chat name
+        return (chat.friend && chat.friend.username.toLowerCase().includes(value)) ||
+          (chat.chatName && chat.chatName.toLowerCase().includes(value));
+    }));
   };
 
     if (!userInfo) {

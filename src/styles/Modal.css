@@ -9,49 +9,7 @@
     align-items: center;
 }
 
-.addFriendModalContent {
-    opacity: 1 !important;
-}
-
-.addFriendModalHeaderWrapper {
-    padding: 20px;
-}
-
-.addFriendModalMainContentWrapper {
-    display: flex;
-    flex-direction: column;
-}
-
-.addFriendModalMainContent {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.addFriendModalInputLabel {
-    font-size: 14px;
-    height: 26px;
-}
-
-.addFriendModalInput {
-    width: 100%;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid black;
-    outline: none;
-}
-
-.addFriendModalInput.field::placeholder {
-    color: rgb(255, 0, 0);
-}
-
-.addFriendModalFooterWrapper {
-    padding: 10px 20px 20px 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.modalContent, .addFriendModalContent {
+.modalContent {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
@@ -132,7 +90,7 @@
     justify-content: end;
 }   
 
-.groupModalBtn, .friendModalBtn, .friendRequestsModalBtn, .profilePicModalBtn, .userIdModalBtn, .addFriendModalBtn {
+.groupModalBtn, .friendRequestsModalBtn, .profilePicModalBtn, .userIdModalBtn {
     cursor: pointer;
     background-color: transparent;
     border: none;
@@ -144,7 +102,7 @@
     user-select: none;
 }
 
-.groupModalBtn:hover, .friendModalBtn:hover, .friendRequestsModalBtn:hover, .profilePicModalBtn:hover, .userIdModalBtn:hover, .addFriendModalBtn:hover {
+.groupModalBtn:hover, .friendRequestsModalBtn:hover, .profilePicModalBtn:hover, .userIdModalBtn:hover {
     background-color: black;
     color: white;
 }
@@ -154,26 +112,7 @@
 
 /* FRIENDS AND FRIEND REQUESTS MODAL CSS CODE */ /* FRIENDS AND FRIEND REQUESTS MODAL CSS CODE */ /* FRIENDS AND FRIEND REQUESTS MODAL CSS CODE */
 
-.friendsModalSearchInputWrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.friendsModalSearchIcon {
-    width: 15px;
-    height: 15px;
-    fill: rgb(140, 140, 140);
-}
-
-.friendsModalSearchInput {
-    outline: none;
-    border: none;
-    font-size: 15px;
-    width: 330px;
-}
-
-.friendModalMainContentWrapper, .friendRequestsModalMainContentWrapper {
+.friendRequestsModalMainContentWrapper {
     display: flex;
     flex-direction: column;
 }
@@ -212,7 +151,7 @@
     color: white;
 }
 
-.friendModalMainContent, .friendRequestsModalMainContent {
+.friendRequestsModalMainContent {
     max-height: 400px;
     height: 400px;
     overflow-y: scroll;
@@ -220,18 +159,18 @@
     flex-direction: column;
 }
 
-.friendModalMainContent::-webkit-scrollbar, .friendRequestsModalMainContent::-webkit-scrollbar {
+.friendRequestsModalMainContent::-webkit-scrollbar {
     width: 0;
 }
 
-.friendModalFooterWrapper, .friendRequestsModalFooterWrapper {
+.friendRequestsModalFooterWrapper {
     border-top: 1px solid rgb(201, 201, 201);
     display: flex;
     justify-content: space-between;
     padding: 12px 20px;
 }
 
-.friendRequestsModalSentUserContentWrapper, .friendModalSentUserContentWrapper {
+.friendRequestsModalSentUserContentWrapper {
     display: flex;
     gap: 16px;
     padding: 15px 25px;
@@ -239,11 +178,11 @@
     cursor: pointer;
 }
 
-.friendRequestsModalSentUserContentWrapper:hover, .friendModalSentUserContentWrapper:hover {
+.friendRequestsModalSentUserContentWrapper:hover {
     background-color: rgb(240, 240, 240);
 }
 
-.friendRequestModalDefaultProfileImgWrapper, .friendModalDefaultProfileImgWrapper, .friendRequestsModalProfileImg, .friendModalProfileImg {
+.friendRequestModalDefaultProfileImgWrapper, .friendRequestsModalProfileImg {
     width: 45px;
     height: 45px;
     display: flex;
@@ -259,7 +198,7 @@
     object-fit: cover;
 }
 
-.friendRequestsModalDefaultProfileImg, .friendModalDefaultProfileImg {
+.friendRequestsModalDefaultProfileImg {
     font-size: 20px;
     font-weight: 500;
 }
@@ -273,11 +212,11 @@
     font-weight: 400;
 }
 
-.friendRequestsModalUserName, .friendModalUserName {
+.friendRequestsModalUserName {
 
 }
 
-.friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn, .friendModalRemoveBtn {
+.friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn {
     margin-left: auto;
     background-color: transparent;
     border: 2px solid rgb(255, 100, 100);
@@ -292,7 +231,7 @@
     transition: all 0.2s ease-in-out;
 }
 
-.friendRequestsModalUnsendBtn:hover, .friendRequestsModalDeclineBtn:hover, .friendModalRemoveBtn:hover {
+.friendRequestsModalUnsendBtn:hover, .friendRequestsModalDeclineBtn:hover {
     background-color: rgb(255, 100, 100);
     color: white;
 }

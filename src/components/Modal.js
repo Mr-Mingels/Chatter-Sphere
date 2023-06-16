@@ -2,8 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import RemoveFriendModal from "./RemoveFriendModal";
 import AddFriendModal from "./AddFriendModal";
+import FriendsListModal from "./FriendsListModal";
 import axios from 'axios';
 import '../styles/Modal.css'
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModalOpen, setInformModalTxt, setInformModalColor, 
     getChatListInfo}) => {
@@ -140,10 +144,8 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                 setSentFriendRequests(response.data)
                 console.log(sentFriendRequests)
             }
-            openSentFriendRequests()
         } catch (err) {
             console.log(err)
-            openSentFriendRequests()
         }
     }
 
@@ -159,11 +161,9 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             } else {
                 setRecievedFriendRequests([])
             }
-            openRecievedFriendRequests()
         } catch (err) {
             console.log(err)
             setRecievedFriendRequests([])
-            openRecievedFriendRequests()
         }
     }
 
@@ -171,13 +171,10 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         try {
             const response = await axios.put('http://localhost:5000/accept-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
-                setRecievedFriendRequests(prevRequests => prevRequests.filter(user => user._id.toString() !== requestedFriendId));
                 setInformModalTxt(`Accepted ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
-                getRecievedRequestUserInfo()
-                getChatListInfo()
             }
         } catch (err) {
             console.log(err)
@@ -188,12 +185,10 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         try {
             const response = await axios.put('http://localhost:5000/decline-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
-                setRecievedFriendRequests(prevRequests => prevRequests.filter(user => user._id.toString() !== requestedFriendId));
                 setInformModalTxt(`Declined ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
-                getRecievedRequestUserInfo()
             }
         } catch (err) {
             console.log(err)
@@ -205,7 +200,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             const response = await axios.put('http://localhost:5000/unsend-friend-request', { requestedFriendId }, { withCredentials: true })
             console.log('triggered')
             if (response.status === 200) {
-                setSentFriendRequests(prevRequests => prevRequests.filter(user => user._id.toString() !== requestedFriendId));
                 setInformModalTxt(`Unsent friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
@@ -239,7 +233,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                 setInformModalTxt(`Removed ${addedFriendUserName.charAt(0) + addedFriendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
-                getChatListInfo()
                 closeModal()
             }
         } catch (err) {
@@ -301,6 +294,45 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         }
     }
 
+    useEffect(() => {
+        // Join the user's socket room
+        if (userInfo) {
+          socket.emit('joinUser', userInfo._id);
+    
+          // Listen for the 'friendRequestAccepted' event
+          socket.on('friendRequestAccepted', (friendUserId) => {
+            // Handle the friend request acceptance, such as updating the friend-related lists
+            // Perform any necessary actions here
+            getSentRequestUserInfo()
+            getRecievedRequestUserInfo()
+            getFriendsList()
+            getChatListInfo();
+          });
+
+          socket.on('friendRequestDeclined', (friendUserId) => {
+            getSentRequestUserInfo()
+            getRecievedRequestUserInfo()
+          })
+
+          socket.on('friendRequestUnsend', (friendUserId) => {
+            getSentRequestUserInfo()
+            getRecievedRequestUserInfo()
+          })
+
+          socket.on('friendRemoved', (friendUserId) => {
+            getFriendsList()
+            getChatListInfo();
+          })
+      
+          // Clean up the event listener when the component unmounts
+          return () => {
+            socket.off('friendRequestAccepted');
+            socket.off('friendRequestDeclined');
+            socket.off('friendRequestUnsend');
+            socket.off('friendRemoved');
+          };
+        }
+      }, [userInfo]);
 
     return (
         <section className="modalWrapper">
@@ -314,18 +346,11 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             <div className={`modalContent ${(friendRequestsModal ? recievedFriendRequests : true) && (friendsListModal ? friendsList : true) &&
             allConfig.some(config => config) ? 'render' : ''} 
             ${(addFriendModal || removeFriendModal) ? 'close' : ''}`}>
+                {!friendsListModal && (
                 <div className="modalHeaderWrapper">
                     <h3 className="modalHeader">{modalHeaderTxt}</h3>
-                    {friendsListModal &&(
-                        <div className="friendsModalSearchInputWrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="friendsModalSearchIcon" viewBox="0 0 512 512">
-                                <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 
-                                0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 
-                                352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
-                                <input className="friendsModalSearchInput" placeholder="Search" onChange={handleFriendsListSearch}></input>
-                        </div>
-                    )}
                 </div>
+                )}
                     {newGroupModal && (
                         <div className="groupModalMainContentWrapper">
                             <div className="groupModalMainContent">
@@ -343,34 +368,16 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                         </div>
                     )}
                     {friendsListModal && (
-                        <div className="friendModalMainContentWrapper">
-                            <div className="friendModalMainContent">
-                            {searchedFriends && searchedFriends.map((user, index) => (
-                                <div className="friendModalSentUserContentWrapper" key={index}>
-                                    {user.profilePicture ? <img src={`${user.profilePicture}`} 
-                                    className="friendModalProfileImg"/> : <div className="friendModalDefaultProfileImgWrapper">
-                                    <h3 className="friendModalDefaultProfileImg">{user.username.charAt(0)}</h3></div>}
-                                    <span className="friendModalUserName">
-                                        {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
-                                    </span>
-                                    <button className="friendModalRemoveBtn" 
-                                    onClick={() => openRemoveFriendModal(user._id.toString(), user.username)}>Remove</button>
-                                </div>
-                            ))}
-                            </div>
-                            <div className="friendModalFooterWrapper">
-                                <button className="friendModalBtn" onClick={() => closeModal()}>Close</button>
-                                <button className="friendModalBtn" onClick={() => openAddFriendModal()}>Add a Friend</button>
-                            </div>
-                        </div>
+                        <FriendsListModal searchedFriends={searchedFriends} openRemoveFriendModal={openRemoveFriendModal} closeModal={closeModal}
+                        openAddFriendModal={openAddFriendModal} handleFriendsListSearch={handleFriendsListSearch}/>
                     )}
                     {(friendRequestsModal && recievedFriendRequests) && (
                         <div className="friendRequestsModalMainContentWrapper">
                             <div className="friendRequestsModalSelectBtnWrapper">
                                 <button className={`friendRequestsModalSelectBtn ${viewRecievedFriendRequests ? 'viewRecieved' : ''}`} 
-                                onClick={() => getRecievedRequestUserInfo()}>Recieved</button>
+                                onClick={() => { getRecievedRequestUserInfo(); openRecievedFriendRequests(); }}>Recieved</button>
                                 <button className={`friendRequestsModalSelectBtn ${viewSentFriendRequests ? 'viewSent' : ''}`} 
-                                onClick={() => getSentRequestUserInfo()}>Sent</button>
+                                onClick={() => {getSentRequestUserInfo(); openSentFriendRequests()}}>Sent</button>
                             </div>
                             <div className="friendRequestsModalMainContent">
                             {(sentFriendRequests && viewSentFriendRequests) && sentFriendRequests.map((user, index) => (

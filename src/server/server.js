@@ -127,6 +127,10 @@ io.on('connection', (socket) => {
     socket.on('joinChat', (chatId) => {
       socket.join(chatId);
     });
+
+    socket.on('joinUser', (userId) => {
+        socket.join(userId);
+    });
   
     // Handle sending and receiving messages
     socket.on('sendMessage', (data) => {
@@ -220,12 +224,15 @@ app.delete('/delete-group', async (req, res) => {
     try {
       if (req.body.currentChatId) {
         const chatId = req.body.currentChatId;
+        const chat = await Chat.findOne({ _id: chatId });
+        const memberIds = chat.members.map(member => member._id.toString());
         const deletedChat = await Chat.findOneAndDelete({ _id: chatId });
-        
+        console.log(memberIds)
         if (deletedChat) {
           // Emit 'chatDeleted' event to all connected clients in the group chat
-          io.to(chatId).emit('chatDeleted');
           await Message.deleteMany({ chat: chatId })
+          io.to(chatId).emit('chatDeleted');
+          io.to(memberIds).emit('chatDeletedMembers');
           res.status(200).json({ message: 'Chat deleted' });
         } else {
           res.status(404).json({ message: 'Chat not found' });
@@ -237,7 +244,42 @@ app.delete('/delete-group', async (req, res) => {
       console.log(err);
       res.status(500).json({ message: err.message });
     }
-  });
+});
+
+app.put('/leave-group', async (req, res) => {
+    try {
+        const userId = req.user._id
+        const chatId = req.body.currentChatId
+        await Chat.updateOne({ _id: chatId },{ $pull: { members: userId.toString() }})
+        res.status(200).send({ message: 'Left Group!' })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
+    }
+})
+
+app.put('/add-member-to-group', async (req, res) => {
+    try {
+      const memberIds = req.body.addedMemberIds;
+      const chatId = req.body.currentChatInfoId.toString();
+      if (memberIds && chatId) {
+        let updateQuery = {};
+        if (Array.isArray(memberIds)) {
+          updateQuery = { $push: { members: { $each: memberIds } } };
+        } else {
+          updateQuery = { $push: { members: memberIds } };
+        }
+        await Chat.updateOne({ _id: chatId }, updateQuery);
+    
+        io.to(memberIds).emit('memberAdded', chatId);
+        
+        res.status(200).send({ message: 'Added member(s) to group!' });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: err.message });
+    }
+});  
   
 
 app.post('/messages', async (req, res) => {
@@ -255,7 +297,7 @@ app.post('/messages', async (req, res) => {
   
       res.status(200).json(newMessage);
     } catch (err) {
-    console.log(err);
+      console.log(err);
       res.status(500).json({ message: err.message });
     }
   });
@@ -416,10 +458,14 @@ app.put('/accept-friend-request', async (req, res) => {
         const usersAlreadyHaveAChat = await Chat.findOne({ members: { $all: memberIds } });
         console.log(usersAlreadyHaveAChat)
         if (usersAlreadyHaveAChat && !usersAlreadyHaveAChat.isGroupChat) {
+            io.to(userId).emit('friendRequestAccepted', receivedFriendUserId);
+            io.to(receivedFriendUserId).emit('friendRequestAccepted', userId);
             return res.status(200).send({ message: 'Accepted!' })
         } 
         const chat = new Chat({ members: memberIds })
         await chat.save()
+        io.to(userId).emit('friendRequestAccepted', receivedFriendUserId);
+        io.to(receivedFriendUserId).emit('friendRequestAccepted', userId);
         res.status(200).send({ message: 'Accepted request and made a new chat!' })
     } catch (err) {
         console.log(err);
@@ -438,6 +484,8 @@ app.put('/decline-friend-request', async (req, res) => {
         if (checkSentRequests || checkRecievedRequests) {
             await User.updateOne({ _id: receivedFriendUserId }, { $pull: { sentFriendRequests: userId } });
             await User.updateOne({ _id: userId }, { $pull: { receivedFriendRequests: receivedFriendUserId } });
+            io.to(userId).emit('friendRequestDeclined', receivedFriendUserId);
+            io.to(receivedFriendUserId).emit('friendRequestDeclined', userId);
         } 
         res.status(200).send({ message: 'Friend request has been declined' })
     } catch (err) {
@@ -457,6 +505,8 @@ app.put('/unsend-friend-request', async (req, res) => {
         if (checkSentRequests || checkRecievedRequests) {
             await User.updateOne({ _id: userId }, { $pull: { sentFriendRequests: receivedFriendUserId } });
             await User.updateOne({ _id: receivedFriendUserId }, { $pull: { receivedFriendRequests: userId } });
+            io.to(userId).emit('friendRequestUnsend', receivedFriendUserId);
+            io.to(receivedFriendUserId).emit('friendRequestUnsend', userId);
         } 
         res.status(200).send({ message: 'Friend request has been unsent' })
     } catch (err) {
@@ -490,6 +540,8 @@ app.put('/remove-friend', async (req, res) => {
         if (userById && friendUserById) {
             await User.updateOne({ _id: userId }, { $pull: { friends: friendUserId } });
             await User.updateOne({ _id: friendUserId }, { $pull: { friends: userId } });
+            io.to(userId).emit('friendRemoved', friendUserId);
+            io.to(friendUserId).emit('friendRemoved', userId);
         }
         res.status(200).send({ message: 'Friend removed from friends list' })
     } catch (err) {

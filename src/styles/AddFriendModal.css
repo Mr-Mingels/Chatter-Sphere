@@ -1,0 +1,62 @@
+.addFriendModalContent {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    transition: all 0.5s ease-in-out;
+}
+
+.addFriendModalHeaderWrapper {
+    padding: 20px;
+}
+
+.addFriendModalMainContentWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.addFriendModalMainContent {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.addFriendModalInputLabel {
+    font-size: 14px;
+    height: 26px;
+}
+
+.addFriendModalInput {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid black;
+    outline: none;
+}
+
+.addFriendModalInput.field::placeholder {
+    color: rgb(255, 0, 0);
+}
+
+.addFriendModalFooterWrapper {
+    padding: 10px 20px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.addFriendModalBtn {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 10px;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
+}
+
+.addFriendModalBtn:hover {
+    background-color: black;
+    color: white;
+}
