@@ -52,7 +52,7 @@
     justify-content: space-around;
 }
 
-.defaultGroupModalImg {
+.defaultGroupModalImgWrapper, .groupModalImg {
     width: 80px;
     height: 80px;
     background-color: black;
@@ -64,14 +64,15 @@
     fill: white;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    object-fit: cover;
 }
 
-.defaultGroupModalImg:hover, .defaultProfilePicModalImg:hover {
+.defaultGroupModalImgWrapper:hover {
     fill: black;
     background-color: white;
 }
 
-.groupModalImg {
+.defaultGroupModalImg {
     width: 30px;
     height: 30px;
 }
@@ -80,8 +81,12 @@
     border: none;
     border-bottom: 2px solid black;
     padding: 5px;
-    font-size: 15px;
+    font-size: 14px;
     outline: none;
+}
+
+.groupModalInput.red::placeholder {
+    color: rgb(255, 0, 0);
 }
 
 .groupModalFooterWrapper {
@@ -250,55 +255,7 @@
     display: flex;
     gap: 16px;
     margin-left: auto;
-}
-
-
-/* ADD A PROFILE PICTURE CSS CODE */ /* ADD A PROFILE PICTURE CSS CODE */ /* ADD A PROFILE PICTURE CSS CODE */ /* ADD A PROFILE PICTURE CSS CODE */
- 
-
-.profilePicModalMainContentWrapper {
-
-}
-
-.profilePicModalMainContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    gap: 24px;
-}
-
-.defaultProfilePicModalImg, .profilePicModalImg {
-    width: 120px;
-    height: 120px;
-    fill: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    border: 1px solid black;
-    object-fit: cover;
-}
-
-.profileDefaultPicModalImg {
-    width: 60px;
-    height: 60px;
-}
-
-.profilePicTxt {
-    font-weight: 200;
-}
-
-.profilePicModalFooterWrapper {
-    padding: 10px 20px 20px 20px;
-    display: flex;
-    justify-content: end;
-    gap: 24px
-}   
+}  
 
 
 /*  USER ID CSS CODE */

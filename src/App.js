@@ -10,6 +10,7 @@ const App = () => {
   const [extractedUserInfo, setExtractedUserInfo] = useState()
   const [extractedChatsListInfo, setExtractedChatsListInfo] = useState()
   const [chatListInfoFunction, setChatListInfoFunction] = useState();
+  const [extractedRenderedChatMsgs, setExtractedRenderedChatMsgs] = useState()
 
   const RedirectToHome = () => {
     const navigate = useNavigate();
@@ -30,9 +31,11 @@ const App = () => {
               <Route path="/sign-up" element={<Authenticate />} />
               <Route path="/log-in" element={<Authenticate />} />
               <Route path="/" element={<Main setExtractedUserInfo={setExtractedUserInfo} 
-              setExtractedChatsListInfo={setExtractedChatsListInfo} getChatListInfoFunction={getChatListInfoFunction}/>}>
+              setExtractedChatsListInfo={setExtractedChatsListInfo} getChatListInfoFunction={getChatListInfoFunction}
+              extractedRenderedChatMsgs={extractedRenderedChatMsgs}/>}>
                 <Route path="chats/:chatId/messages" element={<Messages extractedUserInfo={extractedUserInfo}
-                extractedChatsListInfo={extractedChatsListInfo} chatListInfoFunction={chatListInfoFunction}/>}/>
+                extractedChatsListInfo={extractedChatsListInfo} chatListInfoFunction={chatListInfoFunction}
+                setExtractedRenderedChatMsgs={setExtractedRenderedChatMsgs}/>}/>
               </Route>
               <Route path='*' element={<RedirectToHome />}/>
             </Routes>

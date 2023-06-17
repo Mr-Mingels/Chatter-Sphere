@@ -110,6 +110,38 @@ const ensureAuthentication = ((req, res, next) => {
     res.status(401).send('Unauthorized');
 })
 
+const ensureChatIsReal = async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+      const chatId = req.params.chatId;
+  
+      if (!mongoose.Types.ObjectId.isValid(chatId)) {
+        return res.status(400).send({ message: `Chat not found` });
+      }
+
+      const userById = await User.findOne({ _id: userId.toString() });
+      const chat = await Chat.findOne({ _id: chatId.toString() });
+      if (!chat) return res.status(400).send({ message: `Chat not found` });
+      if (chat.members.includes(userId) && !chat.isGroupChat) {
+        const friendInChat = chat.members.find((member) => member.toString() !== userId.toString());
+  
+        if (userById.friends.includes(friendInChat.toString())) {
+          return next();
+        } else {
+          return res.status(400).send({ message: `Chat found, but your not friends with the User` });
+        }
+      } else if (chat.isGroupChat && chat.members.includes(userId)) {
+        return next();
+      } else {
+        return res.status(400).send({ message: `Chat found but your not in the group` });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  };
+  
+
 const s3Client = new S3Client({
     region: 'eu-north-1',
     credentials: {
@@ -192,7 +224,7 @@ app.get('/users/chats', async (req, res) => {
   });
   
 
-app.get('/chats/:chatId/messages', async (req, res) => {
+app.get('/chats/:chatId/messages', ensureChatIsReal, async (req, res) => {
     try {
         const chatId = req.params.chatId
         if (chatId) {
@@ -207,18 +239,59 @@ app.get('/chats/:chatId/messages', async (req, res) => {
     }
 });
 
-app.post('/create-group', async (req, res) => {
+app.post('/create-group', upload.single('groupPicture'), async (req, res) => {
     try {
-        const groupChatName = req.body.newGroupName
-        const groupChat = new Chat({ isGroupChat: true, chatName: groupChatName, members: req.user._id.toString(), 
-            isOwner: req.user._id.toString() })
-        await groupChat.save()
-        res.status(200).send({ message: 'Group Created!' })
+      const groupChatName = req.body.newGroupName;
+      const groupPicture = req.file;
+      console.log('group picture:', groupPicture)
+      console.log('groupchat name:', groupChatName)
+  
+      // Handle the group picture if available
+      if (groupPicture) {
+        // Use the buffer property attached by multer
+        const fileBuffer = groupPicture.buffer;
+  
+        const uploadParams = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: new Date().toISOString().replace(/:/g, '-') + groupPicture.originalname,
+          Body: fileBuffer,
+        };
+  
+        await s3Client.send(new PutObjectCommand(uploadParams));
+  
+        const groupPictureUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+  
+        // Save the group chat with the group picture
+        const groupChat = new Chat({
+          isGroupChat: true,
+          chatName: groupChatName,
+          members: req.user._id.toString(),
+          isOwner: req.user._id.toString(),
+          groupPicture: groupPictureUrl,
+        });
+  
+        await groupChat.save();
+  
+        res.status(200).send({ message: 'Group Created!' });
+      } else {
+        // Save the group chat without a group picture
+        const groupChat = new Chat({
+          isGroupChat: true,
+          chatName: groupChatName,
+          members: req.user._id.toString(),
+          isOwner: req.user._id.toString(),
+        });
+  
+        await groupChat.save();
+  
+        res.status(200).send({ message: 'Group Created!' });
+      }
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: err.message });
+      console.log(err);
+      res.status(500).json({ message: err.message });
     }
-})
+  });
+  
 
 app.delete('/delete-group', async (req, res) => {
     try {
@@ -227,12 +300,22 @@ app.delete('/delete-group', async (req, res) => {
         const chat = await Chat.findOne({ _id: chatId });
         const memberIds = chat.members.map(member => member._id.toString());
         const deletedChat = await Chat.findOneAndDelete({ _id: chatId });
+        if (chat.groupPicture) {
+            const oldImageKey = chat.groupPicture.split('/').pop();
+      
+            const deleteParams = {
+              Bucket: process.env.S3_BUCKET_NAME,
+              Key: oldImageKey
+            };
+      
+            await s3Client.send(new DeleteObjectCommand(deleteParams));
+        }
         console.log(memberIds)
         if (deletedChat) {
           // Emit 'chatDeleted' event to all connected clients in the group chat
           await Message.deleteMany({ chat: chatId })
-          io.to(chatId).emit('chatDeleted');
-          io.to(memberIds).emit('chatDeletedMembers');
+          io.to(chatId).emit('chatDeleted', chatId);
+          io.to(memberIds).emit('chatDeletedMembers', chatId);
           res.status(200).json({ message: 'Chat deleted' });
         } else {
           res.status(404).json({ message: 'Chat not found' });
@@ -250,7 +333,15 @@ app.put('/leave-group', async (req, res) => {
     try {
         const userId = req.user._id
         const chatId = req.body.currentChatId
+        const userById = await User.findOne({ _id: userId.toString() })
         await Chat.updateOne({ _id: chatId },{ $pull: { members: userId.toString() }})
+        const message = `${userById.username.charAt(0) + userById.username.slice(1).toLowerCase()} has left the group.`
+        const newMessage = new Message({ chat: chatId, sender: userId, message: message });
+    
+        await newMessage.save();
+        // Emit the new message to all connected clients in the same room
+        await newMessage.populate('sender', 'username profilePicture')
+        io.to(chatId).emit('messageReceived', newMessage);
         res.status(200).send({ message: 'Left Group!' })
     } catch (err) {
         console.log(err);
@@ -262,24 +353,38 @@ app.put('/add-member-to-group', async (req, res) => {
     try {
       const memberIds = req.body.addedMemberIds;
       const chatId = req.body.currentChatInfoId.toString();
+  
       if (memberIds && chatId) {
-        let updateQuery = {};
-        if (Array.isArray(memberIds)) {
-          updateQuery = { $push: { members: { $each: memberIds } } };
-        } else {
-          updateQuery = { $push: { members: memberIds } };
-        }
+        const userPromises = memberIds.map(memberId => User.findOne({ _id: memberId.toString() }));
+        const users = await Promise.all(userPromises);
+  
+        const updateQuery = Array.isArray(memberIds)
+          ? { $push: { members: { $each: memberIds } } }
+          : { $push: { members: memberIds } };
+  
         await Chat.updateOne({ _id: chatId }, updateQuery);
-    
+  
+        for (const user of users) {
+          const message = `${user.username.charAt(0) + user.username.slice(1).toLowerCase()} has joined the group.`;
+          const newMessage = new Message({ chat: chatId, sender: user._id, message });
+          await newMessage.save();
+          
+          await newMessage.populate('sender', 'username profilePicture');
+  
+          io.to(chatId).emit('messageReceived', newMessage);
+        }
+
         io.to(memberIds).emit('memberAdded', chatId);
-        
+  
         res.status(200).send({ message: 'Added member(s) to group!' });
       }
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: err.message });
     }
-});  
+});
+  
+    
   
 
 app.post('/messages', async (req, res) => {
@@ -379,6 +484,9 @@ app.put('/send-friend-request', async (req, res) => {
             return res.status(400).send({ message: `User not found`})
         }
         const userByFriendId = await User.findOne({ _id: requestedFriendUserId })
+        if (!userByFriendId) {
+            return res.status(400).send({ message: `User not found`})
+        }
         const checkSentRequests = userByFriendId.sentFriendRequests.find(id => id.toString() === userId)
         const checkRecievedRequests = userByFriendId.receivedFriendRequests.find(id => id.toString() === userId)
         const checkFriendsList = userByFriendId.friends.find(id => id.toString() === userId)
@@ -387,7 +495,9 @@ app.put('/send-friend-request', async (req, res) => {
             await User.updateOne({ _id: userId }, { $pull: { receivedFriendRequests: requestedFriendUserId } });
             await User.updateOne({ _id: userId }, { $push: { friends: requestedFriendUserId } });
             await User.updateOne({ _id: requestedFriendUserId }, { $push: { friends: userId } });
-            return res.status(200).send({ message: 'Added'})
+            io.to(userId).emit('friendRequestAccepted', requestedFriendUserId);
+            io.to(requestedFriendUserId).emit('friendRequestAccepted', userId);
+            return res.status(200).send({ message: `They've already sent a request. Added!`})
         } else if (checkRecievedRequests) {
             return res.status(400).send({ message: `You've already sent them a friend request`})
         } else if (checkFriendsList) {
@@ -537,11 +647,15 @@ app.put('/remove-friend', async (req, res) => {
         const userId = req.user._id.toString()
         const userById = await User.findOne({ _id: userId })
         const friendUserById = await User.findOne({ _id: friendUserId })
+        const chat = await Chat.findOne({
+            isGroupChat: false,
+            members: { $all: [userId, friendUserId] }
+          });
         if (userById && friendUserById) {
             await User.updateOne({ _id: userId }, { $pull: { friends: friendUserId } });
             await User.updateOne({ _id: friendUserId }, { $pull: { friends: userId } });
-            io.to(userId).emit('friendRemoved', friendUserId);
-            io.to(friendUserId).emit('friendRemoved', userId);
+            io.to(userId).emit('friendRemoved', friendUserId, chat);
+            io.to(friendUserId).emit('friendRemoved', userId, chat);
         }
         res.status(200).send({ message: 'Friend removed from friends list' })
     } catch (err) {
@@ -579,12 +693,57 @@ app.put('/add-profile-picture', upload.single('profilePicture'), async (req, res
 
         const userId = req.user._id.toString();
         await User.updateOne({ _id: userId }, { profilePicture: profilePictureUrl });
+
+        const user = await User.findById(userId);
+        const friendIds = user.friends.map(friend => friend.toString());
+
+        io.to(friendIds).emit('profilePictureAdded');
+
         res.status(200).send({ message: 'Profile Picture updated', url: profilePictureUrl });
     } catch (err) {
         console.log(err);
         res.status(500).send({ message: 'Server error' });
     }
 });
+
+app.put('/add-group-picture', upload.single('groupPicture'), async (req, res) => {
+    try {
+      const chatById = await Chat.findOne({ _id: req.body.chatId.toString() })
+      const memberIds = chatById.members.map(member => member._id.toString());
+      const oldGroupPicUrl = chatById.groupPicture;
+      if (oldGroupPicUrl) {
+        const oldImageKey = oldGroupPicUrl.split('/').pop();
+  
+        const deleteParams = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: oldImageKey
+        };
+  
+        await s3Client.send(new DeleteObjectCommand(deleteParams));
+      }
+  
+      const fileBuffer = req.file.buffer;
+  
+      const uploadParams = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: new Date().toISOString().replace(/:/g, '-') + req.file.originalname,
+        Body: fileBuffer,
+      };
+  
+      const result = await s3Client.send(new PutObjectCommand(uploadParams));
+  
+      const groupPictureUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+  
+      const chatId = req.body.chatId.toString();
+      await Chat.updateOne({ _id: chatId }, { groupPicture: groupPictureUrl });
+      io.to(memberIds).emit('groupPictureAdded');
+      res.status(200).send({ message: 'Group Picture updated', url: groupPictureUrl });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({ message: 'Server error' });
+    }
+  });
+  
 
 
 http.listen(PORT, () => {

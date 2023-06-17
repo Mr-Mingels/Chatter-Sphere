@@ -11,7 +11,7 @@ const AddFriendModal = ({ closeModal, setFriendUserId, friendUserId, redAddFrien
                 <div className="addFriendModalMainContentWrapper">
                     <div className="addFriendModalMainContent">
                         <label className="addFriendModalInputLabel">User ID:</label>
-                        <input name="friendRequest" className={`addFriendModalInput ${redAddFriendPlaceHolder ? 'field' : ''}`} 
+                        <input name="friendRequest" maxLength="50" className={`addFriendModalInput ${redAddFriendPlaceHolder ? 'field' : ''}`} 
                         value={friendUserId.value} onChange={(e) => setFriendUserId({ ...friendUserId, value: e.target.value })}
                         placeholder={friendUserId.placeholder} />   
                     </div>

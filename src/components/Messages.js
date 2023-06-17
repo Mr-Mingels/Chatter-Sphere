@@ -3,20 +3,24 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import FriendsListModal from "./FriendsListModal";
 import RemoveFriendModal from "./RemoveFriendModal";
+import AddPictureModal from "./AddPictureModal";
 import '../styles/Messages.css'
 import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
-const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunction }) => {
+const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunction, setExtractedRenderedChatMsgs }) => {
     const [messageTxt, setMessageTxt] = useState('')
     const [chatMessages, setChatMessages] = useState([])
     const [loader, setLoader] = useState(true)
     const [currentChatInfo, setCurrentChatInfo] = useState()
     const [groupOptionsModal, setGroupOptionsModal] = useState(false)
     const [friendsListModal, setFriendsListModal] = useState(false)
+    const [addGroupPictureModal, setAddGroupPictureModal]= useState(false)
+    const [addGroupPictureModalTransition, setAddGroupPictureModalTransition] = useState(false)
+    const [groupImgModalOption, setGroupImgModalOption] = useState(false)
     const [searchedFriends, setSearchedFriends] = useState([]);
-    const [friendsList, setFriendsList] = useState([]);
+    const [friendsList, setFriendsList] = useState();
     const [addMemberOption, setAddMemberOption] = useState(false)
     const [informModalTxt, setInformModalTxt] = useState('')
     const [informModalOpen, setInformModalOpen] = useState(false)
@@ -25,6 +29,8 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const [severingModalOption, setSeveringModalOption] = useState('')
     const [addedFriendId, setAddedFriendId] = useState()
     const [addedFriendUserName, setAddedFriendUserName] = useState()
+    const [renderedChatMessages, setRenderedChatMessages] = useState(false)
+    const [selectedGroupImgFile, setSelectedGroupImgFile] = useState(null);
 
     const messagesEndRef = useRef(null)
     const location = useLocation()
@@ -42,16 +48,27 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const getChatMessages =  async () => {
         try {
             const response = await axios.get(`http://localhost:5000/chats/${chatId}/messages`, { withCredentials: true })
+            console.log(response)
             if (response.status === 200) {
                 setChatMessages(response.data)
                 console.log(response.data)
+                setRenderedChatMessages(true)
             }
         } catch (err) {
             console.log(err)
+            if (err.response.status === 400) {
+                setRenderedChatMessages(true)
+                navigate('/')
+            }
         }
     }
 
     useEffect(() => {
+        setExtractedRenderedChatMsgs(renderedChatMessages)
+    },[renderedChatMessages])
+
+    useEffect(() => {
+        setRenderedChatMessages(false)
         setLoader(true)
         getChatMessages()
     },[navigate])
@@ -89,7 +106,9 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             // Receive a message
             socket.on('messageReceived', (message) => {
               // Update the chatMessages state with the received message
-              setChatMessages((prevChatMessages) => [...prevChatMessages, message]);
+              console.log(message.sender)
+              console.log(message.sender._id)
+                setChatMessages((prevChatMessages) => [...prevChatMessages, message]);
             });
     
             // Listen for the 'memberAdded' event
@@ -100,15 +119,30 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             });
     
             // Listen for the 'chatDeleted' event
-            socket.on('chatDeleted', async () => {
+            socket.on('chatDeleted', async (deletedChatId) => {
                 // Handle the chat deletion, such as updating the UI or taking any necessary actions
                 await chatListInfoFunction()
-                navigate('/')
+                if (deletedChatId === chatId) {
+                    closeSeveringModal()
+                    navigate('/')
+                }
                 // Perform any necessary actions here
               });
     
-            socket.on('chatDeletedMembers', async () => {
+            socket.on('chatDeletedMembers', async (deletedChatId) => {
                 await chatListInfoFunction()
+                if (deletedChatId === chatId) {
+                    closeSeveringModal()
+                    navigate('/')
+                }
+            })
+
+            socket.on('groupPictureAdded', async () => {
+                chatListInfoFunction()
+            })
+
+            socket.on('profilePictureAdded', async () => {
+                chatListInfoFunction()
             })
           
             // Clean up the event listener when the component unmounts
@@ -116,6 +150,9 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
               socket.off('messageReceived');
               socket.off('memberAdded');
               socket.off('chatDeleted');
+              socket.off('chatDeletedMembers');
+              socket.off('groupPictureAdded');
+              socket.off('profilePictureAdded');
             };
         }
       }, [chatId, extractedUserInfo]);
@@ -232,11 +269,28 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         setAddedFriendUserName(friendUserName)
         setSeveringModal(true)
         setSeveringModalOption(option)
+        setGroupOptionsModal(false)
     }
 
     const closeSeveringModal = () => {
         setSeveringModal(false)
         setSeveringModalOption('')
+    }
+
+    const openAddPictureModal = () => {
+        setAddGroupPictureModal(true)
+        setGroupOptionsModal(false)
+        setGroupImgModalOption(true)
+        setTimeout(() => {
+            setAddGroupPictureModalTransition(true)
+        }, 50);
+    }
+
+    const closeAddPictureModal = () => {
+        setAddGroupPictureModal(false)
+        setAddGroupPictureModalTransition(false)
+        setGroupImgModalOption(false)
+        setSelectedGroupImgFile(null)
     }
 
     const removeFriend = async () => {
@@ -247,8 +301,74 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 setInformModalTxt(`Removed ${addedFriendUserName.charAt(0) + addedFriendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
-                await chatListInfoFunction()
+                closeSeveringModal()
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    useEffect(() => {
+        // Join the user's socket room
+        if (extractedUserInfo) {
+          socket.emit('joinUser', extractedUserInfo._id);
+
+          socket.on('friendRequestAccepted', (friendUserId) => {
+            // Handle the friend request acceptance, such as updating the friend-related lists
+            // Perform any necessary actions here
+            getFriendsList()
+            chatListInfoFunction();
+          });
+
+          socket.on('friendRemoved', async (friendUserId, chat) => {
+            await getFriendsList()
+            await chatListInfoFunction();
+            if (chat._id === chatId) {
                 navigate('/')
+            }
+          })
+      
+          // Clean up the event listener when the component unmounts
+          return () => {
+            socket.off('friendRemoved');
+            socket.off('friendRequestAccepted');
+          };
+        }
+      }, [extractedUserInfo]);
+
+      const handleGroupImgFileChange = (event) => {
+        setSelectedGroupImgFile(event.target.files[0]);
+    };
+
+    const addGroupImg = async () => {
+        if (!selectedGroupImgFile) {
+            setInformModalTxt('Select an Image!')
+            setInformModalColor('red')
+            setInformModalOpen(true)
+            return;
+        }
+        if (selectedGroupImgFile.type !== 'image/jpeg' || selectedGroupImgFile.type === 'image/png') {
+            setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
+            setInformModalColor('red')
+            setInformModalOpen(true)
+            return;
+        }
+        const formData = new FormData(); 
+        formData.append('groupPicture', selectedGroupImgFile);
+        formData.append('chatId', chatId);
+        try {
+            const response = await axios.put(`http://localhost:5000/add-group-picture`, formData, { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            console.log(response.message)
+            if (response.status === 200) {
+                setInformModalTxt('Group picture updated!')
+                setInformModalColor('green')
+                setInformModalOpen(true)
+                closeAddPictureModal()
             }
         } catch (err) {
             console.log(err)
@@ -277,6 +397,14 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                     <RemoveFriendModal removeFriend={removeFriend} closeSeveringModal={closeSeveringModal} 
                     severingModalOption={severingModalOption} currentChatInfo={currentChatInfo} deleteGroup={deleteGroup}
                     leaveGroup={leaveGroup}/>
+                </div>
+            )}
+            {addGroupPictureModal && (
+                <div className={`messagesFullPageWrapper ${addGroupPictureModalTransition ? 'open' : ''}`}>
+                    <div className={`messagesModalContent ${addGroupPictureModalTransition ? 'open' : ''}`}>
+                        <AddPictureModal selectedGroupImgFile={selectedGroupImgFile} handleGroupImgFileChange={handleGroupImgFileChange}
+                        closeAddPictureModal={closeAddPictureModal} addGroupImg={addGroupImg} groupImgModalOption={groupImgModalOption}/>
+                    </div>
                 </div>
             )}
             <div className="messagesHeaderWrapper">
@@ -310,7 +438,8 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                                         <button className="groupOptionsModalBtn" onClick={() => openFriendsListModal()}>Add Member</button>
                                         {currentChatInfo.isOwner === extractedUserInfo._id && (
                                             <>
-                                                <button className="groupOptionsModalBtn">Add Picture</button>
+                                                <button className="groupOptionsModalBtn" onClick={() => openAddPictureModal()}>Add Picture
+                                                </button>
                                                 <button className="groupOptionsModalBtn red" 
                                                 onClick={() => openSeveringModal(null, null, 'deleteGroup')}>
                                                     Delete Group</button>
@@ -335,22 +464,49 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                         <div className="messagesLoader"></div>
                     </div>
                 )}
-                {chatMessages.map((message, index) =>
-                    <div className={`chatMessageWrapper ${message.sender._id === extractedUserInfo._id ? 'usersMsg' : ''}`} key={index}>
-                        {message.sender.profilePicture ? <img src={`${message.sender.profilePicture}`} 
-                            className="messageSenderImg" onMouseDown={(e) => e.preventDefault()}/> : 
+                {chatMessages.map((message, index) => {
+                    const messageDate = new Date(message.timestamp);
+                    const currentDate = new Date();
+                    const isSameDay =
+                        messageDate.getDate() === currentDate.getDate() &&
+                        messageDate.getMonth() === currentDate.getMonth() &&
+                        messageDate.getFullYear() === currentDate.getFullYear();
+                    let formattedDate;
+                    
+                    if (isSameDay) {
+                        formattedDate = messageDate.toLocaleTimeString([], { timeStyle: 'short' });
+                    } else {
+                        formattedDate = `${messageDate.toLocaleDateString([], { dateStyle: 'short' })} \u2022 ${messageDate.toLocaleTimeString([], { timeStyle: 'short' })}`;
+                    }
+                    console.log(message)
+                    return (
+                        <div className={`chatMessageWrapper ${message.sender._id === extractedUserInfo._id ? 'usersMsg' : ''} 
+                        ${(message.message === `${message.sender.username.charAt(0) + message.sender.username.slice(1).toLowerCase()} has left the group.` ||
+                        message.message === `${message.sender.username.charAt(0) + message.sender.username.slice(1).toLowerCase()} has joined the group.`) 
+                        ? 'userEvent' : ''}`} key={index}>
+                        {
+                        (message.message === `${message.sender.username.charAt(0) + message.sender.username.slice(1).toLowerCase()} has left the group.` ||
+                            message.message === `${message.sender.username.charAt(0) + message.sender.username.slice(1).toLowerCase()} has joined the group.`) ? (
+                            null
+                        ) : (
+                            message.sender.profilePicture ? (
+                            <img src={`${message.sender.profilePicture}`} className="messageSenderImg" onMouseDown={(e) => e.preventDefault()} />
+                            ) : (
                             <div className="messageSenderDefaultImgWrapper">
-                            <h3 className="messageSenderDefaultImg">{message.sender.username.charAt(0)}</h3></div>}
-                            <p className="messageTxt">{message.message}</p>
-                            <div className="messageInfoWrapper">
-                                <span className="messageSenderUserName">{message.sender.username.charAt(0) +  
-                                message.sender.username.slice(1).toLowerCase()}</span>
-                                <span className="messageBullet"> &bull; </span>
-                                <span className="messageDate">{new Date(message.timestamp).toLocaleTimeString([], 
-                                    { timeStyle: 'short' })}</span>
+                                <h3 className="messageSenderDefaultImg">{message.sender.username.charAt(0)}</h3>
                             </div>
-                    </div>
-                )}
+                            )
+                        )
+                        }
+                        <p className="messageTxt">{message.message}</p>
+                        <div className="messageInfoWrapper">
+                            <span className="messageSenderUserName">{message.sender.username.charAt(0) + message.sender.username.slice(1).toLowerCase()}</span>
+                            <span className="messageBullet"> &bull; </span>
+                            <span className="messageDate">{formattedDate}</span>
+                        </div>
+                        </div>
+                    );
+                })}
                 <div ref={messagesEndRef}></div>
             </div>
             <div className="messagesFooterWrapper">

@@ -8,7 +8,7 @@ import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
-const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction }) => {
+const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction, extractedRenderedChatMsgs }) => {
   const [sideBarOpen, setSideBarOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [userInfo, setUserInfo] = useState()
@@ -18,16 +18,19 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
   const [informModalColor, setInformModalColor] = useState('')
   const [chatsListInfo, setChatsListInfo] = useState()
   const [searchedChatsListInfo, setsearchedChatsListInfo] = useState([])
+  const [isLinkClicked, setIsLinkClicked] = useState(false);
+
 
     const navigate = useNavigate();
     const location = useLocation()
 
     useEffect(() => {
-      // Join the user's socket room
-      if (userInfo) {
-        socket.emit('joinUser', userInfo._id);
+      console.log(extractedRenderedChatMsgs)
+      console.log(isLinkClicked)
+      if (isLinkClicked && extractedRenderedChatMsgs) {
+        setIsLinkClicked(false)
       }
-    }, [userInfo]);
+    }, [extractedRenderedChatMsgs])
 
     const getUserInfo = async () => {
       try {
@@ -121,6 +124,58 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
           (chat.chatName && chat.chatName.toLowerCase().includes(value));
     }));
   };
+
+  useEffect(() => {
+    // Join the user's socket room
+    if (userInfo) {
+      socket.emit('joinUser', userInfo._id);
+
+      socket.on('friendRequestAccepted', (friendUserId) => {
+        // Handle the friend request acceptance, such as updating the friend-related lists
+        // Perform any necessary actions here
+        getChatListInfo();
+      });
+
+      socket.on('friendRemoved', (friendUserId, chat) => {
+        getChatListInfo();
+      })
+
+      // Listen for the 'memberAdded' event
+      socket.on('memberAdded', () => {
+        // Handle the member addition, such as updating the UI or taking any necessary actions
+        getChatListInfo();
+        // Perform any necessary actions here
+      });
+
+      socket.on('chatDeleted', (deletedChatId) => {
+        // Handle the chat deletion, such as updating the UI or taking any necessary actions
+        getChatListInfo()
+        // Perform any necessary actions here
+      });
+
+      socket.on('chatDeletedMembers', async (deletedChatId) => {
+        getChatListInfo()
+      })
+
+      socket.on('groupPictureAdded', async () => {
+        getChatListInfo()
+      })
+
+      socket.on('profilePictureAdded', async () => {
+        getChatListInfo()
+    })
+
+      return () => {
+        socket.off('friendRequestAccepted');
+        socket.off('friendRemoved');
+        socket.off('memberAdded');
+        socket.off('chatDeleted');
+        socket.off('chatDeletedMembers');
+        socket.off('groupPictureAdded');
+        socket.off('profilePictureAdded');
+      };
+    }
+  }, [userInfo]);
 
     if (!userInfo) {
       return <div className="loaderWrapper"><span class="loader"></span></div>
@@ -216,7 +271,13 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                     <div className="friendAndGroupChatsContent">
                     {searchedChatsListInfo.map((chat, index) =>
                           <Link className={`chatWrapper ${location.pathname.split("/")[2] === chat._id ? 'inChat' : ''}`} 
-                          key={index} to={`/chats/${chat._id}/messages`} onMouseDown={(e) => e.preventDefault()}>
+                          key={index} to={`/chats/${chat._id}/messages`} onMouseDown={(e) => e.preventDefault()} onClick={(e) => {
+                            if (isLinkClicked) {
+                              e.preventDefault()
+                            } else {
+                              setIsLinkClicked(true)
+                            }
+                          }}>
                           {chat.friend && (
                             <>
                               {chat.friend.profilePicture ? <img src={`${chat.friend.profilePicture}`} 

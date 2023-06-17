@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import RemoveFriendModal from "./RemoveFriendModal";
 import AddFriendModal from "./AddFriendModal";
 import FriendsListModal from "./FriendsListModal";
+import AddPictureModal from "./AddPictureModal";
 import axios from 'axios';
 import '../styles/Modal.css'
 import { io } from 'socket.io-client';
@@ -32,7 +33,11 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const [addedFriendUserName, setAddedFriendUserName] = useState()
     const [addedFriendId, setAddedFriendId] = useState()
     const [friendsList, setFriendsList] = useState()
-    const [newGroupName, setNewGroupName] = useState('')
+    const [redGroupNamePlaceHolder, setRedGroupNamePlaceHolder] = useState(false)
+    const [newGroupName, setNewGroupName] = useState({
+        value: '',
+        placeholder: 'Group name'
+      });
     const [friendUserId, setFriendUserId] = useState({
         value: '',
         placeholder: 'Type your friends User ID here...'
@@ -41,6 +46,10 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const allConfig = [newGroupModal, friendsListModal, friendRequestsModal, addProfilePictureModal, userIdModal]
 
     const userIdInputRef = useRef()
+    const location = useLocation()
+    const navigate = useNavigate()
+
+    const chatId = location.pathname.split("/")[2]
 
     useEffect(() => {
         if (friendUserId.value !== '') {
@@ -48,6 +57,13 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             setFriendUserId({ ...friendUserId, placeholder: 'Type your friends User ID here...' })
         }
       }, [friendUserId.value])
+
+      useEffect(() => {
+        if (newGroupName.value !== '') {
+            setRedGroupNamePlaceHolder(false)
+            setNewGroupName({ ...newGroupName, placeholder: 'Group name' })
+        }
+      }, [newGroupName.value])
 
     useEffect(() => {
         if (modalConfig === 'new group') {
@@ -99,16 +115,28 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     }
 
     const sendFriendRequest = async () => {
+        if (friendUserId.value === "") {
+            setRedAddFriendPlaceHolder(true)
+            setFriendUserId({ ...friendUserId, value: '', placeholder: 'Please Fill Out This Field' })
+            return
+        }
         const friendRequestObject = {
             friend: friendUserId.value
         }
         try {
             const response = await axios.put('http://localhost:5000/send-friend-request', friendRequestObject, { withCredentials: true });
             if (response.status === 200) {
-                setInformModalTxt(`Sent friend request!`)
-                setInformModalColor('green')
-                setInformModalOpen(true)
-                closeModal()
+                if (response.data.message === "They've already sent a request. Added!") {
+                    setInformModalTxt(`They've already sent a request. Added!`)
+                    setInformModalColor('green')
+                    setInformModalOpen(true)
+                    closeModal()
+                } else {
+                    setInformModalTxt(`Sent friend request!`)
+                    setInformModalColor('green')
+                    setInformModalOpen(true)
+                    closeModal()
+                }
             }
           } catch (err) {
             console.log(err)
@@ -250,6 +278,12 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     };
     
     const addProfileImg = async () => {
+        if (!selectedProfileImgFile) {
+            setInformModalTxt('Select an Image!')
+            setInformModalColor('red')
+            setInformModalOpen(true)
+            return;
+        }
         if (selectedProfileImgFile.type !== 'image/jpeg' || selectedProfileImgFile.type === 'image/png') {
             setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
             setInformModalColor('red')
@@ -273,19 +307,46 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                 setInformModalOpen(true)
                 closeModal()
                 getUserInfo()
-            } else if (response.status === 400) {
-
             }
         } catch (err) {
             console.log(err)
         }
     }
+
+    const handleGroupImgFileChange = (event) => {
+        setSelectedGroupImgFile(event.target.files[0]);
+    };
     
     const createGroup = async () => {
+        if (selectedGroupImgFile) {
+            if (selectedGroupImgFile.type !== 'image/jpeg' || selectedGroupImgFile.type === 'image/png') {
+                setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
+                setInformModalColor('red')
+                setInformModalOpen(true)
+                return;
+            }
+        }
+        if (newGroupName.value === "") {
+            setRedGroupNamePlaceHolder(true)
+            setNewGroupName({ ...newGroupName, value: '', placeholder: 'Please Fill Out This Field' })
+            return
+        }
+        const formData = new FormData(); 
+        formData.append('groupPicture', selectedGroupImgFile);
+        formData.append('newGroupName', newGroupName.value);
+        
         try {
-            const response = await axios.post('http://localhost:5000/create-group', { newGroupName }, { withCredentials: true })
+            const response = await axios.post(`http://localhost:5000/create-group`, formData, { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             console.log(response)
             if (response.status === 200) {
+                setInformModalTxt('Created Group!')
+                setInformModalColor('green')
+                setInformModalOpen(true)
                 getChatListInfo()
                 closeModal()
             }
@@ -319,9 +380,13 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             getRecievedRequestUserInfo()
           })
 
-          socket.on('friendRemoved', (friendUserId) => {
-            getFriendsList()
-            getChatListInfo();
+          socket.on('friendRemoved', async (friendUserId, chat) => {
+            console.log(chat._id)
+            await getFriendsList()
+            await getChatListInfo();
+            if (chat._id === chatId) {
+                navigate('/')
+            }
           })
       
           // Clean up the event listener when the component unmounts
@@ -346,7 +411,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             <div className={`modalContent ${(friendRequestsModal ? recievedFriendRequests : true) && (friendsListModal ? friendsList : true) &&
             allConfig.some(config => config) ? 'render' : ''} 
             ${(addFriendModal || removeFriendModal) ? 'close' : ''}`}>
-                {!friendsListModal && (
+                {!friendsListModal && !addProfilePictureModal && (
                 <div className="modalHeaderWrapper">
                     <h3 className="modalHeader">{modalHeaderTxt}</h3>
                 </div>
@@ -354,12 +419,16 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                     {newGroupModal && (
                         <div className="groupModalMainContentWrapper">
                             <div className="groupModalMainContent">
-                                {groupImg ? <img/> : <div className="defaultGroupModalImg"><svg xmlns="http://www.w3.org/2000/svg" 
-                                className="groupModalImg" viewBox="0 0 512 512"><path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 
+                                {selectedGroupImgFile ? <img className="groupModalImg" src={URL.createObjectURL(selectedGroupImgFile)}/> : 
+                                <div className="defaultGroupModalImgWrapper" onClick={() => document.getElementById('hiddenFileInput').click()}>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="defaultGroupModalImg" viewBox="0 0 512 512">
+                                <path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 
                                 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 
                                 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg></div>}
-                                <input name="groupName" className="groupModalInput" placeholder="Group name"
-                                value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)}/>
+                                <input name="groupName" className={`groupModalInput ${redGroupNamePlaceHolder ? 'red' : ''}`} 
+                                placeholder={newGroupName.placeholder} maxLength="20"
+                                value={newGroupName.value} onChange={(e) => setNewGroupName({ ...newGroupName, value: e.target.value })}/>
+                                <input id='hiddenFileInput' type='file' onChange={handleGroupImgFileChange} style={{display: 'none'}} />
                             </div>
                             <div className="groupModalFooterWrapper">
                                 <button className="groupModalBtn" onClick={() => closeModal()}>Cancel</button>
@@ -416,23 +485,8 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                         </div>
                     )}
                     {addProfilePictureModal && (    
-                        <div className="profilePicModalMainContentWrapper">
-                            <div className="profilePicModalMainContent">
-                                {selectedProfileImgFile ? <img src={URL.createObjectURL(selectedProfileImgFile)} className="profilePicModalImg" 
-                                onClick={() => document.getElementById('hiddenFileInput').click()}/> : 
-                                <div className="defaultProfilePicModalImg" onClick={() => document.getElementById('hiddenFileInput').click()}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="profileDefaultPicModalImg" viewBox="0 0 512 512">
-                                <path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 
-                                64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 
-                                317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg></div>}
-                                <p className="profilePicTxt">Click the above icon to add an image</p>
-                                <input id='hiddenFileInput' type='file' onChange={handleProfileImgFileChange} style={{display: 'none'}} />
-                            </div>
-                            <div className="profilePicModalFooterWrapper">
-                                <button className="profilePicModalBtn" onClick={() => closeModal()}>Cancel</button>
-                                <button className="profilePicModalBtn" onClick={() => addProfileImg()}>Add</button>
-                            </div>
-                        </div>
+                        <AddPictureModal selectedProfileImgFile={selectedProfileImgFile} handleProfileImgFileChange={handleProfileImgFileChange}
+                        closeModal={closeModal} addProfileImg={addProfileImg}/>
                     )}
                     {userIdModal && (
                         <div className="userIdModalMainContentWrapper">
