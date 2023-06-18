@@ -3,13 +3,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import '../styles/RemoveFriendModal.css'
 
-const RemoveFriendModal = ({ closeModal, removeFriend, closeSeveringModal, severingModalOption, currentChatInfo, deleteGroup, leaveGroup}) => {
-    console.log(severingModalOption)
+const RemoveFriendModal = ({ closeModal, removeFriend, closeSeveringModal, severingModalOption, currentChatInfo, deleteGroup, leaveGroup, 
+    selectedMsg, deleteMsg }) => {
     let modalText = '';
     if (severingModalOption === 'deleteGroup') {
         modalText = 'delete this group?';
     } else if (severingModalOption === 'leaveGroup') {
         modalText = 'leave this group?';
+    } else if (selectedMsg) {
+        modalText = 'delete this message?'
     } else {
         modalText = 'remove this friend?';
     }
@@ -21,12 +23,13 @@ const RemoveFriendModal = ({ closeModal, removeFriend, closeSeveringModal, sever
                     <p className="removeFriendModalTxt">Are you sure you want to {modalText}</p>
                 </div>
                 <div className="removeFriendModalFooterWrapper">
-                    <button className="removeFriendModalBtn" onClick={severingModalOption ? () => closeSeveringModal() : 
+                    <button className="removeFriendModalBtn" onClick={(severingModalOption || selectedMsg) ? () => closeSeveringModal() : 
                         () => closeModal()}>Close</button>
                     <button className="removeFriendModalBtn red" onClick={severingModalOption === 'deleteGroup' ? 
                     () => deleteGroup(currentChatInfo._id.toString(), currentChatInfo.members) : 
-                    (severingModalOption === 'leaveGroup' ? () => leaveGroup(currentChatInfo._id.toString()) : () => removeFriend())}>
-                        {severingModalOption === 'deleteGroup' ? 'Delete' : 
+                    (severingModalOption === 'leaveGroup' ? () => leaveGroup(currentChatInfo._id.toString()) : 
+                    (selectedMsg ? () => deleteMsg() : () => removeFriend()))}>
+                        {(severingModalOption === 'deleteGroup' || selectedMsg) ? 'Delete' : 
                     (severingModalOption === 'leaveGroup' ? 'Leave' : 'Remove')}</button>
                 </div>
             </div>

@@ -4,7 +4,7 @@
 
 .profilePicModalHeaderWrapper {
     display: flex;
-    border-bottom: 1px solid rgb(201, 201, 201);
+    border-bottom: 1px solid var(--modal_border_color);
     flex-direction: column;
     padding: 14px 20px;
     gap: 26px;
@@ -13,6 +13,7 @@
 .profilePicModalHeader {
     display: flex;
     align-items: center;
+    color: var(--text_color);
 }
 
 .profilePicModalMainContent {
@@ -47,6 +48,7 @@
 .profilePicTxt {
     font-weight: 200;
     text-align: center;
+    color: var(--text_color);
 }
 
 .profilePicModalFooterWrapper {

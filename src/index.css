@@ -5,9 +5,36 @@
   padding: 0;
 }
 
+:root {
+  --text_color: black;
+  --border_color: rgb(210, 210, 210);
+  --modal_border_color: rgb(201, 201, 201);
+  --background_color: white;
+  --background_messageTxt_color: white;
+  --icon_fill_color: white;
+  --icon_fill_hover_color: black;
+  --icon_background_color: black;
+  --nav_searchInput_border_color: black;
+  --chatWrapper_notInChat_hover_background_color: rgb(240, 240, 240);
+}
+
+[data-theme="dark"] {
+  --text_color: white;
+  --background_color: #121212;
+  --border_color: black;
+  --modal_border_color: black;
+  --background_messageTxt_color: #424242;
+  --icon_fill_color: black;
+  --icon_fill_hover_color: white;
+  --icon_background_color: white;
+  --nav_searchInput_border_color: #424242;
+  --chatWrapper_notInChat_hover_background_color: #202020;
+}
+
 html, body {
   min-height: 100vh;
   width: 100%;
+  overflow-x: hidden;
 }
 
 .loaderWrapper {

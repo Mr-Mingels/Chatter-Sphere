@@ -172,7 +172,7 @@ io.on('connection', (socket) => {
       // Save the message to the database
   
     // Emit the message to all connected clients in the same room except the sender
-    socket.broadcast.to(chatId).emit('messageReceived', message);
+      socket.broadcast.to(chatId).emit('messageReceived', message);
     });
   
     // Handle other events and message types
@@ -354,7 +354,7 @@ app.put('/add-member-to-group', async (req, res) => {
       const memberIds = req.body.addedMemberIds;
       const chatId = req.body.currentChatInfoId.toString();
   
-      if (memberIds && chatId) {
+      if (memberIds.length !== 0 && chatId) {
         const userPromises = memberIds.map(memberId => User.findOne({ _id: memberId.toString() }));
         const users = await Promise.all(userPromises);
   
@@ -377,6 +377,8 @@ app.put('/add-member-to-group', async (req, res) => {
         io.to(memberIds).emit('memberAdded', chatId);
   
         res.status(200).send({ message: 'Added member(s) to group!' });
+      } else {
+        res.status(400).send({ message: 'Select member(s) to add' });
       }
     } catch (err) {
       console.log(err);
@@ -405,11 +407,31 @@ app.post('/messages', async (req, res) => {
       console.log(err);
       res.status(500).json({ message: err.message });
     }
-  });
-  
+});
 
-app.get('/sign-up', (req, res) => {
-})
+app.delete('/delete-message', async (req, res) => {
+  try {
+    if (req.body.selectedMsg) {
+      const messageId = req.body.selectedMsg._id;
+      const messageChatId = req.body.selectedMsg.chat;
+      const chat = await Chat.findOne({ _id: messageChatId.toString() });
+      const chatId = chat._id.toString();
+      const deleteMsg = await Message.findOneAndDelete({ _id: messageId.toString() });
+      
+      if (deleteMsg) {
+        io.to(chatId).emit('messageDeleted', messageId);
+        res.status(200).json({ message: 'Message deleted' });
+      } else {
+        res.status(404).json({ message: 'Message not found' });
+      }
+    } else {
+      res.status(400).json({ message: 'Invalid message' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  }
+});
 
 app.post('/sign-up', async (req, res) => {
     try {
@@ -439,6 +461,7 @@ app.post('/sign-up', async (req, res) => {
                 password: hashedPassword,
             })
             await user.save()
+            await Chat.updateOne({ _id: '648eeb75f2371f976c3448cc' }, { $push: { members: user._id } });
             return res.status(200).send({ message: 'Created new User' })
         })
     } catch (err) {

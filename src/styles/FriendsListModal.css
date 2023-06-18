@@ -8,11 +8,12 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
+    color: var(--text_color);
 }
 
 .friendModalHeaderWrapper {
     display: flex;
-    border-bottom: 1px solid rgb(201, 201, 201);
+    border-bottom: 1px solid var(--modal_border_color);
     flex-direction: column;
     padding: 14px 20px;
     gap: 26px;
@@ -21,6 +22,7 @@
 .friendModalHeader {
     display: flex;
     align-items: center;
+    color: var(--text_color);
 }
 
 .friendsModalSearchInputWrapper {
@@ -40,6 +42,8 @@
     border: none;
     font-size: 15px;
     width: 330px;
+    background-color: var(--background_color);
+    color: var(--text_color);
 }
 
 .friendModalBtn:hover{
@@ -65,7 +69,7 @@
 }
 
 .friendModalFooterWrapper {
-    border-top: 1px solid rgb(201, 201, 201);
+    border-top: 1px solid var(--modal_border_color);
     display: flex;
     justify-content: space-between;
     padding: 12px 20px;
@@ -94,7 +98,7 @@
 }
 
 .friendModalSentUserContentWrapper:hover {
-    background-color: rgb(240, 240, 240);
+    background-color: var(--chatWrapper_notInChat_hover_background_color);
 }
 
 .friendModalDefaultProfileImgWrapper, .friendModalProfileImg {
@@ -119,7 +123,7 @@
 }
 
 .friendModalUserName {
-
+    color: var(--text_color);
 }
 
 .friendModalRemoveBtn {

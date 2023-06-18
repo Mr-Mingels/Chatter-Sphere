@@ -19,6 +19,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
   const [chatsListInfo, setChatsListInfo] = useState()
   const [searchedChatsListInfo, setsearchedChatsListInfo] = useState([])
   const [isLinkClicked, setIsLinkClicked] = useState(false);
+  const [nightMode, setNightMode] = useState(false)
 
 
     const navigate = useNavigate();
@@ -52,9 +53,14 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
       try {
           const response = await axios.get('http://localhost:5000/users/chats', { withCredentials: true })
           console.log(response.data)
+          const sortedChats = [...response.data].sort((a, b) => {
+            if (a._id === "648eeb75f2371f976c3448cc") return -1;
+            if (b._id === "648eeb75f2371f976c3448cc") return 1;
+            return 0;
+          });
           if (response.status === 200 && response.data) {
-            setChatsListInfo(response.data)
-            setsearchedChatsListInfo(response.data)
+            setChatsListInfo(sortedChats)
+            setsearchedChatsListInfo(sortedChats)
             console.log(response.data)
           } else {
               setChatsListInfo([])
@@ -115,7 +121,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
     return () => clearTimeout(timeoutId);
   },[informModalOpen, informModalTxt])
 
-  const handleFriendsListInfoSearch = (event) => {
+  const handleChatsListInfoSearch = (event) => {
     const value = event.target.value.toLowerCase();
   
     setsearchedChatsListInfo(chatsListInfo.filter(chat => {
@@ -177,6 +183,33 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
     }
   }, [userInfo]);
 
+  const setDarkMode = () => {
+    document.querySelector("body").setAttribute("data-theme", "dark")
+    localStorage.setItem("selectedTheme", "dark")
+    setNightMode(true)
+  }
+  const setLightMode = () => {
+    document.querySelector("body").setAttribute("data-theme", "light")
+    localStorage.setItem("selectedTheme", "light")
+    setNightMode(false)
+  }
+
+  useEffect(() => {
+    const selectedTheme = localStorage.getItem("selectedTheme")
+
+    if  (selectedTheme === "dark") {
+      setDarkMode()
+    } else {
+      setLightMode()
+    }
+  },[])
+
+
+  const toggleNightMode = () => {
+    if (nightMode) setLightMode()
+    if(!nightMode) setDarkMode()
+  }
+
     if (!userInfo) {
       return <div className="loaderWrapper"><span class="loader"></span></div>
     }
@@ -235,12 +268,22 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                                   <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 
                                   32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
                               </div>Add Profile Picture</li>
-                            <li className="option">
+                            <li className="option" onClick={() => toggleNightMode()}>
                               <div className="optionIconWrapper">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="optionIcon" viewBox="0 0 384 512">
+                                {nightMode ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="optionIcon" viewBox="0 0 512 512">
+                                  <path d="M361.5 1.2c5 2.1 8.6 6.6 9.6 11.9L391 121l107.9 19.8c5.3 1 9.8 4.6 11.9 9.6s1.5 10.7-1.6 
+                                  15.2L446.9 256l62.3 90.3c3.1 4.5 3.7 10.2 1.6 15.2s-6.6 8.6-11.9 9.6L391 391 371.1 498.9c-1 5.3-4.6 
+                                  9.8-9.6 11.9s-10.7 1.5-15.2-1.6L256 446.9l-90.3 62.3c-4.5 3.1-10.2 3.7-15.2 1.6s-8.6-6.6-9.6-11.9L121 
+                                  391 13.1 371.1c-5.3-1-9.8-4.6-11.9-9.6s-1.5-10.7 1.6-15.2L65.1 256 2.8 165.7c-3.1-4.5-3.7-10.2-1.6-15.2s6.6-8.6 
+                                  11.9-9.6L121 121 140.9 13.1c1-5.3 4.6-9.8 9.6-11.9s10.7-1.5 15.2 1.6L256 65.1 346.3 2.8c4.5-3.1 10.2-3.7 
+                                  15.2-1.6zM160 256a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zm224 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0z"/></svg>
+                                ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="optionIcon" viewBox="0 0 384 512">
                                   <path d="M223.5 32C100 32 0 132.3 0 256S100 480 223.5 480c60.6 0 115.5-24.2 155.8-63.4c5-4.9 
                                   6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6c-96.9 0-175.5-78.8-175.5-176c0-65.8 
                                   36-123.1 89.3-153.3c6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z"/></svg>
+                                )}
                               </div>Night Mode</li>
                               <li className="option" onClick={() => openModal('userID')}>
                               <div className="optionIconWrapper">
@@ -265,13 +308,14 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                   <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 
                   14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 
                   0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
-                  <input className='navSearchInput' placeholder='Search Chats...' onChange={handleFriendsListInfoSearch}/>
+                  <input className='navSearchInput' placeholder='Search Chats...' onChange={handleChatsListInfoSearch}/>
                 </nav>
                 <div className="friendAndGroupChatsWrapper">
                     <div className="friendAndGroupChatsContent">
                     {searchedChatsListInfo.map((chat, index) =>
                           <Link className={`chatWrapper ${location.pathname.split("/")[2] === chat._id ? 'inChat' : ''}`} 
                           key={index} to={`/chats/${chat._id}/messages`} onMouseDown={(e) => e.preventDefault()} onClick={(e) => {
+                            if (location.pathname.split("/")[2] === chat._id) return
                             if (isLinkClicked) {
                               e.preventDefault()
                             } else {
@@ -313,20 +357,3 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 }
 
 export default Main
-
-
-
-/* 
-
-{searchedChatsListInfo.map((user, index) =>
-                          <div className="chatWrapper" key={index} onClick={() => getChatInfo(user._id)}>
-                              {user.profilePicture ? <img src={`${user.profilePicture}`} 
-                              className="chatImg"/> : <div className="chatDefaultImgWrapper">
-                              <h3 className="chatDefaultImg">{user.username.charAt(0)}</h3></div>}
-                              <span className="chatName">
-                                {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
-                              </span>
-                          </div>
-                        )}
-
-                        */

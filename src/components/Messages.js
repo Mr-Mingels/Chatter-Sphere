@@ -31,6 +31,9 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const [addedFriendUserName, setAddedFriendUserName] = useState()
     const [renderedChatMessages, setRenderedChatMessages] = useState(false)
     const [selectedGroupImgFile, setSelectedGroupImgFile] = useState(null);
+    const [deleteMsgModal, setDeleteMsgModal] = useState(false)
+    const [selectedMsg, setSelectedMsg] = useState(null)
+    const [deleteMsgModalPosition, setDeleteMsgModalPosition] = useState({ x: 0, y: 0 });
 
     const messagesEndRef = useRef(null)
     const location = useLocation()
@@ -110,6 +113,13 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
               console.log(message.sender._id)
                 setChatMessages((prevChatMessages) => [...prevChatMessages, message]);
             });
+
+            socket.on('messageDeleted', (deletedMessageId) => {
+                // Remove the deleted message from the chatMessages state
+                setChatMessages((prevChatMessages) =>
+                  prevChatMessages.filter((message) => message._id !== deletedMessageId)
+                );
+            });
     
             // Listen for the 'memberAdded' event
             socket.on('memberAdded', () => {
@@ -123,7 +133,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 // Handle the chat deletion, such as updating the UI or taking any necessary actions
                 await chatListInfoFunction()
                 if (deletedChatId === chatId) {
-                    closeSeveringModal()
                     navigate('/')
                 }
                 // Perform any necessary actions here
@@ -132,7 +141,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             socket.on('chatDeletedMembers', async (deletedChatId) => {
                 await chatListInfoFunction()
                 if (deletedChatId === chatId) {
-                    closeSeveringModal()
                     navigate('/')
                 }
             })
@@ -153,6 +161,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
               socket.off('chatDeletedMembers');
               socket.off('groupPictureAdded');
               socket.off('profilePictureAdded');
+              socket.off('messageDeleted');
             };
         }
       }, [chatId, extractedUserInfo]);
@@ -193,6 +202,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         try {
             const response = await axios.delete('http://localhost:5000/delete-group', { data: { currentChatId, currentChatMembers } }, { withCredentials: true })
             console.log(response)
+            closeSeveringModal()
         } catch (err) {
             console.log(err)
         }
@@ -203,7 +213,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             const response = await axios.put('http://localhost:5000/leave-group', { currentChatId }, { withCredentials: true }) 
             console.log(response)
             if (response.status === 200) {
-                await chatListInfoFunction()
+                chatListInfoFunction()
                 navigate('/')
             }
         } catch (err) {
@@ -224,9 +234,15 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             }
         } catch (err) {
             console.log(err)
-            setInformModalTxt('Server Error')
+            if (err.response.data.message === "Select member(s) to add") {
+                setInformModalTxt('Select member(s) to add')
                 setInformModalColor('red')
                 setInformModalOpen(true)
+            } else {
+                setInformModalTxt('Server Error')
+                setInformModalColor('red')
+                setInformModalOpen(true)
+            }
         }
     }
 
@@ -270,11 +286,13 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         setSeveringModal(true)
         setSeveringModalOption(option)
         setGroupOptionsModal(false)
+        setDeleteMsgModal(false)
     }
 
     const closeSeveringModal = () => {
         setSeveringModal(false)
         setSeveringModalOption('')
+        setSelectedMsg(null)
     }
 
     const openAddPictureModal = () => {
@@ -375,6 +393,76 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         }
     }
 
+    const deleteMsg = async () => {
+        try {
+            const response = await axios.delete('http://localhost:5000/delete-message', { data: { selectedMsg } }, { withCredentials: true })
+            console.log(response)
+            closeSeveringModal()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const disableScroll = () => {
+        const messagesContent = document.querySelector('.messagesContent');
+        if (messagesContent) {
+            messagesContent.style.overflowY = 'hidden';
+        }
+    }
+
+    const enableScroll = () => {
+        const messagesContent = document.querySelector('.messagesContent');
+        if (messagesContent) {
+            messagesContent.style.overflowY = 'scroll';
+        }
+    }
+
+    const toggleDeleteMsgModal = (event, message) => {
+        if (event.button === 0 || event.button === 1) {
+            return
+        }
+        console.log(event)
+        setDeleteMsgModalPosition({ x: event.clientX, y: event.clientY });
+        if (!deleteMsgModal) {
+            setDeleteMsgModal(true)
+            setSelectedMsg(message)
+            disableScroll()
+        } else {
+            setDeleteMsgModal(false)
+            setSelectedMsg(null)
+            enableScroll()
+        }
+    }
+
+    const closeDeleteMsgModal = e => {
+        if (!e.target.closest('.messageTxt') && !e.target.closest('.deleteMsgModalWrapper')) {
+            setDeleteMsgModal(false);
+            setSelectedMsg(null)
+        }
+      };
+
+      useEffect(() => {
+        if (deleteMsgModal) {
+          document.addEventListener('mousedown', closeDeleteMsgModal);
+          disableScroll()
+        } else {
+          document.removeEventListener('mousedown', closeDeleteMsgModal);
+          enableScroll()
+        }
+        // Clean up the event listener when the component is unmounted
+        return () => document.removeEventListener('mousedown', closeDeleteMsgModal);
+      }, [deleteMsgModal]);
+      
+      useEffect(() => {
+        const handleContextMenu = (e) => {
+          e.preventDefault()
+        }
+        document.addEventListener("contextmenu", handleContextMenu)
+        return () => {
+          document.removeEventListener("contextmenu", handleContextMenu)
+        }
+      }, [])
+
     return (
         <div className="messagesWrapper">
             <div className={`messagesInformModalWrapper ${informModalColor === 'red' ? 'redColor' : 'greenColor'} 
@@ -396,7 +484,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 <div className={`messagesFullPageWrapper ${severingModal ? 'open' : ''}`}>
                     <RemoveFriendModal removeFriend={removeFriend} closeSeveringModal={closeSeveringModal} 
                     severingModalOption={severingModalOption} currentChatInfo={currentChatInfo} deleteGroup={deleteGroup}
-                    leaveGroup={leaveGroup}/>
+                    leaveGroup={leaveGroup} selectedMsg={selectedMsg} deleteMsg={deleteMsg}/>
                 </div>
             )}
             {addGroupPictureModal && (
@@ -430,9 +518,11 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                                 <h3 className="messageHeaderDefaultChatImg">{currentChatInfo.chatName.charAt(0)}</h3></div>}
                                 <h5 className="messageHeaderChatName">{currentChatInfo.chatName.charAt(0) + 
                                 currentChatInfo.chatName.slice(1).toLowerCase()}</h5>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="verticalEllipsisMenu" onClick={() => toggleGroupOptions()} viewBox="0 0 128 512">
-                                <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 
-                                56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>
+                                {currentChatInfo._id !== '648eeb75f2371f976c3448cc' && (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="verticalEllipsisMenu" onClick={() => toggleGroupOptions()} viewBox="0 0 128 512">
+                                    <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 
+                                    56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>
+                                )}
                                 {groupOptionsModal &&(
                                     <div className="groupOptionsModalWrapper">
                                         <button className="groupOptionsModalBtn" onClick={() => openFriendsListModal()}>Add Member</button>
@@ -478,7 +568,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                     } else {
                         formattedDate = `${messageDate.toLocaleDateString([], { dateStyle: 'short' })} \u2022 ${messageDate.toLocaleTimeString([], { timeStyle: 'short' })}`;
                     }
-                    console.log(message)
                     return (
                         <div className={`chatMessageWrapper ${message.sender._id === extractedUserInfo._id ? 'usersMsg' : ''} 
                         ${(message.message === `${message.sender.username.charAt(0) + message.sender.username.slice(1).toLowerCase()} has left the group.` ||
@@ -498,7 +587,21 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                             )
                         )
                         }
-                        <p className="messageTxt">{message.message}</p>
+                        <p className="messageTxt" onMouseDown={(event) => toggleDeleteMsgModal(event, message)}
+                        onTouchStart={(event) => toggleDeleteMsgModal(event, message)}>{message.message}</p>
+                        {(selectedMsg === message && deleteMsgModal && message.sender._id === extractedUserInfo._id) &&(
+                            <div className="deleteMsgModalWrapper" style={{ top: `${deleteMsgModalPosition.y}px`, 
+                            left: `${deleteMsgModalPosition.x}px` }}>
+                                <button className="deleteMsgModalBtn" onClick={() => openSeveringModal()}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="deleteMsgIconImg" viewBox="0 0 448 512">
+                                    <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 
+                                    32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 
+                                    128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 
+                                    16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 
+                                    16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 
+                                    7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/></svg> Delete</button>
+                            </div>
+                        )}
                         <div className="messageInfoWrapper">
                             <span className="messageSenderUserName">{message.sender.username.charAt(0) + message.sender.username.slice(1).toLowerCase()}</span>
                             <span className="messageBullet"> &bull; </span>
@@ -514,6 +617,12 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                     <form className="messagesFooterForm" onSubmit={(event) => {event.preventDefault(); createMessage(location.pathname.split("/")[2]);}}>
                         <input className="messagesFooterInput" placeholder="Write a message..." 
                         onChange={(e) => setMessageTxt(e.target.value)} value={messageTxt}/>
+                            <button className={`submitArrowBtn ${messageTxt ? 'hasTxt' : ''}`} type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="submitArrow" viewBox="0 0 448 512">
+                                <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 
+                                224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 
+                                0l160-160z"/></svg>
+                            </button>
                     </form>
                 </div>
             </div>

@@ -10,7 +10,7 @@
 }
 
 .modalContent {
-    background-color: white;
+    background-color: var(--background_color);
     border-radius: 8px;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
     width: 400px;
@@ -28,7 +28,7 @@
 
 .modalHeaderWrapper {
     display: flex;
-    border-bottom: 1px solid rgb(201, 201, 201);
+    border-bottom: 1px solid var(--modal_border_color);
     flex-direction: column;
     padding: 14px 20px;
     gap: 26px;
@@ -37,6 +37,7 @@
 .modalHeader {
     display: flex;
     align-items: center;
+    color: var(--text_color);
 }
 
 .groupModalMainContentWrapper {
@@ -83,6 +84,8 @@
     padding: 5px;
     font-size: 14px;
     outline: none;
+    background-color: var(--background_color);
+    color: var(--text_color);
 }
 
 .groupModalInput.red::placeholder {
@@ -105,6 +108,7 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
+    color: var(--text_color);
 }
 
 .groupModalBtn:hover, .friendRequestsModalBtn:hover, .profilePicModalBtn:hover, .userIdModalBtn:hover {
@@ -131,14 +135,14 @@
     padding: 15px;
     cursor: pointer;
     background-color: transparent;
-    border: none;
-    border: 1px solid rgb(201, 201, 201);
-    border-bottom: 2px solid rgb(201, 201, 201);
+    border: 1px solid var(--modal_border_color);
+    border-bottom: 2px solid var(--modal_border_color);
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
     transition: all 0.2s ease-in-out;
+    color: var(--text_color);
 }
 
 .friendRequestsModalSelectBtn.viewRecieved {
@@ -169,7 +173,7 @@
 }
 
 .friendRequestsModalFooterWrapper {
-    border-top: 1px solid rgb(201, 201, 201);
+    border-top: 1px solid var(--modal_border_color);
     display: flex;
     justify-content: space-between;
     padding: 12px 20px;
@@ -184,7 +188,7 @@
 }
 
 .friendRequestsModalSentUserContentWrapper:hover {
-    background-color: rgb(240, 240, 240);
+    background-color: var(--chatWrapper_notInChat_hover_background_color);
 }
 
 .friendRequestModalDefaultProfileImgWrapper, .friendRequestsModalProfileImg {
@@ -218,7 +222,7 @@
 }
 
 .friendRequestsModalUserName {
-
+    color: var(--text_color);
 }
 
 .friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn {
@@ -281,6 +285,7 @@
 .userIdModalInputLabel {
     font-size: 14px;
     height: 26px;
+    color: var(--text_color);
 }
 
 .userIdModalInput {
@@ -291,6 +296,8 @@
     border: 1px solid black;
     border-right: none;
     outline: none;
+    background-color: var(--background_color);
+    color: var(--text_color);
 }
 
 .userIdModalIconImgWrapper {

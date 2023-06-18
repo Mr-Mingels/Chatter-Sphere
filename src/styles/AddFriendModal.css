@@ -1,5 +1,5 @@
 .addFriendModalContent {
-    background-color: white;
+    background-color: var(--background_color);
     border-radius: 8px;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
     width: 400px;
@@ -8,6 +8,7 @@
 
 .addFriendModalHeaderWrapper {
     padding: 20px;
+    color: var(--text_color);
 }
 
 .addFriendModalMainContentWrapper {
@@ -24,6 +25,7 @@
 .addFriendModalInputLabel {
     font-size: 14px;
     height: 26px;
+    color: var(--text_color);
 }
 
 .addFriendModalInput {
@@ -32,6 +34,8 @@
     border-radius: 4px;
     border: 1px solid black;
     outline: none;
+    background-color: var(--background_color);
+    color: var(--text_color);
 }
 
 .addFriendModalInput.field::placeholder {
@@ -54,6 +58,7 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
+    color: var(--text_color);
 }
 
 .addFriendModalBtn:hover {
