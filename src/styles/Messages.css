@@ -80,12 +80,12 @@
     right: 0;
     width: 100%;
     background-color: var(--background_color);
-    transition: background-color 1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
     z-index: 20;
 }
 
 .messagesHeaderContent {
-    padding: 10px 8px 10px 16px;
+    padding: 10px 16px;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -117,12 +117,14 @@
 .messageHeaderChatName {
     font-weight: 400;
     color: var(--text_color);
-    transition: color 1s ease-in-out;
+    transition: color 0.2s ease-in-out;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .messageHeaderRemoveBtn {
     margin-left: auto;
-    margin-right: 10px;
     border: 2px solid rgb(255, 100, 100);
     color: rgb(255, 100, 100);
     border-radius: 8px;
@@ -139,7 +141,6 @@
 
 .verticalEllipsisMenu {
     margin-left: auto;
-    margin-right: 10px;
     cursor: pointer;
     width: 20px;
     height: 20px;
@@ -158,7 +159,7 @@
     border: 1px solid black;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     gap: 6px;
-    transition: background-color 1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .groupOptionsModalBtn {
@@ -171,7 +172,6 @@
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
     color: var(--text_color);
-    transition: color 1s ease-in-out;
 }   
 
 .groupOptionsModalBtn.red {
@@ -189,8 +189,9 @@
 }
 
 .messagesContent {
-    margin-top: 53.4px;
-    max-height: 660px;
+    padding-top: 53.4px;
+    padding-bottom: 44.2px;
+    height: 100%;
     overflow-y: scroll;
     transition: all 0.2s ease-in-out;
 }
@@ -207,7 +208,7 @@
     width: 100%;
     border-top: 1px solid var(--border_color);
     background-color: var(--background_color);
-    transition: background-color 1s ease-in-out, border-top 1s ease-in-out;
+    transition: background-color 0.2s ease-in-out, border-top 0.2s ease-in-out;
     z-index: 20;
 }
 
@@ -233,7 +234,7 @@
     height: 100%;
     background-color: var(--background_color);
     color: var(--text_color);
-    transition: color 1s ease-in-out, background-color 1s ease-in-out;;
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;;
 }
 
 .submitArrowBtn {
@@ -296,12 +297,14 @@
     justify-content: center;
     flex-direction: column;
     gap: 4px;
+    text-align: center;
 }
 
 .chatMessageWrapper.userEvent .messageTxt {
     padding: 0;
     font-size: 12px;
     color: rgb(150, 150, 150);
+    transition: none;
     background-color: transparent;
     order: 1;
     -webkit-user-select: none; /* Safari */
@@ -360,7 +363,8 @@
     border-radius: 8px;
     font-size: 14px;
     color: var(--text_color);
-    transition: color 1s ease-in-out, background-color 1s ease-in-out;
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    overflow-wrap: break-word;
 }
 
 .deleteMsgModalWrapper {
@@ -373,7 +377,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     gap: 6px;
     z-index: 100;
-    transition: background-color 1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
 }   
 
 .deleteMsgModalBtn {
@@ -415,6 +419,10 @@
     gap: 4px;
     color: rgb(150, 150, 150);
     font-weight: 400;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none;
 }
 
 .messageSenderUserName {
@@ -457,4 +465,93 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
+}
+
+@media screen and (min-width: 1536.1px) and (max-width: 100vw) {
+    .messageInfoWrapper {
+        font-size: calc(12px + (100vw - 1536px) / 160);
+        gap: calc(4px + (100vw - 1536px) / 500);
+     }
+     .messageTxt {
+         max-width: calc(500px + (100vw - 1536px) / 2.7);
+     }
+}
+
+@media (max-width: 1536px) {
+    .messageInfoWrapper {
+       font-size: calc(12px + (100vw - 1536px) / 160);
+       gap: calc(4px + (100vw - 1536px) / 500);
+    }
+    .chatMessageWrapper.userEvent .messageTxt {
+        width: fit-content;
+        font-size: calc(12px + (100vw - 1536px) / 250);
+    }
+    .chatMessageWrapper.userEvent .messageDate {
+        font-size: calc(10px + (100vw - 1536px) / 250);
+    }
+    .messageTxt {
+        max-width: calc(500px + (100vw - 1536px) / 2.7);
+    }
+    .messageSenderUserName {
+        max-width: calc(217px + (100vw - 1536px) / 6);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 500px) {
+    .messagesModalContent {
+        width: calc(400px + (100vw - 500px) / 1.6);
+    }
+    .messagesHeaderContent {
+        gap: 8px;
+    }
+    .messagesHeaderContent.centerGlobal .messageHeaderChatName {
+        display: none;
+    }
+    .goBackBtnWrapper {
+        margin-right: auto;
+    }
+    .goBackArrow {
+        min-width: 10px;
+        min-height: 10px;
+        max-height: 10px;
+        max-width: 10px;
+        fill: var(--text_color);
+    }
+    .goBackBtn {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        text-decoration: none;
+        color: var(--text_color);
+        font-weight: 400;
+    }
+    .chatMessageWrapper {
+        padding-right: calc(15px + (100vw - 500px) / 22);
+        padding-left: calc(15px + (100vw - 500px) / 22);
+    }
+    .messageInfoWrapper {
+        padding-right: calc(15px + (100vw - 500px) / 22);
+        padding-left: calc(15px + (100vw - 500px) / 22);
+        font-size: calc(8px + (100vw - 500px) / 250);
+        gap: calc(2px + (100vw - 500px) / 250);
+    }
+    .messageSenderUserName {
+        max-width: 45px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .chatMessageWrapper.userEvent .messageTxt {
+        max-width: calc(500px + (100vw - 500px) / 100);
+        font-size: calc(10px + (100vw - 500px) / 100);
+    }
+    .chatMessageWrapper.userEvent .messageDate {
+        font-size: calc(8px + (100vw - 500px) / 100);
+    }
+    .messageTxt {
+        max-width: calc(300px + (100vw - 500px) / 1.15);
+    }
+}

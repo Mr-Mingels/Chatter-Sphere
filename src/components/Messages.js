@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from 'axios';
 import FriendsListModal from "./FriendsListModal";
 import RemoveFriendModal from "./RemoveFriendModal";
@@ -9,7 +9,7 @@ import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
-const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunction, setExtractedRenderedChatMsgs }) => {
+const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunction, setExtractedRenderedChatMsgs, windowWidth }) => {
     const [messageTxt, setMessageTxt] = useState('')
     const [chatMessages, setChatMessages] = useState([])
     const [loader, setLoader] = useState(true)
@@ -93,11 +93,18 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView()
-        setLoader(false)
+        if (chatMessages.length === 0) {
+            setTimeout(() => {
+                setLoader(false)
+            }, 800);
+        } else {
+            setLoader(false)
+        }
     }
 
     useEffect(() => {
         scrollToBottom()
+        console.log(chatMessages)
     }, [chatMessages])
 
     useEffect(() => {
@@ -497,7 +504,17 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             )}
             <div className="messagesHeaderWrapper">
                 {currentChatInfo && (
-                    <div className="messagesHeaderContent">
+                    <div className={`messagesHeaderContent ${(currentChatInfo._id === '648eeb75f2371f976c3448cc' && windowWidth <= 500) 
+                    ? 'centerGlobal' : ''}`}>
+                        {windowWidth <= 500 && (
+                            <div className="goBackBtnWrapper">
+                                <Link to='/' className="goBackBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="goBackArrow" viewBox="0 0 320 512">
+                                    <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 
+                                    0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/>
+                                    </svg><h5 className="goBackBtn">Back</h5></Link>
+                            </div>  
+                        )}
                         {currentChatInfo.friend && (
                             <>
                                 {currentChatInfo.friend.profilePicture ? <img src={`${currentChatInfo.friend.profilePicture}`} 

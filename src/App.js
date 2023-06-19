@@ -11,6 +11,7 @@ const App = () => {
   const [extractedChatsListInfo, setExtractedChatsListInfo] = useState()
   const [chatListInfoFunction, setChatListInfoFunction] = useState();
   const [extractedRenderedChatMsgs, setExtractedRenderedChatMsgs] = useState()
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const RedirectToHome = () => {
     const navigate = useNavigate();
@@ -23,19 +24,32 @@ const App = () => {
     setChatListInfoFunction(() => chatListInfoFunction)
   }
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+  
+    window.addEventListener('resize', handleResize);
+  
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <div className="App">
       <BrowserRouter>
         <Suspense fallback={<div className="loaderWrapper"><span className="loader"></span></div>}>
             <Routes>
-              <Route path="/sign-up" element={<Authenticate />} />
-              <Route path="/log-in" element={<Authenticate />} />
+              <Route path="/sign-up" element={<Authenticate windowWidth={windowWidth}/>} />
+              <Route path="/log-in" element={<Authenticate windowWidth={windowWidth}/>} />
               <Route path="/" element={<Main setExtractedUserInfo={setExtractedUserInfo} 
               setExtractedChatsListInfo={setExtractedChatsListInfo} getChatListInfoFunction={getChatListInfoFunction}
-              extractedRenderedChatMsgs={extractedRenderedChatMsgs}/>}>
+              extractedRenderedChatMsgs={extractedRenderedChatMsgs} windowWidth={windowWidth}/>}>
                 <Route path="chats/:chatId/messages" element={<Messages extractedUserInfo={extractedUserInfo}
                 extractedChatsListInfo={extractedChatsListInfo} chatListInfoFunction={chatListInfoFunction}
-                setExtractedRenderedChatMsgs={setExtractedRenderedChatMsgs}/>}/>
+                setExtractedRenderedChatMsgs={setExtractedRenderedChatMsgs} windowWidth={windowWidth}/>}/>
               </Route>
               <Route path='*' element={<RedirectToHome />}/>
             </Routes>

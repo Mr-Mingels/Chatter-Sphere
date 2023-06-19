@@ -54,8 +54,10 @@
 }
 
 .defaultGroupModalImgWrapper, .groupModalImg {
-    width: 80px;
-    height: 80px;
+    max-height: 80px;
+    max-width: 80px;
+    min-height: 80px;
+    min-width: 80px;
     background-color: black;
     border: 1px solid black;
     border-radius: 50%;
@@ -98,7 +100,7 @@
     justify-content: end;
 }   
 
-.groupModalBtn, .friendRequestsModalBtn, .profilePicModalBtn, .userIdModalBtn {
+.groupModalBtn, .friendRequestsModalBtn, .userIdModalBtn {
     cursor: pointer;
     background-color: transparent;
     border: none;
@@ -111,7 +113,7 @@
     color: var(--text_color);
 }
 
-.groupModalBtn:hover, .friendRequestsModalBtn:hover, .profilePicModalBtn:hover, .userIdModalBtn:hover {
+.groupModalBtn:hover, .friendRequestsModalBtn:hover, .userIdModalBtn:hover {
     background-color: black;
     color: white;
 }
@@ -192,8 +194,10 @@
 }
 
 .friendRequestModalDefaultProfileImgWrapper, .friendRequestsModalProfileImg {
-    width: 45px;
-    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    max-width: 45px;
+    max-height: 45px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -223,6 +227,9 @@
 
 .friendRequestsModalUserName {
     color: var(--text_color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn {
@@ -387,4 +394,29 @@
     padding: 20px;
     border: 2px solid rgb(169, 169, 255);
     background-color: rgb(245, 158, 158);
+}
+
+@media (max-width: 500px) {
+    .modalContent {
+        width: calc(400px + (100vw - 500px) / 1.6);
+    }
+    .defaultGroupModalImgWrapper, .groupModalImg {
+        min-width: calc(80px + (100vw - 500px) / 20);
+        min-height: calc(80px + (100vw - 500px) / 20);
+        max-width: calc(80px + (100vw - 500px) / 20);
+        max-height: calc(80px + (100vw - 500px) / 20);
+    }
+    .defaultGroupModalImg {
+        width: calc(30px + (100vw - 500px) / 50);
+        height: calc(30px + (100vw - 500px) / 50);
+    }
+    .groupModalInput {
+        width: calc(186px + (100vw - 500px) / 4);
+    }
+    .groupModalBtn, .friendRequestsModalBtn {
+        padding-right: calc(10px + (100vw - 500px) / 100);
+        padding-left: calc(10px + (100vw - 500px) / 100);
+        padding-top: calc(8px + (100vw - 500px) / 100);
+        padding-bottom: calc(8px + (100vw - 500px) / 100);
+    }
 }

@@ -8,7 +8,7 @@ import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
-const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction, extractedRenderedChatMsgs }) => {
+const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction, extractedRenderedChatMsgs, windowWidth }) => {
   const [sideBarOpen, setSideBarOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [userInfo, setUserInfo] = useState()
@@ -284,7 +284,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                                   6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6c-96.9 0-175.5-78.8-175.5-176c0-65.8 
                                   36-123.1 89.3-153.3c6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z"/></svg>
                                 )}
-                              </div>Night Mode</li>
+                              </div>{nightMode ? 'Light Mode' : 'Night Mode'}</li>
                               <li className="option" onClick={() => openModal('userID')}>
                               <div className="optionIconWrapper">
                               <svg xmlns="http://www.w3.org/2000/svg" className="optionIcon" viewBox="0 0 384 512">
@@ -297,6 +297,9 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                           </ul>
                       </div>
                       <div className="sideBarFooterWrapper">
+                        {windowWidth <= 500 && (
+                          <button className="sideBarCloseBtn" onClick={() => handleCloseSideBar ()}>Close</button>
+                        )}
                         <button className="sideBarLogOutBtn" onClick={() => logOut()}>Log Out</button>
                       </div>
                     </div>
@@ -348,7 +351,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                 </div>
             </div>
         </section>
-        <section className="chatMessagesSectionWrapper">
+        <section className={`chatMessagesSectionWrapper ${location.pathname !== '/' ? 'open': ''}`}>
           <ParticleBackGround />
           <Outlet />
         </section>

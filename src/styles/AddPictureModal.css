@@ -68,6 +68,7 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
+    color: var(--text_color);
 }
 
 .profilePicModalBtn:hover {
@@ -78,4 +79,24 @@
 .defaultProfilePicModalImg:hover {
     fill: black;
     background-color: white;
+}
+
+@media (max-width: 500px) {
+    .defaultProfilePicModalImg, .profilePicModalImg {
+        width: calc(120px + (100vw - 500px) / 10);
+        height: calc(120px + (100vw - 500px) / 10);
+    }
+    .profileDefaultPicModalImg {
+        width: calc(60px + (100vw - 500px) / 15);
+        height: calc(60px + (100vw - 500px) / 15);
+    }
+    .profilePicTxt {
+        font-size: calc(16px + (100vw - 500px) / 150);
+    }
+    .profilePicModalBtn {
+        padding-right: calc(10px + (100vw - 500px) / 100);
+        padding-left: calc(10px + (100vw - 500px) / 100);
+        padding-top: calc(8px + (100vw - 500px) / 100);
+        padding-bottom: calc(8px + (100vw - 500px) / 100);
+    }
 }

@@ -42,8 +42,9 @@
 .chatsContent {
     width: 100%;
     height: 100vh;
+    position: relative;
     border-right: 1px solid var(--border_color);
-    transition: border-right 1s ease-in-out
+    transition: border-right 0.2s ease-in-out
 }
 
 .chatsNavBar {
@@ -52,8 +53,10 @@
     align-items: center;
     gap: 16px;
     height: 53.4px;
+    position: relative;
+    z-index: 2;
     background-color: var(--background_color);
-    transition: background-color 1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .hamburgerMenu {
@@ -76,8 +79,8 @@
     padding: 7px 12px;
     background-color: var(--background_color);
     border-radius: 4px;
-    transition: border-color 0.2s ease-in-out, color 1s ease-in-out, background-color 1s ease-in-out;
-    width: 547px;
+    transition: border-color 0.2s ease-in-out, color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    width: 100%;
     color: var(--text_color);
 }
 
@@ -121,7 +124,7 @@
     height: 100vh;
     background-color: var(--background_color);
     transform: translateX(-100%);
-    transition: transform 0.5s ease-in-out, background-color 1s ease-in-out;
+    transition: transform 0.5s ease-in-out, background-color 0.2s ease-in-out;
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -168,7 +171,7 @@
     font-weight: 500;
     font-size: 12px;
     color: var(--text_color);
-    transition: color 1s ease-in-out;
+    transition: color 0.2s ease-in-out;
 }
 
 .sideBarOptionsWrapper {
@@ -193,7 +196,7 @@
     font-size: 14px;
     font-weight: 500;
     color: var(--text_color);
-    transition: color 1s ease-in-out;
+    transition: color 0.2s ease-in-out;
 }
 
 .option:hover > .optionIconWrapper {
@@ -224,7 +227,7 @@
     margin-top: auto;
 }
 
-.sideBarLogOutBtn {
+.sideBarLogOutBtn, .sideBarCloseBtn {
     border: 2px solid rgb(255, 100, 100);
     color: rgb(255, 100, 100);
     border-radius: 8px;
@@ -240,12 +243,26 @@
     color: white;
 }
 
+.sideBarCloseBtn {
+    border: 2px solid var(--text_color);
+    color: var(--text_color)
+}
+
+.sideBarCloseBtn:hover {
+    background-color: var(--text_color);
+    color: var(--icon_fill_color);
+}
+
 .friendAndGroupChatsWrapper {
     width: 100%;
     overflow-y: scroll;
-    height: 706px;
+    height: 100%;
+    position: absolute;
+    padding-top: 53.4px;
+    top: 0;
+    left: 0;
     background-color: var(--background_color);
-    transition: background-color 1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .friendAndGroupChatsWrapper::-webkit-scrollbar {
@@ -265,7 +282,6 @@
     cursor: pointer;
     text-decoration: none;
     color: var(--text_color);
-    transition: color 1s ease-in-out;
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
@@ -310,7 +326,9 @@
 }
 
 .chatName {
-
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .chatMessagesSectionWrapper {
@@ -321,5 +339,37 @@
 .mainEmptySpace {
     background-color: aquamarine;
     padding: 10px;
+}
+
+@media (max-width: 500px) {
+    .chatsWrapper {
+        width: 100%;
+        z-index: 0;
+    }   
+    .chatsContent {
+        border-right: none;
+    }
+    .fullPageWrapper {
+        background-color: transparent;
+    }
+    .sideBarWrapper {
+        width: 100%;
+    }
+    .sideBarFooterWrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .chatMessagesSectionWrapper {
+        position: fixed;
+        transform: translateX(100%);
+        transition: transform 0.5s ease-in-out, background-color 0.2s ease-in-out;
+        z-index: 5;
+        width: 100%;
+        height: 100%;
+    }
+    .chatMessagesSectionWrapper.open {
+        transform: translateX(0%);
+    }
 }
   

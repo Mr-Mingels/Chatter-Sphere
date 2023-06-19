@@ -3,12 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import '../styles/SignUp.css'
 import logo from '../assets/logo.png'
+import logoWhite from '../assets/logoWhite.png'
 import signUpImg from '../assets/signUpImg.jpg'
 import signInImg from '../assets/signInImg.jpg'
 import free from '../assets/free.png'
 import laptop from '../assets/laptop.png'
 
-const Authenticate = () => {
+const Authenticate = ({ windowWidth }) => {
     const [authConfig, setAuthConfig] = useState(null)
     const [imgLoaded, setImgLoaded] = useState(false)
     const [redUserNamePlaceHolder, setRedUserNamePlaceHolder] = useState(false)
@@ -69,6 +70,7 @@ const Authenticate = () => {
             const response = await axios.post(url + path, user, { withCredentials: true });
             console.log(response.data);
             if (authConfig && response.status === 200) {
+                setImgLoaded(false)
                 navigate('/log-in')
                 setEmail({ ...email, value: ''})
                 setPassword({ ...password, value: ''})
@@ -81,16 +83,16 @@ const Authenticate = () => {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
                 console.error('Error message: ', error.response.data.message);
-                if (error.response.data.message === 'Incorrect email and username') {
+                if (error.response.data.message === 'Email and Username are incorrect') {
                     setRedEmailPlaceHolder(true)
                     setEmail({ ...email, value: '', placeholder: 'Incorrect email' })
                     setRedUserNamePlaceHolder(true)
                     setUserName({ ...userName, value: '', placeholder: 'Incorrect username' })
-                } else if (error.response.data.message === 'Incorrect email') {
+                } else if (error.response.data.message === 'Email is incorrect') {
                     setRedEmailPlaceHolder(true)
                     setEmail({ ...email, value: '', placeholder: 'Incorrect email' })
-                } else if (error.response.data.message === 'Incorrect username' || 
-                error.response.data.message === "Email and username do not match the same user") {
+                } else if (error.response.data.message === 'Username is incorrect' || 
+                    error.response.data.message === "Email and username do not match the same user") {
                     setRedUserNamePlaceHolder(true)
                     setUserName({ ...userName, value: '', placeholder: 'Incorrect username' })
                 } else if (error.response.data.message === 'Incorrect password') {
@@ -151,7 +153,7 @@ const Authenticate = () => {
                 <div className="authLeftSideWrapper">
                     <div className="logo-txt-wrapper">
                         <div className="authPageLogoWrapper">
-                            <img className="authPageLogo" src={logo} onMouseDown={(e) => e.preventDefault()}/>
+                            <img className="authPageLogo" src={windowWidth <= 800 ? logoWhite : logo} onMouseDown={(e) => e.preventDefault()}/>
                         </div>
                         <h3 className="authLogoTitle">Chatter Sphere</h3>
                     </div>
@@ -164,7 +166,7 @@ const Authenticate = () => {
                                 className={`authFormEmailInput ${redEmailPlaceHolder ? 'field' : ''}`} 
                                 onChange={(e) => setEmail({ ...email, value: e.target.value })} value={email.value}/>
                                 <label className="authLabel">UserName<span className="authRequireTag">*</span></label>
-                                <input name="username" placeholder={userName.placeholder} 
+                                <input maxLength='16' name="username" placeholder={userName.placeholder} 
                                 className={`authFormUserNameInput ${redUserNamePlaceHolder ? 'field' : ''}`}
                                 onChange={(e) => setUserName({ ...userName, value: e.target.value })} value={userName.value}/>
                                 <label className="authLabel">Password<span className="authRequireTag">*</span></label>
