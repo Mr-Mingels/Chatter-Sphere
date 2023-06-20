@@ -15,7 +15,7 @@ const http = require('http').createServer(app);
 
 const io = require('socket.io')(http, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"],
       methods: ["GET", "POST"],
       credentials: true
     }
@@ -24,7 +24,7 @@ const io = require('socket.io')(http, {
 app.locals.io = io;
 
 const PORT = process.env.PORT || 5000;
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"], credentials: true }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,9 +53,7 @@ io.on('connection', (socket) => {
   
     // Handle sending and receiving messages
     socket.on('sendMessage', (data) => {
-        console.log(data)
       const { chatId, message } = data;
-      console.log(message)
       // Save the message to the database
   
     // Emit the message to all connected clients in the same room except the sender
