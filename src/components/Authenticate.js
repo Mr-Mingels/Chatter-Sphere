@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from 'axios';
 import '../styles/SignUp.css'
 import logo from '../assets/logo.png'
@@ -174,9 +174,9 @@ const Authenticate = ({ windowWidth }) => {
                                 onChange={(e) => setPassword({ ...password, value: e.target.value })} value={password.value}/>
                                 <button type="submit" className="authConfirmBtn">{authConfig ? 'Sign Up' : 'Log In'}</button>
                             </form>
-                            <small className="authFormQuestion">{authConfig ? 'Already have an account?' : `Don't have an account?`} <a 
-                            className="authFormRedirectLink" href={authConfig ? '/log-in' : `/sign-up`} onMouseDown={(e) => e.preventDefault()}>
-                            {authConfig ? 'Log in' : `Sign up`}</a></small>
+                            <small className="authFormQuestion">{authConfig ? 'Already have an account?' : `Don't have an account?`} <Link 
+                            className="authFormRedirectLink" to={authConfig ? '/log-in' : `/sign-up`} onMouseDown={(e) => e.preventDefault()}>
+                            {authConfig ? 'Log in' : `Sign up`}</Link></small>
                         </div>
                     </div>
                 </div>
