@@ -18,7 +18,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const [friendRequestsModal, setFriendRequestsModal] = useState(false)
     const [addProfilePictureModal, setAddProfilePictureModal] = useState(false)
     const [userIdModal, setUserIdModal] = useState(false)
-    const [groupImg, setGroupImg] = useState()
     const [userIdCopied, setUserIdCopied] = useState(false)
     const [recievedFriendRequests, setRecievedFriendRequests] = useState()
     const [sentFriendRequests, setSentFriendRequests] = useState()
@@ -166,11 +165,8 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const getSentRequestUserInfo = async () => {
         try {   
             const response = await axios.get('http://localhost:5000/sent-friend-requests', { withCredentials: true });
-            console.log(response)
-            console.log(response.data)
             if (response.status === 200 && response.data) {
                 setSentFriendRequests(response.data)
-                console.log(sentFriendRequests)
             }
         } catch (err) {
             console.log(err)
@@ -180,12 +176,8 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const getRecievedRequestUserInfo = async () => {
         try {   
             const response = await axios.get('http://localhost:5000/received-friend-requests', { withCredentials: true });
-            console.log(response)
-            console.log(response.data)
             if (response.status === 200 && response.data) {
                 setRecievedFriendRequests(response.data)
-                console.log(recievedFriendRequests)
-                console.log(friendRequestsModal)
             } else {
                 setRecievedFriendRequests([])
             }
@@ -226,7 +218,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const unsendFriendRequest = async (requestedFriendId) => {
         try {
             const response = await axios.put('http://localhost:5000/unsend-friend-request', { requestedFriendId }, { withCredentials: true })
-            console.log('triggered')
             if (response.status === 200) {
                 setInformModalTxt(`Unsent friend request!`)
                 setInformModalColor('green')
@@ -240,7 +231,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const getFriendsList = async () => {
         try {
             const response = await axios.get('http://localhost:5000/friends-list', { withCredentials: true })
-            console.log(response.data)
             if (response.status === 200 && response.data) {
                 setFriendsList(response.data)
                 setSearchedFriends(response.data)
@@ -256,7 +246,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const removeFriend = async () => {
         try {
             const response = await axios.put('http://localhost:5000/remove-friend', { addedFriendId }, { withCredentials: true })
-            console.log(response)
             if (response.status === 200) {
                 setInformModalTxt(`Removed ${addedFriendUserName.charAt(0) + addedFriendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
@@ -300,7 +289,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            console.log(response.message)
             if (response.status === 200) {
                 setInformModalTxt('Profile picture updated!')
                 setInformModalColor('green')
@@ -342,7 +330,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            console.log(response)
             if (response.status === 200) {
                 setInformModalTxt('Created Group!')
                 setInformModalColor('green')
@@ -381,7 +368,6 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
           })
 
           socket.on('friendRemoved', async (friendUserId, chat) => {
-            console.log(chat._id)
             await getFriendsList()
             await getChatListInfo();
             if (chat._id === chatId) {

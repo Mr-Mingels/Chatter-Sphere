@@ -10,8 +10,6 @@ router.post('/create-group', upload.single('groupPicture'), async (req, res) => 
     try {
       const groupChatName = req.body.newGroupName;
       const groupPicture = req.file;
-      console.log('group picture:', groupPicture)
-      console.log('groupchat name:', groupChatName)
   
       // Handle the group picture if available
       if (groupPicture) {
@@ -57,7 +55,7 @@ router.post('/create-group', upload.single('groupPicture'), async (req, res) => 
       console.log(err);
       res.status(500).json({ message: err.message });
     }
-  });
+});
   
 
 router.delete('/delete-group', async (req, res) => {
@@ -78,7 +76,6 @@ router.delete('/delete-group', async (req, res) => {
       
             await s3Client.send(new DeleteObjectCommand(deleteParams));
         }
-        console.log(memberIds)
         if (deletedChat) {
           // Emit 'chatDeleted' event to all connected clients in the group chat
           await Message.deleteMany({ chat: chatId })

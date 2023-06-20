@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import '../styles/FriendsListModal.css'
 
 const FriendsListModal = ({ openAddFriendModal, openRemoveFriendModal, closeModal, searchedFriends, handleFriendsListSearch, 
@@ -9,7 +8,6 @@ const FriendsListModal = ({ openAddFriendModal, openRemoveFriendModal, closeModa
 
     const addMember = (friendId) => {
         const checkIfMember = currentChatInfo.members.find(member => member._id === friendId)
-        console.log(checkIfMember)
         if (checkIfMember) return
         const index = addedMember.indexOf(friendId);
         if (index !== -1) {
@@ -20,9 +18,6 @@ const FriendsListModal = ({ openAddFriendModal, openRemoveFriendModal, closeModa
             setAddedMember([...addedMember, friendId]);
         }
     }
-    useEffect(() => {
-        console.log(addedMember)
-    },[addedMember])
     return (
         <>
             <div className="friendModalHeaderWrapper">

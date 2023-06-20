@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import '../styles/AddPictureModal.css'
 
 const AddPictureModal = ({ selectedProfileImgFile, handleProfileImgFileChange, closeModal, addProfileImg, closeAddPictureModal, 

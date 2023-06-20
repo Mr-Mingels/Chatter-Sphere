@@ -1,5 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import '../styles/AddFriendModal.css'
 
 const AddFriendModal = ({ closeModal, setFriendUserId, friendUserId, redAddFriendPlaceHolder, sendFriendRequest }) => {

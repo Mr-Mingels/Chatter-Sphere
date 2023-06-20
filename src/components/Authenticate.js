@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import '../styles/SignUp.css'
@@ -68,7 +68,6 @@ const Authenticate = ({ windowWidth }) => {
             const path = authConfig ? 'sign-up' : 'log-in';
 
             const response = await axios.post(url + path, user, { withCredentials: true });
-            console.log(response.data);
             if (authConfig && response.status === 200) {
                 setImgLoaded(false)
                 navigate('/log-in')

@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useLocation, useNavigate, Routes, Route, Outlet, Link } from "react-router-dom";
+import React, { useCallback } from "react";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 
 const ParticleBackGround = () => {
 
     const particlesInit = useCallback(engine => {
-        console.log(engine);
         // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
         // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
         // starting from v2 you can add only the features you need reducing the bundle size
@@ -14,7 +12,6 @@ const ParticleBackGround = () => {
     }, []);
     
     const particlesLoaded = useCallback(container => {
-        console.log(container);
     }, []);
 
     return (

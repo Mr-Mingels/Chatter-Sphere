@@ -51,10 +51,8 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const getChatMessages =  async () => {
         try {
             const response = await axios.get(`http://localhost:5000/chats/${chatId}/messages`, { withCredentials: true })
-            console.log(response)
             if (response.status === 200) {
                 setChatMessages(response.data)
-                console.log(response.data)
                 setRenderedChatMessages(true)
             }
         } catch (err) {
@@ -104,7 +102,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     useEffect(() => {
         scrollToBottom()
-        console.log(chatMessages)
     }, [chatMessages])
 
     useEffect(() => {
@@ -116,8 +113,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             // Receive a message
             socket.on('messageReceived', (message) => {
               // Update the chatMessages state with the received message
-              console.log(message.sender)
-              console.log(message.sender._id)
                 setChatMessages((prevChatMessages) => [...prevChatMessages, message]);
             });
 
@@ -176,7 +171,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
       useEffect(() => {
         if (extractedChatsListInfo) {
             const result = extractedChatsListInfo.find(id => id._id === chatId)
-            console.log(result)
             setCurrentChatInfo(result)
         }
       },[extractedChatsListInfo, navigate])
@@ -208,7 +202,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const deleteGroup = async (currentChatId, currentChatMembers) => {
         try {
             const response = await axios.delete('http://localhost:5000/delete-group', { data: { currentChatId, currentChatMembers } }, { withCredentials: true })
-            console.log(response)
             closeSeveringModal()
         } catch (err) {
             console.log(err)
@@ -218,7 +211,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const leaveGroup = async (currentChatId) => {
         try {
             const response = await axios.put('http://localhost:5000/leave-group', { currentChatId }, { withCredentials: true }) 
-            console.log(response)
             if (response.status === 200) {
                 chatListInfoFunction()
                 navigate('/')
@@ -256,7 +248,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const getFriendsList = async () => {
         try {
             const response = await axios.get('http://localhost:5000/friends-list', { withCredentials: true })
-            console.log(response.data)
             if (response.status === 200 && response.data) {
                 setFriendsList(response.data)
                 setSearchedFriends(response.data)
@@ -321,7 +312,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const removeFriend = async () => {
         try {
             const response = await axios.put('http://localhost:5000/remove-friend', { addedFriendId }, { withCredentials: true })
-            console.log(response)
             if (response.status === 200) {
                 setInformModalTxt(`Removed ${addedFriendUserName.charAt(0) + addedFriendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
@@ -388,7 +378,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            console.log(response.message)
             if (response.status === 200) {
                 setInformModalTxt('Group picture updated!')
                 setInformModalColor('green')
@@ -403,7 +392,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const deleteMsg = async () => {
         try {
             const response = await axios.delete('http://localhost:5000/delete-message', { data: { selectedMsg } }, { withCredentials: true })
-            console.log(response)
             closeSeveringModal()
         } catch (err) {
             console.log(err)
@@ -428,7 +416,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         if (event.button === 0 || event.button === 1) {
             return
         }
-        console.log(event)
         setDeleteMsgModalPosition({ x: event.clientX, y: event.clientY });
         if (!deleteMsgModal) {
             setDeleteMsgModal(true)

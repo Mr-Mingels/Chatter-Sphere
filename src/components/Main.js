@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useLocation, useNavigate, Routes, Route, Outlet, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate, Outlet, Link } from "react-router-dom";
 import axios from 'axios';
 import '../styles/Main.css'
 import Modal from './Modal'
@@ -26,8 +26,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
     const location = useLocation()
 
     useEffect(() => {
-      console.log(extractedRenderedChatMsgs)
-      console.log(isLinkClicked)
       if (isLinkClicked && extractedRenderedChatMsgs) {
         setIsLinkClicked(false)
       }
@@ -42,7 +40,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
         } else {
           const userData = await response.json()
           setUserInfo(userData)
-          console.log(userData)
         }
       } catch (error) {
         console.log(error)
@@ -52,7 +49,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
     const getChatListInfo = async () => {
       try {
           const response = await axios.get('http://localhost:5000/users/chats', { withCredentials: true })
-          console.log(response.data)
           const sortedChats = [...response.data].sort((a, b) => {
             if (a._id === "648eeb75f2371f976c3448cc") return -1;
             if (b._id === "648eeb75f2371f976c3448cc") return 1;
@@ -61,7 +57,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
           if (response.status === 200 && response.data) {
             setChatsListInfo(sortedChats)
             setsearchedChatsListInfo(sortedChats)
-            console.log(response.data)
           } else {
               setChatsListInfo([])
               setsearchedChatsListInfo([])
@@ -91,7 +86,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
     const logOut = async () => {
       try {
         const response = await axios.get('http://localhost:5000/log-out', { withCredentials: true });
-        console.log(response)
         if (response.status === 200) {
           navigate('/log-in')
         }

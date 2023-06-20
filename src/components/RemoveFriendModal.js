@@ -1,6 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from 'axios';
 import '../styles/RemoveFriendModal.css'
 
 const RemoveFriendModal = ({ closeModal, removeFriend, closeSeveringModal, severingModalOption, currentChatInfo, deleteGroup, leaveGroup, 
