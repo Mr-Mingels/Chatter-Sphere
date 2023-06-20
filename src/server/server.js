@@ -11,6 +11,7 @@ const friendsRoutes = require('./routes/friendsRoutes')
 const chatsRoutes = require('./routes/chatsRoutes')
 const path = require('path');
 const app = express()
+const fs = require('fs');
 
 const http = require('http').createServer(app);
 
@@ -78,14 +79,6 @@ io.on('connection', (socket) => {
       console.log('A user disconnected');
     });
 });
-  
-app.get('/', ensureAuthentication, (req, res) => {
-    res.json(req.user)
-})
-
-http.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
 
 app.use(express.static(path.join(__dirname, '../../../build')));
 console.log("Build path:", path.join(__dirname, '../../../build'));
@@ -93,5 +86,17 @@ console.log("Build path:", path.join(__dirname, '../../../build'));
 app.get('*', (req, res) => {
   console.log("Received request for", req.originalUrl);
   res.sendFile(path.join(__dirname, '../../../build', 'index.html'));
+});
+
+fs.readdir(path.join(__dirname, '../../../build'), (err, files) => {
+  console.log("Build directory contents:", files);
+});
+  
+app.get('/', ensureAuthentication, (req, res) => {
+    res.json(req.user)
+})
+
+http.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
