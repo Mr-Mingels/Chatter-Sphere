@@ -10,21 +10,21 @@ const friendsRoutes = require('./routes/friendsRoutes')
 const chatsRoutes = require('./routes/chatsRoutes')
 const path = require('path');
 const app = express()
+app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"], credentials: true }));
 
 const http = require('http').createServer(app);
 
 const io = require('socket.io')(http, {
-    cors: {
+    cors: cors({
       origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"],
       methods: ["GET", "POST"],
       credentials: true
-    }
+    })
 });
 
 app.locals.io = io;
 
 const PORT = process.env.PORT || 5000;
-app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"], credentials: true }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -71,11 +71,6 @@ io.on('connection', (socket) => {
 app.get('/', ensureAuthentication, (req, res) => {
     res.json(req.user)
 })
-
-app.use((req, res, next) => {
-  console.log('CORS headers:', res.getHeaders()['access-control-allow-origin']);
-  next();
-});
 
 http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
