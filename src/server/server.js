@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express')
 const session = require('express-session')
-const MongoDBStore = require('connect-mongo')(session);
+const MongoDBStore = require('connect-mongo');
 const cors = require('cors');
 const { ensureAuthentication, localStrategy, session: passportSession } = require('./controllers/authController');
 const connectToMongoDb = require('./controllers/mongoController');
