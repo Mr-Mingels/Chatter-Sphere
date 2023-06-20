@@ -6,9 +6,9 @@ const cors = require('cors');
 const { ensureAuthentication, localStrategy, session: passportSession } = require('./controllers/authController');
 const connectToMongoDb = require('./controllers/mongoController');
 const authRoutes = require('./routes/authRoutes');
+const chatsRoutes = require('./routes/chatsRoutes')
 const groupRoutes = require('./routes/groupRoutes');
 const friendsRoutes = require('./routes/friendsRoutes')
-const chatsRoutes = require('./routes/chatsRoutes')
 const path = require('path');
 const app = express()
 const fs = require('fs');
@@ -87,6 +87,8 @@ app.get('/', ensureAuthentication, (req, res) => {
 http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+app.use(express.static(path.join(__dirname, '../../../build')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../build', 'index.html'));
