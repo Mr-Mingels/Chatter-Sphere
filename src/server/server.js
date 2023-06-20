@@ -80,14 +80,6 @@ app.use(authRoutes);
 app.use(chatsRoutes)
 app.use(groupRoutes);
 app.use(friendsRoutes)
-  
-app.get('/', ensureAuthentication, (req, res) => {
-    res.json(req.user)
-})
-
-http.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
 
 app.get('/test-build', (req, res) => {
   fs.readdir(path.join(__dirname, '../../../build'), (err, files) => {
@@ -98,6 +90,14 @@ app.get('/test-build', (req, res) => {
     }
     res.send(files);
   });
+});
+  
+app.get('/', ensureAuthentication, (req, res) => {
+    res.json(req.user)
+})
+
+http.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
 app.use(express.static(path.join(__dirname, '../../../build')));
