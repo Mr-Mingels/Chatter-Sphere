@@ -72,6 +72,11 @@ app.get('/', ensureAuthentication, (req, res) => {
     res.json(req.user)
 })
 
+app.use((req, res, next) => {
+  console.log('CORS headers:', res.getHeaders()['access-control-allow-origin']);
+  next();
+});
+
 http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
