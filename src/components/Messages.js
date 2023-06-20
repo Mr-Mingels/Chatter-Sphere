@@ -7,7 +7,7 @@ import AddPictureModal from "./AddPictureModal";
 import '../styles/Messages.css'
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://chatter-sphere-app-api.onrender.com/');
 
 const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunction, setExtractedRenderedChatMsgs, windowWidth }) => {
     const [messageTxt, setMessageTxt] = useState('')
@@ -50,7 +50,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const getChatMessages =  async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/chats/${chatId}/messages`, { withCredentials: true })
+            const response = await axios.get(`https://chatter-sphere-app-api.onrender.com/chats/${chatId}/messages`, { withCredentials: true })
             if (response.status === 200) {
                 setChatMessages(response.data)
                 setRenderedChatMessages(true)
@@ -80,7 +80,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             chatId: chatId,
             message: messageTxt,
           };
-          const response = await axios.post(`http://localhost:5000/messages`, { idInfo }, { withCredentials: true });
+          const response = await axios.post(`https://chatter-sphere-app-api.onrender.com/messages`, { idInfo }, { withCredentials: true });
           setMessageTxt('');
         } catch (err) {
           console.log(err);
@@ -201,7 +201,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const deleteGroup = async (currentChatId, currentChatMembers) => {
         try {
-            const response = await axios.delete('http://localhost:5000/delete-group', { data: { currentChatId, currentChatMembers } }, { withCredentials: true })
+            const response = await axios.delete('https://chatter-sphere-app-api.onrender.com/delete-group', { data: { currentChatId, currentChatMembers } }, { withCredentials: true })
             closeSeveringModal()
         } catch (err) {
             console.log(err)
@@ -210,7 +210,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const leaveGroup = async (currentChatId) => {
         try {
-            const response = await axios.put('http://localhost:5000/leave-group', { currentChatId }, { withCredentials: true }) 
+            const response = await axios.put('https://chatter-sphere-app-api.onrender.com/leave-group', { currentChatId }, { withCredentials: true }) 
             if (response.status === 200) {
                 chatListInfoFunction()
                 navigate('/')
@@ -222,7 +222,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const addMemberToGroup = async (addedMemberIds, currentChatInfoId) => {
         try {
-            const response = await axios.put('http://localhost:5000/add-member-to-group', { addedMemberIds, currentChatInfoId }, 
+            const response = await axios.put('https://chatter-sphere-app-api.onrender.com/add-member-to-group', { addedMemberIds, currentChatInfoId }, 
             { withCredentials: true })
             if (response.status === 200) {
                 setInformModalTxt('Added member(s) to Group!')
@@ -247,7 +247,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const getFriendsList = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/friends-list', { withCredentials: true })
+            const response = await axios.get('https://chatter-sphere-app-api.onrender.com/friends-list', { withCredentials: true })
             if (response.status === 200 && response.data) {
                 setFriendsList(response.data)
                 setSearchedFriends(response.data)
@@ -311,7 +311,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const removeFriend = async () => {
         try {
-            const response = await axios.put('http://localhost:5000/remove-friend', { addedFriendId }, { withCredentials: true })
+            const response = await axios.put('https://chatter-sphere-app-api.onrender.com/remove-friend', { addedFriendId }, { withCredentials: true })
             if (response.status === 200) {
                 setInformModalTxt(`Removed ${addedFriendUserName.charAt(0) + addedFriendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
@@ -372,7 +372,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         formData.append('groupPicture', selectedGroupImgFile);
         formData.append('chatId', chatId);
         try {
-            const response = await axios.put(`http://localhost:5000/add-group-picture`, formData, { 
+            const response = await axios.put(`https://chatter-sphere-app-api.onrender.com/add-group-picture`, formData, { 
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -391,7 +391,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
 
     const deleteMsg = async () => {
         try {
-            const response = await axios.delete('http://localhost:5000/delete-message', { data: { selectedMsg } }, { withCredentials: true })
+            const response = await axios.delete('https://chatter-sphere-app-api.onrender.com/delete-message', { data: { selectedMsg } }, { withCredentials: true })
             closeSeveringModal()
         } catch (err) {
             console.log(err)

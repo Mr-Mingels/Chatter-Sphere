@@ -6,7 +6,7 @@ import Modal from './Modal'
 import ParticleBackGround from "./ParticleBackGround";
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://chatter-sphere-app-api.onrender.com/');
 
 const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction, extractedRenderedChatMsgs, windowWidth }) => {
   const [sideBarOpen, setSideBarOpen] = useState(false)
@@ -33,7 +33,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getUserInfo = async () => {
       try {
-        const response = await fetch('http://localhost:5000/', { credentials: 'include' });
+        const response = await fetch('https://chatter-sphere-app-api.onrender.com/', { credentials: 'include' });
         // check for user authentication
         if (response.status === 401) {
           navigate('/sign-up');
@@ -48,7 +48,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getChatListInfo = async () => {
       try {
-          const response = await axios.get('http://localhost:5000/users/chats', { withCredentials: true })
+          const response = await axios.get('https://chatter-sphere-app-api.onrender.com/users/chats', { withCredentials: true })
           const sortedChats = [...response.data].sort((a, b) => {
             if (a._id === "648eeb75f2371f976c3448cc") return -1;
             if (b._id === "648eeb75f2371f976c3448cc") return 1;
@@ -85,7 +85,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const logOut = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/log-out', { withCredentials: true });
+        const response = await axios.get('https://chatter-sphere-app-api.onrender.com/log-out', { withCredentials: true });
         if (response.status === 200) {
           navigate('/log-in')
         }

@@ -64,7 +64,7 @@ const Authenticate = ({ windowWidth }) => {
         }
 
         try {
-            const url = 'http://localhost:5000/';
+            const url = 'https://chatter-sphere-app-api.onrender.com/';
             const path = authConfig ? 'sign-up' : 'log-in';
 
             const response = await axios.post(url + path, user, { withCredentials: true });
