@@ -80,30 +80,19 @@ app.use(authRoutes);
 app.use(chatsRoutes)
 app.use(groupRoutes);
 app.use(friendsRoutes)
-
-app.get('/test-build', (req, res) => {
-  fs.readdir(path.join(__dirname, '../../../build'), (err, files) => {
-    console.log(files)
-    if (err) {
-      console.log('Unable to read files')
-      return res.status(500).send('Unable to read build directory');
-    }
-    res.send(files);
-  });
-});
   
 app.get('/', ensureAuthentication, (req, res) => {
     res.json(req.user)
 })
 
-http.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
 app.use(express.static(path.join(__dirname, '../../../build')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../build', 'index.html'));
+});
+
+http.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
 
