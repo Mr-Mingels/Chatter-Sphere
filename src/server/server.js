@@ -88,7 +88,10 @@ http.listen(PORT, () => {
 });
 
 app.use(express.static(path.join(__dirname, '../../build')));
+console.log("Build path:", path.join(__dirname, '../../build'));
 
 app.get('*', (req, res) => {
+  console.log("Received request for", req.originalUrl);
   res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
+
