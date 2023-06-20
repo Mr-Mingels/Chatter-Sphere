@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express')
 const session = require('express-session')
-const MongoDBStore = require('connect-mongo')(session);
 const cors = require('cors');
 const { ensureAuthentication, localStrategy, session: passportSession } = require('./controllers/authController');
 const connectToMongoDb = require('./controllers/mongoController');
@@ -29,18 +28,18 @@ app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrende
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const store = new MongoDBStore({
-  uri: process.env.MONGODB_URL,
-  collection: 'mySessions'
-});
 
 app.use(session({
   secret: 'secret',
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
-  store: store,
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  store: new MongoDBStore({
+    mongoUrl: process.env.MONGODB_URL,
+    collection: 'mySessions'
+  })
 }));
+
 app.use(localStrategy) 
 app.use(passportSession)
 app.use(authRoutes);
