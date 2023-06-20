@@ -4,11 +4,6 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Chat = require('../models/chat');
-const { ensureAuthentication } = require('../controllers/authController');
-
-router.get('/', ensureAuthentication, (req, res) => {
-    res.json(req.user)
-})
 
 router.post('/sign-up', async (req, res) => {
     try {
