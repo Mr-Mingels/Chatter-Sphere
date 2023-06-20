@@ -42,11 +42,6 @@ app.use(session({
   })
 }));
 app.use(localStrategy) 
-app.use(passportSession)
-app.use(authRoutes);
-app.use(chatsRoutes)
-app.use(groupRoutes);
-app.use(friendsRoutes)
 
 
 connectToMongoDb()
@@ -79,6 +74,12 @@ io.on('connection', (socket) => {
       console.log('A user disconnected');
     });
 });
+
+app.use(passportSession)
+app.use(authRoutes);
+app.use(chatsRoutes)
+app.use(groupRoutes);
+app.use(friendsRoutes)
   
 app.get('/', ensureAuthentication, (req, res) => {
     res.json(req.user)
