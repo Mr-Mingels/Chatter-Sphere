@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express')
 const session = require('express-session')
+const MongoDBStore = require('connect-mongo')(session);
 const cors = require('cors');
 const { ensureAuthentication, localStrategy, session: passportSession } = require('./controllers/authController');
 const connectToMongoDb = require('./controllers/mongoController');
@@ -10,25 +11,36 @@ const friendsRoutes = require('./routes/friendsRoutes')
 const chatsRoutes = require('./routes/chatsRoutes')
 const path = require('path');
 const app = express()
-app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"], credentials: true }));
 
 const http = require('http').createServer(app);
 
 const io = require('socket.io')(http, {
-    cors: cors({
+    cors: {
       origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"],
       methods: ["GET", "POST"],
       credentials: true
-    })
+    }
 });
 
 app.locals.io = io;
 
 const PORT = process.env.PORT || 5000;
+app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"], credentials: true }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(session({ secret: 'secret', resave: false, saveUninitialized: false}))
+const store = new MongoDBStore({
+  uri: process.env.MONGODB_URL,
+  collection: 'mySessions'
+});
+
+app.use(session({
+  secret: 'secret',
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
+  store: store,
+  resave: true,
+  saveUninitialized: true
+}));
 app.use(localStrategy) 
 app.use(passportSession)
 app.use(authRoutes);
