@@ -91,7 +91,9 @@ http.listen(PORT, () => {
 
 app.get('/test-build', (req, res) => {
   fs.readdir(path.join(__dirname, '../../../build'), (err, files) => {
+    console.log(files)
     if (err) {
+      console.log('Unable to read files')
       return res.status(500).send('Unable to read build directory');
     }
     res.send(files);
