@@ -3,8 +3,8 @@ const express = require('express')
 const session = require('express-session')
 const MongoDBStore = require('connect-mongo');
 const cors = require('cors');
-const { localStrategy, session: passportSession } = require('../../api/controllers/authController');
-const connectToMongoDb = require('../../api/controllers/mongoController');
+const { localStrategy, session: passportSession } = require('./controllers/authController');
+const connectToMongoDb = require('./controllers/mongoController');
 const authRoutes = require('./routes/authRoutes');
 const chatsRoutes = require('./routes/chatsRoutes')
 const groupRoutes = require('./routes/groupRoutes');
@@ -87,12 +87,6 @@ app.get('/', (req, res) => {
     res.status(401).send('Unauthorized');
   }
 })
-
-app.use(express.static(path.join(__dirname, '../../build')));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../build', 'index.html'));
-});
 
 http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
