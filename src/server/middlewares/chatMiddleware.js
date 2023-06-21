@@ -25,6 +25,7 @@ const ensureChatIsReal = async (req, res, next) => {
       } else if (chat.isGroupChat && chat.members.includes(userId)) {
         return next();
       } else {
+        /* next(); */
         return res.status(400).send({ message: `Chat found but your not in the group` });
       }
     } catch (err) {
