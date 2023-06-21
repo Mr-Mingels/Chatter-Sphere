@@ -80,22 +80,15 @@ app.use(authRoutes);
 app.use(chatsRoutes)
 app.use(groupRoutes);
 app.use(friendsRoutes)
-
-app.use(express.static(path.join(__dirname, '../../build')));
-
-app.get('*', (req, res) => {
-  const filePath = path.join(__dirname, '../../build', 'index.html');
-
-  console.log(`Serving: ${filePath}`);
-
-  res.sendFile(filePath, function (err) {
-    if (err) {
-      console.log(err);
-      res.status(500).send('Error while serving index.html');
-    }
-  });
-});
-
+  
+app.get('/', (req, res) => {
+  console.log('Root route handler triggered');
+  if (req.isAuthenticated()) {
+    res.json(req.user)
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+})
 
 
 http.listen(PORT, () => {
