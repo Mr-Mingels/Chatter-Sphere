@@ -89,10 +89,10 @@ app.get('/', (req, res) => {
   }
 })
 
-app.use(express.static(path.join(__dirname, '../../../build')));
+app.use(express.static(path.join(__dirname, '../../build')));
 
 app.get('*', (req, res) => {
-  const filePath = path.join(__dirname, '../../../build', 'index.html');
+  const filePath = path.join(__dirname, '../../build', 'index.html');
 
   console.log(`Serving: ${filePath}`);
 
