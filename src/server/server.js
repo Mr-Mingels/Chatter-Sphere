@@ -29,6 +29,10 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"], credentials: true }));
 
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log(req.session.cookie);
+  next();
+});
 app.use(express.urlencoded({ extended: true }));
 console.log('NODE ENV value:', process.env.NODE_ENV)
 app.use(session({
@@ -37,7 +41,6 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     secure: process.env.NODE_ENV === 'production', // secure in production, not secure in development
     sameSite: 'none', // allow cross-site requests
-    domain: 'chatter-sphere-app-api.onrender.com' // add this line
   },
   resave: true,
   saveUninitialized: true,
