@@ -33,7 +33,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getUserInfo = async () => {
       try {
-        const response = await fetch('https://chatter-sphere.vercel.app/', { credentials: 'include' });
+        const response = await fetch('https://chatter-sphere.vercel.app/');
         // check for user authentication
         console.log(response)
         if (response.status === 401) {
