@@ -32,7 +32,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'secret',
-  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
+  cookie: { 
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    secure: process.env.NODE_ENV === 'production', // secure in production, not secure in development
+    sameSite: 'none', // allow cross-site requests
+  },
   resave: true,
   saveUninitialized: true,
   store: new MongoDBStore({
@@ -40,6 +44,7 @@ app.use(session({
     collection: 'mySessions'
   })
 }));
+
 app.use(localStrategy) 
 app.use(passportSession)
 app.use(authRoutes);
