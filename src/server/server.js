@@ -80,10 +80,6 @@ app.use(authRoutes);
 app.use(chatsRoutes)
 app.use(groupRoutes);
 app.use(friendsRoutes)
-  
-app.get('/', ensureAuthentication, (req, res) => {
-    res.json(req.user)
-})
 
 app.use(express.static(path.join(__dirname, '../../../build')));
 
