@@ -12,7 +12,6 @@ const friendsRoutes = require('./routes/friendsRoutes')
 const path = require('path');
 const app = express()
 const fs = require('fs');
-const root = path.resolve();
 
 const http = require('http').createServer(app);
 
@@ -89,10 +88,10 @@ app.get('/', (req, res) => {
   }
 })
 
-app.use(express.static(path.join(root, '../build')));
+app.use(express.static(path.join(__dirname, '../../build')));
 
-app.all('*', (req, res) => {
-  res.sendFile(path.join(root, '../build', 'index.html'));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
 
 http.listen(PORT, () => {
