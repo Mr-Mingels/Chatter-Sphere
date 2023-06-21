@@ -29,10 +29,6 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrender.com"], credentials: true }));
 
 app.use(express.json());
-app.use((req, res, next) => {
-  console.log(req.session.cookie);
-  next();
-});
 app.use(express.urlencoded({ extended: true }));
 console.log('NODE ENV value:', process.env.NODE_ENV)
 app.use(session({
