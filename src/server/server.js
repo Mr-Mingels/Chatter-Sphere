@@ -30,14 +30,9 @@ app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrende
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-console.log('NODE ENV value:', process.env.NODE_ENV)
 app.use(session({
   secret: 'secret',
-  cookie: { 
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-    secure: process.env.NODE_ENV === 'production', // secure in production, not secure in development
-    sameSite: 'none', // allow cross-site requests
-  },
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
   resave: true,
   saveUninitialized: true,
   store: new MongoDBStore({
@@ -45,8 +40,6 @@ app.use(session({
     collection: 'mySessions'
   })
 }));
-
-
 app.use(localStrategy) 
 app.use(passportSession)
 app.use(authRoutes);
