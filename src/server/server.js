@@ -37,7 +37,7 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     secure: process.env.NODE_ENV === 'production', // secure in production, not secure in development
     sameSite: 'none', // allow cross-site requests
-    domain: 'https://chatter-sphere-app-api.onrender.com' // add this line
+    domain: 'chatter-sphere-app-api.onrender.com' // add this line
   },
   resave: true,
   saveUninitialized: true,
