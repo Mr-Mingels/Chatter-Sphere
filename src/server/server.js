@@ -80,8 +80,6 @@ io.on('connection', (socket) => {
 });
   
 app.get('/', (req, res) => {
-  console.log('Req user console:', req.user)
-  console.log('Req session console:', req.session)
   console.log('Root route handler triggered');
   if (req.isAuthenticated()) {
     res.json(req.user)
@@ -90,6 +88,11 @@ app.get('/', (req, res) => {
   }
 })
 
+app.use(express.static(path.join(__dirname, '../../build')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../build', 'index.html'));
+});
 
 http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
