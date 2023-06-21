@@ -30,7 +30,7 @@ app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrende
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-console.log(process.env.NODE_ENV)
+console.log('NODE ENV value:', process.env.NODE_ENV)
 app.use(session({
   secret: 'secret',
   cookie: { 
