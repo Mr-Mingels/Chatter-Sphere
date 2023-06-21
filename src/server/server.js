@@ -30,11 +30,6 @@ app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrende
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(passportSession)
-app.use(authRoutes);
-app.use(chatsRoutes)
-app.use(groupRoutes);
-app.use(friendsRoutes)
 app.use(session({
   secret: 'secret',
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
@@ -46,6 +41,11 @@ app.use(session({
   })
 }));
 app.use(localStrategy) 
+app.use(passportSession)
+app.use(authRoutes);
+app.use(chatsRoutes)
+app.use(groupRoutes);
+app.use(friendsRoutes)
 
 
 connectToMongoDb()
