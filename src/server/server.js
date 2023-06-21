@@ -88,8 +88,19 @@ app.get('/', ensureAuthentication, (req, res) => {
 app.use(express.static(path.join(__dirname, '../../../build')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../build', 'index.html'));
+  const filePath = path.join(__dirname, '../../../build', 'index.html');
+
+  console.log(`Serving: ${filePath}`);
+
+  res.sendFile(filePath, function (err) {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Error while serving index.html');
+    }
+  });
 });
+
+
 
 http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
