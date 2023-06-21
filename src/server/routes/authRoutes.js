@@ -78,15 +78,6 @@ router.post('/log-in', async (req, res, next) => {
     })(req, res, next);
 });
 
-router.get('/', (req, res) => {
-    console.log('Root route handler triggered');
-    if (req.isAuthenticated()) {
-      res.json(req.user)
-    } else {
-      res.status(401).send('Unauthorized');
-    }
-  })
-
 router.get('/log-out', (req, res, next) => {
     req.logout((err) => {
         if (err) {

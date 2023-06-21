@@ -78,6 +78,17 @@ io.on('connection', (socket) => {
       console.log('A user disconnected');
     });
 });
+  
+app.get('/', (req, res) => {
+  console.log('Req user console:', req.user)
+  console.log('Req session console:', req.session)
+  console.log('Root route handler triggered');
+  if (req.isAuthenticated()) {
+    res.json(req.user)
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+})
 
 
 http.listen(PORT, () => {
