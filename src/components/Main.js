@@ -42,6 +42,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
           setUserInfo(userData)
         }
       } catch (error) {
+        console.log(error.message)
         console.log(error)
       }
     };
