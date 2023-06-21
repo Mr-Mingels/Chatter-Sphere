@@ -56,15 +56,7 @@ passport.deserializeUser(async (id, done) => {
     }
 })
 
-const ensureAuthentication = ((req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next()
-    }
-    res.status(401).send('Unauthorized');
-})
-
 module.exports = {
-    ensureAuthentication,
     localStrategy: passport.initialize(),
     session: passport.session()
 }
