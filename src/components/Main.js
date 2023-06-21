@@ -31,9 +31,21 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
       }
     }, [extractedRenderedChatMsgs])
 
+    const getTestMessage = async () => {
+      try {
+        const response = await fetch('https://chatter-sphere.vercel.app/test', { credentials: 'include' });
+        const data = await response.json();
+        console.log(data);  // Should log: { message: 'Test successful' }
+      } catch (error) {
+        console.log(error.message)
+        console.log(error)
+      }
+    };
+    
+
     const getUserInfo = async () => {
       try {
-        const response = await fetch('https://chatter-sphere.vercel.app/');
+        const response = await fetch('https://chatter-sphere.vercel.app/', { credentials: 'include' });
         // check for user authentication
         console.log(response)
         if (response.status === 401) {
@@ -74,6 +86,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
   },[])
 
     useEffect(() => {
+      getTestMessage()
       getUserInfo()
       getChatListInfo()
     }, [])

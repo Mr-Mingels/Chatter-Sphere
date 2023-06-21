@@ -78,6 +78,11 @@ io.on('connection', (socket) => {
       console.log('A user disconnected');
     });
 });
+
+app.get('/test', (req, res) => {
+  res.json({ message: 'Test successful' });
+});
+
   
 app.get('/', (req, res) => {
   console.log('Root route handler triggered');
