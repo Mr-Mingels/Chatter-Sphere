@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const User = require('../../../src/server/models/user')
-const Chat = require('../../../src/server/models/chat');
+const User = require('../models/user')
+const Chat = require('../models/chat');
 
 const ensureChatIsReal = async (req, res, next) => {
     try {
