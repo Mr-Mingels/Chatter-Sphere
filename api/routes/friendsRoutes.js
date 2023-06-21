@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const Chat = require('../models/chat');
 const User = require('../models/user');
-const { upload, s3Client } = require('../controllers/s3Controller');
+const { upload, s3Client } = require('../../../api/controllers/s3Controller');
 
 
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Chat = require('../models/chat');
 const Message = require('../models/messages')
-const ensureChatIsReal = require('../middlewares/chatMiddleware');
+const ensureChatIsReal = require('../../../api/controllers/middlewares/chatMiddleware');
 
 
 router.get('/users/chats', async (req, res) => {
