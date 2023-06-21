@@ -30,17 +30,7 @@ app.use(cors({ origin: ["http://localhost:3000", "https://chatter-sphere.onrende
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use(session({
-  secret: 'secret',
-  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
-  resave: true,
-  saveUninitialized: true,
-  store: new MongoDBStore({
-    mongoUrl: process.env.MONGODB_URL,
-    collection: 'mySessions'
-  })
-}));
+app.use(session({ secret: 'secret', resave: false, saveUninitialized: false}))
 app.use(localStrategy) 
 
 
