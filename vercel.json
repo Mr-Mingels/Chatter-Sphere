@@ -1,10 +1,7 @@
 {
-    "functions": {
-      "api/**/*.js": {
-        "rewrites": [
-          { "source": "/(.*)", "destination": "/src/server/server.js" }
-        ]
-      }
-    }
+    "routes": [
+      { "src": "/(.*)", "dest": "/src/server/server.js" }
+    ]
   }
+  
   
