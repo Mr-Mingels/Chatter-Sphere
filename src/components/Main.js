@@ -35,7 +35,9 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
       try {
         const response = await fetch('https://chatter-sphere.vercel.app/', { credentials: 'include' });
         // check for user authentication
+        console.log(response)
         if (response.status === 401) {
+          console.log('passed if statement')
           navigate('/sign-up');
         } else {
           const userData = await response.json()
