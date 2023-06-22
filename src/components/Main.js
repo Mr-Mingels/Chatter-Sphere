@@ -63,7 +63,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getChatListInfo = async () => {
       try {
-          const response = await axios.get('https://chatter-sphere.vercel.app/users/chats', { withCredentials: true })
+          const response = await axios.get('https://app-api-chatter-sphere.onrender.com/users/chats', { withCredentials: true })
           const sortedChats = [...response.data].sort((a, b) => {
             if (a._id === "648eeb75f2371f976c3448cc") return -1;
             if (b._id === "648eeb75f2371f976c3448cc") return 1;
