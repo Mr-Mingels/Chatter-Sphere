@@ -33,7 +33,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getTestMessage = async () => {
       try {
-        const response = await fetch('https://app-api-chatter-sphere.onrender.com/test', { credentials: 'include' });
+        const response = await fetch('/test', { credentials: 'include' });
         const data = await response.json();
         console.log(data);  // Should log: { message: 'Test successful' }
       } catch (error) {
@@ -45,7 +45,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getUserInfo = async () => {
       try {
-        const response = await fetch('https://app-api-chatter-sphere.onrender.com/', { credentials: 'include' });
+        const response = await fetch('/', { credentials: 'include' });
         // check for user authentication
         console.log(response)
         if (response.status === 401) {
@@ -63,7 +63,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getChatListInfo = async () => {
       try {
-          const response = await axios.get('https://app-api-chatter-sphere.onrender.com/users/chats', { withCredentials: true })
+          const response = await axios.get('/users/chats', { withCredentials: true })
           const sortedChats = [...response.data].sort((a, b) => {
             if (a._id === "648eeb75f2371f976c3448cc") return -1;
             if (b._id === "648eeb75f2371f976c3448cc") return 1;
