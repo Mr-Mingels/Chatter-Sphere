@@ -33,7 +33,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getTestMessage = async () => {
       try {
-        const response = await fetch('https://chatter-sphere.vercel.app/test', { credentials: 'include' });
+        const response = await fetch('https://app-api-chatter-sphere.onrender.com/test', { credentials: 'include' });
         const data = await response.json();
         console.log(data);  // Should log: { message: 'Test successful' }
       } catch (error) {
@@ -45,7 +45,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getUserInfo = async () => {
       try {
-        const response = await fetch('https://chatter-sphere.vercel.app/', { credentials: 'include' });
+        const response = await fetch('https://app-api-chatter-sphere.onrender.com/', { credentials: 'include' });
         // check for user authentication
         console.log(response)
         if (response.status === 401) {
