@@ -47,7 +47,7 @@ const App = () => {
               <Route path="/" element={<Main setExtractedUserInfo={setExtractedUserInfo} 
               setExtractedChatsListInfo={setExtractedChatsListInfo} getChatListInfoFunction={getChatListInfoFunction}
               extractedRenderedChatMsgs={extractedRenderedChatMsgs} windowWidth={windowWidth}/>}>
-                <Route path="chats/:chatId/messages" element={<Messages extractedUserInfo={extractedUserInfo}
+                <Route path="chat/:chatId" element={<Messages extractedUserInfo={extractedUserInfo}
                 extractedChatsListInfo={extractedChatsListInfo} chatListInfoFunction={chatListInfoFunction}
                 setExtractedRenderedChatMsgs={setExtractedRenderedChatMsgs} windowWidth={windowWidth}/>}/>
               </Route>

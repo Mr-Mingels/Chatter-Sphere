@@ -315,7 +315,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                     <div className="friendAndGroupChatsContent">
                     {searchedChatsListInfo.map((chat, index) =>
                           <Link className={`chatWrapper ${location.pathname.split("/")[2] === chat._id ? 'inChat' : ''}`} 
-                          key={index} to={`/chats/${chat._id}/messages`} onMouseDown={(e) => e.preventDefault()} onClick={(e) => {
+                          key={index} to={`/chat/${chat._id}`} onMouseDown={(e) => e.preventDefault()} onClick={(e) => {
                             if (location.pathname.split("/")[2] === chat._id) return
                             if (isLinkClicked) {
                               e.preventDefault()

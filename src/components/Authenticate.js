@@ -32,6 +32,7 @@ const Authenticate = ({ windowWidth }) => {
     const navigate = useNavigate()
 
     useEffect(() => {
+        setImgLoaded(false)
         if (location.pathname === '/sign-up') {
             setAuthConfig(true)
         } else {
@@ -65,11 +66,10 @@ const Authenticate = ({ windowWidth }) => {
 
         try {
             const url = '/';
-            const path = authConfig ? 'sign-up' : 'log-in';
+            const path = authConfig ? 'sign-up-page' : 'log-in-page';
 
             const response = await axios.post(url + path, user, { withCredentials: true });
             if (authConfig && response.status === 200) {
-                setImgLoaded(false)
                 navigate('/log-in')
                 setEmail({ ...email, value: ''})
                 setPassword({ ...password, value: ''})

@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const Chat = require('../models/chat');
 
-router.post('/sign-up', async (req, res) => {
+router.post('/sign-up-page', async (req, res) => {
     try {
         const password = req.body.password
         const username = req.body.username.toUpperCase();
@@ -42,7 +42,7 @@ router.post('/sign-up', async (req, res) => {
     }
 })
 
-router.post('/log-in', async (req, res, next) => {
+router.post('/log-in-page', async (req, res, next) => {
     const password = req.body.password
     const username = req.body.username.toUpperCase();
     const email = req.body.email.toUpperCase();
