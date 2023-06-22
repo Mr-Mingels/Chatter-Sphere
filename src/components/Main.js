@@ -45,7 +45,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const getUserInfo = async () => {
       try {
-        const response = await fetch('/', { credentials: 'include' });
+        const response = await fetch('/user-info', { credentials: 'include' });
         // check for user authentication
         console.log(response)
         if (response.status === 401) {
