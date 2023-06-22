@@ -64,7 +64,7 @@ const Authenticate = ({ windowWidth }) => {
         }
 
         try {
-            const url = 'https://chatter-sphere.vercel.app/';
+            const url = 'http://localhost:5000/';
             const path = authConfig ? 'sign-up' : 'log-in';
 
             const response = await axios.post(url + path, user, { withCredentials: true });
