@@ -7,7 +7,7 @@ import AddPictureModal from "./AddPictureModal";
 import '../styles/Messages.css'
 import { io } from 'socket.io-client';
 
-const socket = io('https://app-api-chatter-sphere.onrender.com/');
+const socket = io(window.location.origin);
 
 const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunction, setExtractedRenderedChatMsgs, windowWidth }) => {
     const [messageTxt, setMessageTxt] = useState('')

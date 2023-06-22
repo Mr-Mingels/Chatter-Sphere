@@ -17,7 +17,7 @@ const http = require('http').createServer(app);
 
 const io = require('socket.io')(http, {
     cors: {
-      origin: ["http://localhost:3000", "https://app-api-chatter-sphere.onrender.com", "http://localhost:5000"],
+      origin: ["http://localhost:3000", "https://app-api-chatter-sphere.onrender.com", "http://localhost:5000", "https://eu-chatter-sphere.onrender.com"],
       methods: ["GET", "POST"],
       credentials: true
     }
@@ -26,7 +26,7 @@ const io = require('socket.io')(http, {
 app.locals.io = io;
 
 const PORT = process.env.PORT || 5000;
-app.use(cors({ origin: ["http://localhost:3000", "https://app-api-chatter-sphere.onrender.com", "http://localhost:5000"], credentials: true }));
+app.use(cors({ origin: ["http://localhost:3000", "https://app-api-chatter-sphere.onrender.com", "http://localhost:5000", "https://eu-chatter-sphere.onrender.com"], credentials: true }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

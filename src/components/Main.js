@@ -6,7 +6,7 @@ import Modal from './Modal'
 import ParticleBackGround from "./ParticleBackGround";
 import { io } from 'socket.io-client';
 
-const socket = io('https://app-api-chatter-sphere.onrender.com/');
+const socket = io(window.location.origin);
 
 const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction, extractedRenderedChatMsgs, windowWidth }) => {
   const [sideBarOpen, setSideBarOpen] = useState(false)

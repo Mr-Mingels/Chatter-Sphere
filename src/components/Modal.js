@@ -8,7 +8,7 @@ import axios from 'axios';
 import '../styles/Modal.css'
 import { io } from 'socket.io-client';
 
-const socket = io('https://app-api-chatter-sphere.onrender.com/');
+const socket = io(window.location.origin);
 
 const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModalOpen, setInformModalTxt, setInformModalColor, 
     getChatListInfo}) => {
