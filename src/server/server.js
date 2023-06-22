@@ -79,10 +79,6 @@ io.on('connection', (socket) => {
     });
 });
 
-app.get('/test', (req, res) => {
-  res.json({ message: 'Test successful' });
-});
-
 app.get('/user-info', (req, res) => {
   console.log('Root route handler triggered');
   if (req.isAuthenticated()) {

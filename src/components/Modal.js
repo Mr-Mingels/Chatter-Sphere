@@ -8,7 +8,7 @@ import axios from 'axios';
 import '../styles/Modal.css'
 import { io } from 'socket.io-client';
 
-const socket = io('https://chatter-sphere.vercel.app/');
+const socket = io('https://app-api-chatter-sphere.onrender.com/');
 
 const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModalOpen, setInformModalTxt, setInformModalColor, 
     getChatListInfo}) => {
@@ -123,7 +123,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             friend: friendUserId.value
         }
         try {
-            const response = await axios.put('https://chatter-sphere.vercel.app/send-friend-request', friendRequestObject, { withCredentials: true });
+            const response = await axios.put('/send-friend-request', friendRequestObject, { withCredentials: true });
             if (response.status === 200) {
                 if (response.data.message === "They've already sent a request. Added!") {
                     setInformModalTxt(`They've already sent a request. Added!`)
@@ -164,7 +164,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
 
     const getSentRequestUserInfo = async () => {
         try {   
-            const response = await axios.get('https://chatter-sphere.vercel.app/sent-friend-requests', { withCredentials: true });
+            const response = await axios.get('/sent-friend-requests', { withCredentials: true });
             if (response.status === 200 && response.data) {
                 setSentFriendRequests(response.data)
             }
@@ -175,7 +175,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
 
     const getRecievedRequestUserInfo = async () => {
         try {   
-            const response = await axios.get('https://chatter-sphere.vercel.app/received-friend-requests', { withCredentials: true });
+            const response = await axios.get('/received-friend-requests', { withCredentials: true });
             if (response.status === 200 && response.data) {
                 setRecievedFriendRequests(response.data)
             } else {
@@ -189,7 +189,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
 
     const acceptFriendRequest = async (requestedFriendId, requestedFriendUserName) => {
         try {
-            const response = await axios.put('https://chatter-sphere.vercel.app/accept-friend-request', { requestedFriendId }, { withCredentials: true })
+            const response = await axios.put('/accept-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
                 setInformModalTxt(`Accepted ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
@@ -203,7 +203,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
 
     const declineFriendRequest = async (requestedFriendId, requestedFriendUserName) => {
         try {
-            const response = await axios.put('https://chatter-sphere.vercel.app/decline-friend-request', { requestedFriendId }, { withCredentials: true })
+            const response = await axios.put('/decline-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
                 setInformModalTxt(`Declined ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
@@ -217,7 +217,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
 
     const unsendFriendRequest = async (requestedFriendId) => {
         try {
-            const response = await axios.put('https://chatter-sphere.vercel.app/unsend-friend-request', { requestedFriendId }, { withCredentials: true })
+            const response = await axios.put('/unsend-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
                 setInformModalTxt(`Unsent friend request!`)
                 setInformModalColor('green')
@@ -230,7 +230,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
 
     const getFriendsList = async () => {
         try {
-            const response = await axios.get('https://chatter-sphere.vercel.app/friends-list', { withCredentials: true })
+            const response = await axios.get('/friends-list', { withCredentials: true })
             if (response.status === 200 && response.data) {
                 setFriendsList(response.data)
                 setSearchedFriends(response.data)
@@ -245,7 +245,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
 
     const removeFriend = async () => {
         try {
-            const response = await axios.put('https://chatter-sphere.vercel.app/remove-friend', { addedFriendId }, { withCredentials: true })
+            const response = await axios.put('/remove-friend', { addedFriendId }, { withCredentials: true })
             if (response.status === 200) {
                 setInformModalTxt(`Removed ${addedFriendUserName.charAt(0) + addedFriendUserName.slice(1).toLowerCase()} from your friends list!`)
                 setInformModalColor('green')
@@ -283,7 +283,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         formData.append('profilePicture', selectedProfileImgFile);
         formData.append('userId', userInfo._id);
         try {
-            const response = await axios.put(`https://chatter-sphere.vercel.app/add-profile-picture`, formData, { 
+            const response = await axios.put(`/add-profile-picture`, formData, { 
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -324,7 +324,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
         formData.append('newGroupName', newGroupName.value);
         
         try {
-            const response = await axios.post(`https://chatter-sphere.vercel.app/create-group`, formData, { 
+            const response = await axios.post(`/create-group`, formData, { 
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data',

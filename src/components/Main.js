@@ -6,7 +6,7 @@ import Modal from './Modal'
 import ParticleBackGround from "./ParticleBackGround";
 import { io } from 'socket.io-client';
 
-const socket = io('https://chatter-sphere.vercel.app/');
+const socket = io('https://app-api-chatter-sphere.onrender.com/');
 
 const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfoFunction, extractedRenderedChatMsgs, windowWidth }) => {
   const [sideBarOpen, setSideBarOpen] = useState(false)
@@ -30,17 +30,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
         setIsLinkClicked(false)
       }
     }, [extractedRenderedChatMsgs])
-
-    const getTestMessage = async () => {
-      try {
-        const response = await fetch('/test', { credentials: 'include' });
-        const data = await response.json();
-        console.log(data);  // Should log: { message: 'Test successful' }
-      } catch (error) {
-        console.log(error.message)
-        console.log(error)
-      }
-    };
     
 
     const getUserInfo = async () => {
@@ -86,7 +75,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
   },[])
 
     useEffect(() => {
-      getTestMessage()
       getUserInfo()
       getChatListInfo()
     }, [])
@@ -101,7 +89,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
 
     const logOut = async () => {
       try {
-        const response = await axios.get('https://chatter-sphere.vercel.app/log-out', { withCredentials: true });
+        const response = await axios.get('/log-out', { withCredentials: true });
         if (response.status === 200) {
           navigate('/log-in')
         }
