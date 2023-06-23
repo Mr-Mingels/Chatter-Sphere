@@ -362,7 +362,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             setInformModalOpen(true)
             return;
         }
-        if (selectedGroupImgFile.type !== 'image/jpeg' || selectedGroupImgFile.type === 'image/png') {
+        if (selectedGroupImgFile.type !== 'image/jpeg' && selectedGroupImgFile.type !== 'image/png') {
             setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
             setInformModalColor('red')
             setInformModalOpen(true)

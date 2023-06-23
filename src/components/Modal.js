@@ -273,7 +273,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             setInformModalOpen(true)
             return;
         }
-        if (selectedProfileImgFile.type !== 'image/jpeg' || selectedProfileImgFile.type === 'image/png') {
+        if (selectedProfileImgFile.type !== 'image/jpeg' && selectedProfileImgFile.type !== 'image/png') {
             setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
             setInformModalColor('red')
             setInformModalOpen(true)
@@ -307,7 +307,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     
     const createGroup = async () => {
         if (selectedGroupImgFile) {
-            if (selectedGroupImgFile.type !== 'image/jpeg' || selectedGroupImgFile.type === 'image/png') {
+            if (selectedGroupImgFile.type !== 'image/jpeg' && selectedGroupImgFile.type !== 'image/png') {
                 setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
                 setInformModalColor('red')
                 setInformModalOpen(true)
