@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+### **[Chatter Sphere](https://chatter-sphere.onrender.com/)**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## **Project Introduction:**
 
-## Available Scripts
+Chatter Sphere is an efficient and powerful full-stack application that transforms the way you communicate in the digital world. The application leverages cutting-edge technology to facilitate real-time interactions across the globe, making it simpler and more engaging than ever to connect with friends or meet new people.
 
-In the project directory, you can run:
+Harnessing the power of Socket.IO, Node.js, Express, MongoDB, and React, Chatter Sphere brings you an easy-to-navigate and dynamic platform for real-time communication. Whether you're looking to catch up with an old friend, engage in group conversations, or meet new people, Chatter Sphere delivers a seamless experience with a user-friendly UI.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## **About The Project:**
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+![An image of the home screen of the Quick-Sum application](./public/images/chatterSphereDesktopScreenShot.png)
 
-### `npm test`
+Chatter Sphere is a full-stack real-time communication application, designed for an easy to understand UI and seamless experience.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+The common functionalities are:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Users can create an account, log in, and log out securely
+- Allows users to communicate in real time with each other individually or in a group setting. Messages are sent and received instantaneously thanks to Socket.IO
+- Users can search for other users, send friend requests, accept incoming friend requests, unsend sent friend requests, and remove friends from their friends list
+- Users can update their profile information, including uploading a profile picture
+- Users can create group chats, add their friends to the group, and all members of the group can chat with each other in real time. Users can also set a custom picture for the group
+- Users get notified about sending friend requests, accepting friend requests, updating their user profile, updating the users individual group, and more
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+I'm using [Socket IO](https://socket.io/) to create a real-time environment
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Credit: Socket IO
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### **Built With:**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- React.js
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Node.js
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Express js
 
-## Learn More
+- JavaScript (ES6+)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- HTML/CSS
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Socket IO
 
-### Code Splitting
+- Mongoose
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- MongoDB
 
-### Analyzing the Bundle Size
+### **Key Concepts:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Data Management and Storage
 
-### Making a Progressive Web App
+- Security and Privacy
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- Cors
 
-### Advanced Configuration
+- Axios
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Bcrypt JS
 
-### Deployment
+- Responsive Web Design
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- WebSockets
 
-### `npm run build` fails to minify
+- Component-based Architecture
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Passport JS
+
+- Real-Time Communication
