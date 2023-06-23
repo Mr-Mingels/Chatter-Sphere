@@ -416,7 +416,15 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         if (event.button === 0 || event.button === 1) {
             return
         }
-        setDeleteMsgModalPosition({ x: event.clientX, y: event.clientY });
+        let x, y;
+        if (event.type === "touchstart") {
+            x = event.touches[0].clientX;
+            y = event.touches[0].clientY;
+        } else { // For mousedown events
+            x = event.clientX;
+            y = event.clientY;
+        }
+        setDeleteMsgModalPosition({ x: x, y: y });
         if (!deleteMsgModal) {
             setDeleteMsgModal(true)
             setSelectedMsg(message)
@@ -427,6 +435,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             enableScroll()
         }
     }
+    
 
     const closeDeleteMsgModal = e => {
         if (!e.target.closest('.messageTxt') && !e.target.closest('.deleteMsgModalWrapper')) {

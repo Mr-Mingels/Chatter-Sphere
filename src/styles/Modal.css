@@ -97,7 +97,7 @@
 .groupModalFooterWrapper {
     display: flex;
     gap: 24px;
-    justify-content: end;
+    justify-content: flex-end;
 }   
 
 .groupModalBtn, .friendRequestsModalBtn, .userIdModalBtn {
