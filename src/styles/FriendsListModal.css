@@ -44,7 +44,7 @@
     border: none;
     font-size: 15px;
     width: 100%;
-    background-color: var(--background_color);
+    background-color: var(--modal_background_color);
     color: var(--text_color);
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from 'axios';
-import '../styles/SignUp.css'
+import '../styles/Auth.css'
 import logo from '../assets/logo.png'
 import logoWhite from '../assets/logoWhite.png'
 import signUpImg from '../assets/signUpImg.jpg'

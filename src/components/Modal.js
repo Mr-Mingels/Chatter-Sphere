@@ -374,6 +374,10 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                 navigate('/')
             }
           })
+
+          socket.on('friendRequestRecieved', () => {
+            getRecievedRequestUserInfo()
+          })
       
           // Clean up the event listener when the component unmounts
           return () => {
@@ -381,6 +385,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             socket.off('friendRequestDeclined');
             socket.off('friendRequestUnsend');
             socket.off('friendRemoved');
+            socket.off('friendRequestRecieved');
           };
         }
       }, [userInfo]);

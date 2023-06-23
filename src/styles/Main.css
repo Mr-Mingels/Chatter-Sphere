@@ -336,11 +336,6 @@
     position: relative;
 }
 
-.mainEmptySpace {
-    background-color: aquamarine;
-    padding: 10px;
-}
-
 @media (max-width: 500px) {
     .chatsWrapper {
         width: 100%;

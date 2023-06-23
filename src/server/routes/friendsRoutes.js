@@ -38,6 +38,8 @@ router.put('/send-friend-request', async (req, res) => {
         }
         await User.updateOne({ _id: requestedFriendUserId }, { $push: { receivedFriendRequests: userId }})
         await User.updateOne({ _id: userId }, { $push: { sentFriendRequests: requestedFriendUserId }})
+        io.to(userId).emit('friendRequestRecieved', requestedFriendUserId);
+        io.to(requestedFriendUserId).emit('friendRequestRecieved', userId);
 
         res.status(200).send({ message: 'Request Sent! '})
     } catch (err) {
@@ -98,17 +100,13 @@ router.put('/accept-friend-request', async (req, res) => {
         await User.updateOne({ _id: receivedFriendUserId }, { $push: { friends: userId } });
 
         const memberIds = [userId, receivedFriendUserId]
-        console.log('member IDS:', memberIds)
         const usersAlreadyHaveAChat = await Chat.findOne({ members: { $all: memberIds }, isGroupChat: false });
-        console.log('do users already have a chat:', usersAlreadyHaveAChat)
         if (usersAlreadyHaveAChat && !usersAlreadyHaveAChat.isGroupChat) {
             io.to(userId).emit('friendRequestAccepted', receivedFriendUserId);
             io.to(receivedFriendUserId).emit('friendRequestAccepted', userId);
-            console.log('Accepted friend request, but already have a chat')
             return res.status(200).send({ message: 'Accepted!' })
         } 
         const chat = new Chat({ members: memberIds })
-        console.log('Accepted and created chat')
         await chat.save()
         io.to(userId).emit('friendRequestAccepted', receivedFriendUserId);
         io.to(receivedFriendUserId).emit('friendRequestAccepted', userId);

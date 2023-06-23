@@ -9,6 +9,7 @@
   --text_color: black;
   --border_color: rgb(210, 210, 210);
   --modal_border_color: rgb(201, 201, 201);
+  --modal_background_color: white;
   --background_color: white;
   --background_messageTxt_color: white;
   --icon_fill_color: white;
@@ -21,6 +22,7 @@
 [data-theme="dark"] {
   --text_color: white;
   --background_color: #121212;
+  --modal_background_color: #1b1b1b;
   --border_color: black;
   --modal_border_color: black;
   --background_messageTxt_color: #424242;

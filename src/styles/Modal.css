@@ -10,7 +10,7 @@
 }
 
 .modalContent {
-    background-color: var(--background_color);
+    background-color: var(--modal_background_color);
     border-radius: 8px;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
     width: 400px;
@@ -86,7 +86,7 @@
     padding: 5px;
     font-size: 14px;
     outline: none;
-    background-color: var(--background_color);
+    background-color: var(--modal_background_color);
     color: var(--text_color);
 }
 
@@ -298,7 +298,7 @@
     border: 1px solid black;
     border-right: none;
     outline: none;
-    background-color: var(--background_color);
+    background-color: var(--modal_background_color);
     color: var(--text_color);
 }
 
@@ -353,7 +353,7 @@
 
 .userIdModalFooterWrapper {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     padding: 10px 20px 20px 20px;
 }
 
