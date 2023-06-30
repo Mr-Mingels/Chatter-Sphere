@@ -34,12 +34,17 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     const [deleteMsgModal, setDeleteMsgModal] = useState(false)
     const [selectedMsg, setSelectedMsg] = useState(null)
     const [deleteMsgModalPosition, setDeleteMsgModalPosition] = useState({ x: 0, y: 0 });
+    const [modalLoader, setModalLoader] = useState(false)
 
     const messagesEndRef = useRef(null)
     const location = useLocation()
     const navigate = useNavigate()
 
     const chatId = location.pathname.split("/")[2]
+
+    useEffect(() => {
+        chatListInfoFunction()
+    },[])
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -127,9 +132,11 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
             socket.on('memberAdded', () => {
                 // Handle the member addition, such as updating the UI or taking any necessary actions
                 chatListInfoFunction();
-                // Perform any necessary actions here
             });
-    
+
+            socket.on('memberLeftGroup', () => {
+                chatListInfoFunction();
+            });
             // Listen for the 'chatDeleted' event
             socket.on('chatDeleted', async (deletedChatId) => {
                 // Handle the chat deletion, such as updating the UI or taking any necessary actions
@@ -137,7 +144,6 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 if (deletedChatId === chatId) {
                     navigate('/')
                 }
-                // Perform any necessary actions here
               });
     
             socket.on('chatDeletedMembers', async (deletedChatId) => {
@@ -164,6 +170,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
               socket.off('groupPictureAdded');
               socket.off('profilePictureAdded');
               socket.off('messageDeleted');
+              socket.off('memberLeftGroup');
             };
         }
       }, [chatId, extractedUserInfo]);
@@ -200,27 +207,33 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
       }, [groupOptionsModal]);
 
     const deleteGroup = async (currentChatId, currentChatMembers) => {
+        setModalLoader(true)
         try {
             const response = await axios.delete('/delete-group', { data: { currentChatId, currentChatMembers } }, { withCredentials: true })
             closeSeveringModal()
         } catch (err) {
             console.log(err)
+            setModalLoader(false)
         }
     }
 
     const leaveGroup = async (currentChatId) => {
+        setModalLoader(true)
         try {
             const response = await axios.put('/leave-group', { currentChatId }, { withCredentials: true }) 
             if (response.status === 200) {
                 chatListInfoFunction()
                 navigate('/')
             }
+            setModalLoader(false)
         } catch (err) {
             console.log(err)
+            setModalLoader(false)
         }
     }
 
     const addMemberToGroup = async (addedMemberIds, currentChatInfoId) => {
+        setModalLoader(true)
         try {
             const response = await axios.put('/add-member-to-group', { addedMemberIds, currentChatInfoId }, 
             { withCredentials: true })
@@ -231,6 +244,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 closeFriendListModal()
                 chatListInfoFunction()
             }
+            setModalLoader(false)
         } catch (err) {
             console.log(err)
             if (err.response.data.message === "Select member(s) to add") {
@@ -242,6 +256,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 setInformModalColor('red')
                 setInformModalOpen(true)
             }
+            setModalLoader(false)
         }
     }
 
@@ -276,6 +291,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         setFriendsListModal(false)
         setAddMemberOption(false)
         setFriendsList(false)
+        setModalLoader(false)
     }
 
     const openSeveringModal = (friendId, friendUserName, option) => {
@@ -291,6 +307,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         setSeveringModal(false)
         setSeveringModalOption('')
         setSelectedMsg(null)
+        setModalLoader(false)
     }
 
     const openAddPictureModal = () => {
@@ -307,9 +324,11 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
         setAddGroupPictureModalTransition(false)
         setGroupImgModalOption(false)
         setSelectedGroupImgFile(null)
+        setModalLoader(false)
     }
 
     const removeFriend = async () => {
+        setModalLoader(true)
         try {
             const response = await axios.put('/remove-friend', { addedFriendId }, { withCredentials: true })
             if (response.status === 200) {
@@ -318,8 +337,10 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 setInformModalOpen(true)
                 closeSeveringModal()
             }
+            setModalLoader(false)
         } catch (err) {
             console.log(err)
+            setModalLoader(false)
         }
     }
 
@@ -356,16 +377,19 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
     };
 
     const addGroupImg = async () => {
+        setModalLoader(true)
         if (!selectedGroupImgFile) {
             setInformModalTxt('Select an Image!')
             setInformModalColor('red')
             setInformModalOpen(true)
+            setModalLoader(false)
             return;
         }
         if (selectedGroupImgFile.type !== 'image/jpeg' && selectedGroupImgFile.type !== 'image/png') {
             setInformModalTxt('Invalid file type, only JPEG and PNG is allowed!')
             setInformModalColor('red')
             setInformModalOpen(true)
+            setModalLoader(false)
             return;
         }
         const formData = new FormData(); 
@@ -384,8 +408,10 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 setInformModalOpen(true)
                 closeAddPictureModal()
             }
+            setModalLoader(false)
         } catch (err) {
             console.log(err)
+            setModalLoader(false)
         }
     }
 
@@ -478,7 +504,7 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                     <div className={`messagesModalContent ${(friendsListModal ? friendsList : true) && friendsListModal ? 'open' : ''}`}>
                         <FriendsListModal searchedFriends={searchedFriends} handleFriendsListSearch={handleFriendsListSearch}
                         closeFriendListModal={closeFriendListModal} addMemberOption={addMemberOption} addMemberToGroup={addMemberToGroup}
-                        currentChatInfo={currentChatInfo} chatListInfoFunction={chatListInfoFunction}/>
+                        currentChatInfo={currentChatInfo} chatListInfoFunction={chatListInfoFunction} modalLoader={modalLoader}/>
                     </div>
                     )}
                 </div>  
@@ -487,14 +513,15 @@ const Messages = ({ extractedUserInfo, extractedChatsListInfo, chatListInfoFunct
                 <div className={`messagesFullPageWrapper ${severingModal ? 'open' : ''}`}>
                     <RemoveFriendModal removeFriend={removeFriend} closeSeveringModal={closeSeveringModal} 
                     severingModalOption={severingModalOption} currentChatInfo={currentChatInfo} deleteGroup={deleteGroup}
-                    leaveGroup={leaveGroup} selectedMsg={selectedMsg} deleteMsg={deleteMsg}/>
+                    leaveGroup={leaveGroup} selectedMsg={selectedMsg} deleteMsg={deleteMsg} modalLoader={modalLoader}/>
                 </div>
             )}
             {addGroupPictureModal && (
                 <div className={`messagesFullPageWrapper ${addGroupPictureModalTransition ? 'open' : ''}`}>
                     <div className={`messagesModalContent ${addGroupPictureModalTransition ? 'open' : ''}`}>
                         <AddPictureModal selectedGroupImgFile={selectedGroupImgFile} handleGroupImgFileChange={handleGroupImgFileChange}
-                        closeAddPictureModal={closeAddPictureModal} addGroupImg={addGroupImg} groupImgModalOption={groupImgModalOption}/>
+                        closeAddPictureModal={closeAddPictureModal} addGroupImg={addGroupImg} groupImgModalOption={groupImgModalOption}
+                        modalLoader={modalLoader}/>
                     </div>
                 </div>
             )}

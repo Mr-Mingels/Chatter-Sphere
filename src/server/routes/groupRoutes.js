@@ -108,6 +108,7 @@ router.put('/leave-group', async (req, res) => {
         // Emit the new message to all connected clients in the same room
         await newMessage.populate('sender', 'username profilePicture')
         io.to(chatId).emit('messageReceived', newMessage);
+        io.to(chatId).emit('memberLeftGroup');
         res.status(200).send({ message: 'Left Group!' })
     } catch (err) {
         console.log(err);
@@ -141,7 +142,7 @@ router.put('/add-member-to-group', async (req, res) => {
           io.to(chatId).emit('messageReceived', newMessage);
         }
 
-        io.to(memberIds).emit('memberAdded', chatId);
+        io.to(memberIds).emit('memberAdded');
   
         res.status(200).send({ message: 'Added member(s) to group!' });
       } else {

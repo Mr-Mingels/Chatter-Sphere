@@ -144,13 +144,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
         getChatListInfo();
       })
 
-      // Listen for the 'memberAdded' event
-      socket.on('memberAdded', () => {
-        // Handle the member addition, such as updating the UI or taking any necessary actions
-        getChatListInfo();
-        // Perform any necessary actions here
-      });
-
       socket.on('chatDeleted', (deletedChatId) => {
         // Handle the chat deletion, such as updating the UI or taking any necessary actions
         getChatListInfo()
@@ -172,7 +165,6 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
       return () => {
         socket.off('friendRequestAccepted');
         socket.off('friendRemoved');
-        socket.off('memberAdded');
         socket.off('chatDeleted');
         socket.off('chatDeletedMembers');
         socket.off('groupPictureAdded');

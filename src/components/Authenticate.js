@@ -15,6 +15,7 @@ const Authenticate = ({ windowWidth }) => {
     const [redUserNamePlaceHolder, setRedUserNamePlaceHolder] = useState(false)
     const [redEmailPlaceHolder, setRedEmailPlaceHolder] = useState(false)
     const [redPasswordPlaceholder, setRedPasswordPlaceholder] = useState(false)
+    const [loader, setLoader] = useState(false)
     const [email, setEmail] = useState({
         value: '',
         placeholder: 'Enter your email'
@@ -41,6 +42,7 @@ const Authenticate = ({ windowWidth }) => {
     },[location])
 
     const handleFormSubmit = async (event) => {
+        setLoader(true)
         event.preventDefault();
         if (userName.value === '') {
             setRedUserNamePlaceHolder(true)
@@ -55,6 +57,7 @@ const Authenticate = ({ windowWidth }) => {
             setPassword({ ...password, placeholder: 'Please Fill Out This Field' })
         }
         if (password.value === '' || email.value === '' || userName.value === '') {
+            setLoader(false)
             return;
         }
 
@@ -65,10 +68,9 @@ const Authenticate = ({ windowWidth }) => {
         }
 
         try {
-            const url = '/';
             const path = authConfig ? 'sign-up-page' : 'log-in-page';
 
-            const response = await axios.post(url + path, user, { withCredentials: true });
+            const response = await axios.post(`/${path}`, user, { withCredentials: true });
             if (authConfig && response.status === 200) {
                 navigate('/log-in')
                 setEmail({ ...email, value: ''})
@@ -77,6 +79,7 @@ const Authenticate = ({ windowWidth }) => {
             } else if (!authConfig && response.status === 200) {
                 navigate('/')
             }
+            setLoader(false)
         } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -113,6 +116,7 @@ const Authenticate = ({ windowWidth }) => {
                 // Something happened in setting up the request that triggered an Error
                 console.error('Error', error.message);
             }
+            setLoader(false)
         }
     }
     
@@ -172,7 +176,11 @@ const Authenticate = ({ windowWidth }) => {
                                 <input type="password" name="password" placeholder={password.placeholder} 
                                 className={`authFormPassWordInput ${redPasswordPlaceholder ? 'field' : ''}`} 
                                 onChange={(e) => setPassword({ ...password, value: e.target.value })} value={password.value}/>
-                                <button type="submit" className="authConfirmBtn">{authConfig ? 'Sign Up' : 'Log In'}</button>
+                                {loader ? (
+                                    <button className="authConfirmBtn authLoader"><span class="modalLoader"></span></button>
+                                ) : (
+                                    <button type="submit" className="authConfirmBtn">{authConfig ? 'Sign Up' : 'Log In'}</button>
+                                )}  
                             </form>
                             <small className="authFormQuestion">{authConfig ? 'Already have an account?' : `Don't have an account?`} <Link 
                             className="authFormRedirectLink" to={authConfig ? '/log-in' : `/sign-up`} onMouseDown={(e) => e.preventDefault()}>

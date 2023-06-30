@@ -1,6 +1,6 @@
 import '../styles/AddFriendModal.css'
 
-const AddFriendModal = ({ closeModal, setFriendUserId, friendUserId, redAddFriendPlaceHolder, sendFriendRequest }) => {
+const AddFriendModal = ({ closeModal, setFriendUserId, friendUserId, redAddFriendPlaceHolder, sendFriendRequest, loader }) => {
     return (
         <div className="addFriendModalContent">
                 <div className="addFriendModalHeaderWrapper">
@@ -15,7 +15,11 @@ const AddFriendModal = ({ closeModal, setFriendUserId, friendUserId, redAddFrien
                     </div>
                 <div className="addFriendModalFooterWrapper">
                     <button className="addFriendModalBtn" onClick={() => closeModal()}>Close</button>
-                    <button className="addFriendModalBtn" onClick={() => sendFriendRequest()}>Send</button>
+                    {loader ? (
+                        <div className="modalLoaderWrapper"><span class="modalLoader"></span></div>
+                    ) : (
+                        <button className="addFriendModalBtn" onClick={() => sendFriendRequest()}>Send</button>
+                    )}
                 </div>
             </div>
         </div>

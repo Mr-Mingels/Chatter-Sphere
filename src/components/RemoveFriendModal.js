@@ -1,7 +1,7 @@
 import '../styles/RemoveFriendModal.css'
 
 const RemoveFriendModal = ({ closeModal, removeFriend, closeSeveringModal, severingModalOption, currentChatInfo, deleteGroup, leaveGroup, 
-    selectedMsg, deleteMsg }) => {
+    selectedMsg, deleteMsg, modalLoader, loader }) => {
     let modalText = '';
     if (severingModalOption === 'deleteGroup') {
         modalText = 'delete this group?';
@@ -22,12 +22,16 @@ const RemoveFriendModal = ({ closeModal, removeFriend, closeSeveringModal, sever
                 <div className="removeFriendModalFooterWrapper">
                     <button className="removeFriendModalBtn" onClick={(severingModalOption || selectedMsg) ? () => closeSeveringModal() : 
                         () => closeModal()}>Close</button>
-                    <button className="removeFriendModalBtn red" onClick={severingModalOption === 'deleteGroup' ? 
-                    () => deleteGroup(currentChatInfo._id.toString(), currentChatInfo.members) : 
-                    (severingModalOption === 'leaveGroup' ? () => leaveGroup(currentChatInfo._id.toString()) : 
-                    (selectedMsg ? () => deleteMsg() : () => removeFriend()))}>
-                        {(severingModalOption === 'deleteGroup' || selectedMsg) ? 'Delete' : 
-                    (severingModalOption === 'leaveGroup' ? 'Leave' : 'Remove')}</button>
+                    {modalLoader || loader ? (
+                        <div className="modalLoaderWrapper red"><span class="modalLoader"></span></div>
+                    ) : (
+                        <button className="removeFriendModalBtn red" onClick={severingModalOption === 'deleteGroup' ? 
+                        () => deleteGroup(currentChatInfo._id.toString(), currentChatInfo.members) : 
+                        (severingModalOption === 'leaveGroup' ? () => leaveGroup(currentChatInfo._id.toString()) : 
+                        (selectedMsg ? () => deleteMsg() : () => removeFriend()))}>
+                            {(severingModalOption === 'deleteGroup' || selectedMsg) ? 'Delete' : 
+                        (severingModalOption === 'leaveGroup' ? 'Leave' : 'Remove')}</button>
+                    )}
                 </div>
             </div>
         </div>

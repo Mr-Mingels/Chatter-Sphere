@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import '../styles/AddPictureModal.css'
 
 const AddPictureModal = ({ selectedProfileImgFile, handleProfileImgFileChange, closeModal, addProfileImg, closeAddPictureModal, 
-    selectedGroupImgFile, addGroupImg, handleGroupImgFileChange, groupImgModalOption}) => {
+    selectedGroupImgFile, addGroupImg, handleGroupImgFileChange, groupImgModalOption, loader, modalLoader}) => {
         const [selectedImgFile, setSelectedImgFile] = useState(null)
 
         useEffect(() => {
@@ -36,7 +36,11 @@ const AddPictureModal = ({ selectedProfileImgFile, handleProfileImgFileChange, c
             <div className="profilePicModalFooterWrapper">
                  <button className="profilePicModalBtn" onClick={groupImgModalOption ? () => closeAddPictureModal() : 
                     () => closeModal()}>Cancel</button>
-                 <button className="profilePicModalBtn" onClick={groupImgModalOption ? () => addGroupImg() : () => addProfileImg()}>Add</button>
+                 {loader || modalLoader ? (
+                        <div className="modalLoaderWrapper"><span class="modalLoader"></span></div>
+                 ) : (
+                    <button className="profilePicModalBtn" onClick={groupImgModalOption ? () => addGroupImg() : () => addProfileImg()}>Add</button>
+                 )}
             </div>
         </div>
     )

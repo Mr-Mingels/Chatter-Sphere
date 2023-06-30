@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import '../styles/FriendsListModal.css'
 
 const FriendsListModal = ({ openAddFriendModal, openRemoveFriendModal, closeModal, searchedFriends, handleFriendsListSearch, 
-    closeFriendListModal, addMemberOption, addMemberToGroup, currentChatInfo }) => {
+    closeFriendListModal, addMemberOption, addMemberToGroup, currentChatInfo, modalLoader}) => {
 
     const [addedMember, setAddedMember] = useState([])
 
@@ -51,8 +51,13 @@ const FriendsListModal = ({ openAddFriendModal, openRemoveFriendModal, closeModa
                 <div className="friendModalFooterWrapper">
                     <button className="friendModalBtn" onClick={addMemberOption ? () => closeFriendListModal() : () => closeModal()}>
                         Close</button>
-                    <button className="friendModalBtn" onClick={addMemberOption ? () => addMemberToGroup(addedMember, currentChatInfo._id) : 
-                        () => openAddFriendModal()}> {addMemberOption ? 'Add to Group' : 'Add a Friend'}</button>
+                    {modalLoader ? (
+                        <div className="modalLoaderWrapper"><span class="modalLoader"></span></div>
+                    ) : (
+                        <button className="friendModalBtn" onClick={addMemberOption ? () => addMemberToGroup(addedMember, currentChatInfo._id) : 
+                            () => openAddFriendModal()}> {addMemberOption ? 'Add to Group' : 'Add a Friend'}
+                        </button>
+                    )}
                 </div>
             </div>
         </>

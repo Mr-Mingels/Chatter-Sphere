@@ -117,11 +117,18 @@
     padding: 16px;
     margin-top: 22px;
     background-color: #222222;
+    height: 48px;
     cursor: pointer;
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
+}
+
+.authConfirmBtn.authLoader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .authFormQuestion {
