@@ -20,10 +20,10 @@ const RemoveFriendModal = ({ closeModal, removeFriend, closeSeveringModal, sever
                     <p className="removeFriendModalTxt">Are you sure you want to {modalText}</p>
                 </div>
                 <div className="removeFriendModalFooterWrapper">
-                    <button className="removeFriendModalBtn" onClick={(severingModalOption || selectedMsg) ? () => closeSeveringModal() : 
+                    <button className="removeFriendModalBtn closeBtn" onClick={(severingModalOption || selectedMsg) ? () => closeSeveringModal() : 
                         () => closeModal()}>Close</button>
                     {modalLoader || loader ? (
-                        <button className="removeFriendModalBtn red"><span class="modalLoader"></span></button>
+                        <button className="removeFriendModalBtn removeFriendLoader"><span class="modalLoader"></span></button>
                     ) : (
                         <button className="removeFriendModalBtn red" onClick={severingModalOption === 'deleteGroup' ? 
                         () => deleteGroup(currentChatInfo._id.toString(), currentChatInfo.members) : 

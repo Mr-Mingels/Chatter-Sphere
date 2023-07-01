@@ -10,6 +10,10 @@
     user-select: none;
     color: var(--text_color);
     min-width: 112.8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 32px;
 }
 
 .friendModalBtn.addMemberLoader {
