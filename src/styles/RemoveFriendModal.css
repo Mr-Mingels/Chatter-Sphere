@@ -39,6 +39,10 @@
     user-select: none;
     color: var(--text_color);
     min-width: 76px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 32px;
 }
 
 .removeFriendModalBtn.red {

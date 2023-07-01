@@ -60,6 +60,14 @@
     user-select: none;
     color: var(--text_color);
     min-width: 54.4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 32px;
+}
+
+.addFriendModalBtn.closeBtn {
+    width: fit-content;
 }
 
 .addFriendModalBtn:hover {

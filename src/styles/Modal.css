@@ -115,6 +115,10 @@
 
 .groupModalBtn {
     min-width: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 32px;
 }
 
 .groupModalBtn:hover, .friendRequestsModalBtn:hover, .userIdModalBtn:hover {
@@ -244,7 +248,11 @@
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
     transition: all 0.2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-width: 67.2px;
+    min-height: 27.2px;
 }
 
 .friendRequestsModalDeclineBtn.declineLoader {

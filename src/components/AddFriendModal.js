@@ -14,7 +14,7 @@ const AddFriendModal = ({ closeModal, setFriendUserId, friendUserId, redAddFrien
                         placeholder={friendUserId.placeholder} />   
                     </div>
                 <div className="addFriendModalFooterWrapper">
-                    <button className="addFriendModalBtn" onClick={() => closeModal()}>Close</button>
+                    <button className="addFriendModalBtn closeBtn" onClick={() => closeModal()}>Close</button>
                     {loader ? (
                         <button className="addFriendModalBtn"><span class="modalLoader"></span></button>
                     ) : (
