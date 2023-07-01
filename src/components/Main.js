@@ -300,7 +300,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                         {windowWidth <= 500 && (
                           <button className="sideBarCloseBtn" onClick={() => handleCloseSideBar ()}>Close</button>
                         )}
-                        {loader ? (
+                        {logOutLoader ? (
                           <button className="sideBarLogOutBtn logOutLoader"><span class="modalLoader"></span></button>
                         ) : (
                           <button className="sideBarLogOutBtn" onClick={() => logOut()}>Log Out</button>
