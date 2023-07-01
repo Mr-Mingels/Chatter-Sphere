@@ -113,6 +113,10 @@
     color: var(--text_color);
 }
 
+.groupModalBtn {
+    min-width: 65px;
+}
+
 .groupModalBtn:hover, .friendRequestsModalBtn:hover, .userIdModalBtn:hover {
     background-color: black;
     color: white;
@@ -240,6 +244,15 @@
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
     transition: all 0.2s ease-in-out;
+    min-width: 67.2px;
+}
+
+.friendRequestsModalDeclineBtn.declineLoader {
+    background-color: rgb(255, 100, 100);
+}
+
+.friendRequestsModalUnsendBtn.unsendLoader {
+    background-color: rgb(255, 100, 100);
 }
 
 .friendRequestsModalUnsendBtn:hover, .friendRequestsModalDeclineBtn:hover {
@@ -250,6 +263,11 @@
 .friendRequestsModalAcceptBtn {
     border: 2px solid rgb(34, 204, 0);
     color: rgb(34, 204, 0);
+    min-width: 64px;
+}
+
+.friendRequestsModalAcceptBtn.acceptLoader {
+    background-color: rgb(34, 204, 0);
 }
 
 .friendRequestsModalAcceptBtn:hover {

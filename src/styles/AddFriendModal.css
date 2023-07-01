@@ -59,6 +59,7 @@
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none;
     color: var(--text_color);
+    min-width: 54.4px;
 }
 
 .addFriendModalBtn:hover {

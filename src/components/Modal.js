@@ -34,6 +34,9 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     const [friendsList, setFriendsList] = useState()
     const [redGroupNamePlaceHolder, setRedGroupNamePlaceHolder] = useState(false)
     const [loader, setLoader] = useState(false)
+    const [acceptFriendRequestLoader, setAcceptFriendRequestLoader] = useState(false)
+    const [declineFriendRequestLoader, setDeclineFriendRequestLoader] = useState(false)
+    const [unsendFriendRequestLoader, setUnsendFriendRequestLoader] = useState(false)
     const [newGroupName, setNewGroupName] = useState({
         value: '',
         placeholder: 'Group name'
@@ -194,43 +197,57 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
     }
 
     const acceptFriendRequest = async (requestedFriendId, requestedFriendUserName) => {
+        if (declineFriendRequestLoader) return
+        setAcceptFriendRequestLoader(true)
         try {
             const response = await axios.put('/accept-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
+                await getRecievedRequestUserInfo()
                 setInformModalTxt(`Accepted ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
             }
+            setAcceptFriendRequestLoader(false)
         } catch (err) {
             console.log(err)
+            setAcceptFriendRequestLoader(false)
         }
     }
 
     const declineFriendRequest = async (requestedFriendId, requestedFriendUserName) => {
+        if (acceptFriendRequestLoader) return
+        setDeclineFriendRequestLoader(true)
         try {
             const response = await axios.put('/decline-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
+                await getRecievedRequestUserInfo()
                 setInformModalTxt(`Declined ${requestedFriendUserName.charAt(0) + requestedFriendUserName.slice(1).toLowerCase()}'s 
                 friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
             }
+            setDeclineFriendRequestLoader(false)
         } catch (err) {
             console.log(err)
+            setDeclineFriendRequestLoader(false)
         }
     }
 
     const unsendFriendRequest = async (requestedFriendId) => {
+        setUnsendFriendRequestLoader(true)
         try {
             const response = await axios.put('/unsend-friend-request', { requestedFriendId }, { withCredentials: true })
             if (response.status === 200) {
+                await getSentRequestUserInfo()
                 setInformModalTxt(`Unsent friend request!`)
                 setInformModalColor('green')
                 setInformModalOpen(true)
             }
+            setUnsendFriendRequestLoader(false)
         } catch (err) {
             console.log(err)
+            setUnsendFriendRequestLoader(false)
         }
     }
 
@@ -371,18 +388,15 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
             // Handle the friend request acceptance, such as updating the friend-related lists
             // Perform any necessary actions here
             getSentRequestUserInfo()
-            getRecievedRequestUserInfo()
             getFriendsList()
             getChatListInfo();
           });
 
           socket.on('friendRequestDeclined', (friendUserId) => {
             getSentRequestUserInfo()
-            getRecievedRequestUserInfo()
           })
 
           socket.on('friendRequestUnsend', (friendUserId) => {
-            getSentRequestUserInfo()
             getRecievedRequestUserInfo()
           })
 
@@ -444,7 +458,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                             <div className="groupModalFooterWrapper">
                                 <button className="groupModalBtn" onClick={() => closeModal()}>Cancel</button>
                                 {loader ? (
-                                    <div className="modalLoaderWrapper"><span class="modalLoader"></span></div>
+                                    <button className="groupModalBtn"><span class="modalLoader"></span></button>
                                 ) : (
                                     <button className="groupModalBtn" onClick={() => createGroup()}>Create</button>
                                 )}
@@ -472,8 +486,14 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                                     <span className="friendRequestsModalUserName">
                                         {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
                                     </span>
-                                    <button className="friendRequestsModalUnsendBtn" 
-                                    onClick={() => unsendFriendRequest(user._id.toString())}>Unsend</button>
+                                    {unsendFriendRequestLoader ? (
+                                        <button className="friendRequestsModalUnsendBtn unsendLoader">
+                                            <span class="modalLoader"></span>
+                                        </button>
+                                    ) : (
+                                        <button className="friendRequestsModalUnsendBtn" 
+                                        onClick={() => unsendFriendRequest(user._id.toString())}>Unsend</button>
+                                    )}
                                 </div>
                             ))}
                             {(recievedFriendRequests && viewRecievedFriendRequests) && recievedFriendRequests.map((user, index) => (
@@ -485,10 +505,22 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                                         {user.username.charAt(0) + user.username.slice(1).toLowerCase()}
                                     </span>
                                     <div className="friendRequestsModalBtnWrapper">
+                                    {acceptFriendRequestLoader ? (
+                                        <button className="friendRequestsModalAcceptBtn acceptLoader">
+                                            <span class="modalLoader"></span>
+                                        </button>
+                                    ) : (
                                         <button className="friendRequestsModalAcceptBtn" 
                                         onClick={() => acceptFriendRequest(user._id.toString(), user.username)}>Accept</button>
+                                    )}
+                                    {declineFriendRequestLoader ? (
+                                        <button className="friendRequestsModalDeclineBtn declineLoader">
+                                            <span class="modalLoader"></span>
+                                        </button>
+                                    ) : (
                                         <button className="friendRequestsModalDeclineBtn" 
                                         onClick={() => declineFriendRequest(user._id.toString(), user.username)}>Decline</button>
+                                    )}
                                     </div>
                                 </div>
                             ))}

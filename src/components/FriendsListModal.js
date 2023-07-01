@@ -52,7 +52,7 @@ const FriendsListModal = ({ openAddFriendModal, openRemoveFriendModal, closeModa
                     <button className="friendModalBtn" onClick={addMemberOption ? () => closeFriendListModal() : () => closeModal()}>
                         Close</button>
                     {modalLoader ? (
-                        <div className="modalLoaderWrapper"><span class="modalLoader"></span></div>
+                        <button className="friendModalBtn"><span class="modalLoader"></span></button>
                     ) : (
                         <button className="friendModalBtn" onClick={addMemberOption ? () => addMemberToGroup(addedMember, currentChatInfo._id) : 
                             () => openAddFriendModal()}> {addMemberOption ? 'Add to Group' : 'Add a Friend'}
