@@ -66,7 +66,12 @@
     min-height: 32px;
 }
 
+.addFriendModalBtn.addFriendLoader {
+    background-color: black;
+}
+
 .addFriendModalBtn.closeBtn {
+    min-width: unset;
     width: fit-content;
 }
 

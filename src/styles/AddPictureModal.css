@@ -76,6 +76,10 @@
     min-height: 32px;
 }
 
+.profilePicModalBtn.picLoader {
+    background-color: black;
+}
+
 .profilePicModalBtn:hover {
     background-color: black;
     color: white;

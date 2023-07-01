@@ -121,6 +121,10 @@
     min-height: 32px;
 }
 
+.groupModalBtn.groupLoader {
+    background-color: black;
+}
+
 .groupModalBtn:hover, .friendRequestsModalBtn:hover, .userIdModalBtn:hover {
     background-color: black;
     color: white;

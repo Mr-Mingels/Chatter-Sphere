@@ -37,7 +37,7 @@ const AddPictureModal = ({ selectedProfileImgFile, handleProfileImgFileChange, c
                  <button className="profilePicModalBtn" onClick={groupImgModalOption ? () => closeAddPictureModal() : 
                     () => closeModal()}>Cancel</button>
                  {loader || modalLoader ? (
-                        <button className="profilePicModalBtn"><span class="modalLoader"></span></button>
+                        <button className="profilePicModalBtn picLoader"><span class="modalLoader"></span></button>
                  ) : (
                     <button className="profilePicModalBtn" onClick={groupImgModalOption ? () => addGroupImg() : () => addProfileImg()}>Add</button>
                  )}

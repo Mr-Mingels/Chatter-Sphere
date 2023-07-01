@@ -458,7 +458,7 @@ const Modal = ({ modalConfig, userInfo, setModalOpen, getUserInfo, setInformModa
                             <div className="groupModalFooterWrapper">
                                 <button className="groupModalBtn" onClick={() => closeModal()}>Cancel</button>
                                 {loader ? (
-                                    <button className="groupModalBtn"><span class="modalLoader"></span></button>
+                                    <button className="groupModalBtn groupLoader"><span class="modalLoader"></span></button>
                                 ) : (
                                     <button className="groupModalBtn" onClick={() => createGroup()}>Create</button>
                                 )}

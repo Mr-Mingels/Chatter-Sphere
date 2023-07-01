@@ -12,6 +12,15 @@
     min-width: 112.8px;
 }
 
+.friendModalBtn.addMemberLoader {
+    background-color: black;
+}
+
+.friendModalBtn.closeBtn {
+    min-width: unset;
+    width: fit-content;
+}
+
 .friendModalHeaderWrapper {
     display: flex;
     border-bottom: 1px solid var(--modal_border_color);

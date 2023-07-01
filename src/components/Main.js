@@ -20,6 +20,7 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
   const [searchedChatsListInfo, setsearchedChatsListInfo] = useState([])
   const [isLinkClicked, setIsLinkClicked] = useState(false);
   const [nightMode, setNightMode] = useState(false)
+  const [logOutLoader, setLogOutLoader] = useState(false)
 
 
     const navigate = useNavigate();
@@ -86,13 +87,16 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
     },[chatsListInfo])
 
     const logOut = async () => {
+      setLogOutLoader(true)
       try {
         const response = await axios.get('/log-out', { withCredentials: true });
         if (response.status === 200) {
           navigate('/log-in')
         }
+        setLogOutLoader(false)
       } catch (err) {
         console.log(err)
+        setLogOutLoader(false)
       }
     }
 
@@ -296,7 +300,11 @@ const Main = ({ setExtractedUserInfo, setExtractedChatsListInfo, getChatListInfo
                         {windowWidth <= 500 && (
                           <button className="sideBarCloseBtn" onClick={() => handleCloseSideBar ()}>Close</button>
                         )}
-                        <button className="sideBarLogOutBtn" onClick={() => logOut()}>Log Out</button>
+                        {loader ? (
+                          <button className="sideBarLogOutBtn logOutLoader"><span class="modalLoader"></span></button>
+                        ) : (
+                          <button className="sideBarLogOutBtn" onClick={() => logOut()}>Log Out</button>
+                        )}
                       </div>
                     </div>
                 </div>
