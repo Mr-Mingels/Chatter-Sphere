@@ -61,6 +61,15 @@
     margin-bottom: 50px;
 }
 
+.demoAccountTxt {
+    color: rgb(0, 40, 40);
+    cursor: pointer;
+    font-size: 13.3333px;
+    text-align: center;
+    margin-bottom: 8px;
+    text-decoration: underline;
+}
+
 .authFormWrapper {
     display: flex;
     flex-direction: column;

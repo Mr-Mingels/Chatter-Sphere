@@ -129,30 +129,46 @@ const Authenticate = ({ windowWidth }) => {
         }
     }
     
-      useEffect(() => {
+    useEffect(() => {
         if(userName.value !== '') {
             setRedUserNamePlaceHolder(false)
             setUserName({ ...userName, placeholder: 'Enter your username' })
         }
-      },[userName.value])
+    },[userName.value])
       
-      useEffect(() => {
+    useEffect(() => {
         if (email.value !== '') {
             setRedEmailPlaceHolder(false)
             setEmail({ ...email, placeholder: 'Enter your email' })
         }
-      }, [email.value])
+    }, [email.value])
     
-      useEffect(() => {
+    useEffect(() => {
         if (password.value !== '') {
             setRedPasswordPlaceholder(false)
             setPassword({ ...password, placeholder: 'Enter your password' })
         }
-      }, [password.value])
+    }, [password.value])
 
-      const handleImageLoad = () => {
+    const handleImageLoad = () => {
         setImgLoaded(true)
-      }
+    }
+
+    const demoAccountLogIn = async () => {
+        const user = {
+            email: 'DEMOACCOUNT@GMAIL.COM',
+            username: 'DEMOACCOUNT',
+            password: '1234'
+        }
+        try {
+            const response = await axios.post(`/signin`, user, { withCredentials: true });
+            if (response.status === 200) {
+                navigate('/')
+            }
+        } catch (err) {
+            console.log(err)    
+        }
+    }
 
     return (
         <section className="authWrapper">
@@ -171,6 +187,7 @@ const Authenticate = ({ windowWidth }) => {
                     </div>
                     <div className="authLeftSideContentWrapper">
                         <h1 className="authCreateAccountTitle">{authConfig ? 'Create your account' : 'Log into your account'}</h1>
+                        <span className="demoAccountTxt" onClick={() => demoAccountLogIn()}>Use Demo Account</span>
                         <div className="authFormWrapper">
                             <form method="POST" className="authForm" onSubmit={handleFormSubmit}>
                                 <label className="authLabel">Email<span className="authRequireTag">*</span></label>
