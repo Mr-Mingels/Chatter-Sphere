@@ -161,7 +161,7 @@ const Authenticate = ({ windowWidth }) => {
             password: '1234'
         }
         try {
-            const response = await axios.post(`/signin`, user, { withCredentials: true });
+            const response = await axios.post(`/log-in-page`, user, { withCredentials: true });
             if (response.status === 200) {
                 navigate('/')
             }
