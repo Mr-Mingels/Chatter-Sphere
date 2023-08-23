@@ -4,9 +4,12 @@
     border: none;
     border-radius: 4px;
     padding: 8px 10px;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
     color: var(--text_color);
     min-width: 112.8px;
@@ -62,7 +65,7 @@
     color: var(--text_color);
 }
 
-.friendModalBtn:hover{
+.friendModalBtn:hover {
     background-color: black;
     color: white;
 }
@@ -118,7 +121,8 @@
     background-color: var(--chatWrapper_notInChat_hover_background_color);
 }
 
-.friendModalDefaultProfileImgWrapper, .friendModalProfileImg {
+.friendModalDefaultProfileImgWrapper,
+.friendModalProfileImg {
     min-width: 45px;
     min-height: 45px;
     max-width: 45px;
@@ -129,9 +133,12 @@
     color: white;
     background-color: black;
     border-radius: 50%;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
     object-fit: cover;
 }
@@ -155,9 +162,12 @@
     border-radius: 8px;
     padding: 4px 6px;
     cursor: pointer;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
     transition: all 0.2s ease-in-out;
 }
@@ -165,6 +175,73 @@
 .friendModalRemoveBtn:hover {
     background-color: rgb(255, 100, 100);
     color: white;
+}
+
+.friendsListModalLoaderWrapper {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 10px;
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.friendsListModalLoader {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    position: relative;
+    animation: modalLoader-rotate 1s linear infinite;
+    color: red;
+}
+
+.friendsListModalLoader::before {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    border: 4px solid #000000;
+    animation: prixClipFix 2s linear infinite;
+}
+
+@keyframes prixClipFix {
+    0% {
+        clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+    }
+
+    25% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+    }
+
+    50% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+    }
+
+    75% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+    }
+
+    100% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+    }
+}
+
+@keyframes modalLoader-rotate {
+    100% {
+        transform: rotate(360deg)
+    }
 }
 
 @media (max-width: 500px) {

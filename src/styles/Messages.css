@@ -39,24 +39,15 @@
 
 .messagesFullPageWrapper {
     position: fixed;
-    z-index: -1;
+    z-index: 100;
     top: 0;
     left: 0;
     min-height: 100vh;
     width: 100vw;
-    background-color: transparent;
-    opacity: 1;
-    pointer-events: none;
-    transition: 0.5s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.messagesFullPageWrapper.open {
-    background-color: rgba(0, 0, 0, 0.5);
-    opacity: 1;
-    z-index: 100;
     pointer-events: auto;
 }
 
@@ -65,12 +56,6 @@
     border-radius: 8px;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
     width: 400px;
-    opacity: 0;
-    transition: all 0.5s ease-in-out;
-}
-
-.messagesModalContent.open {
-    opacity: 1;
 }
 
 .messagesHeaderWrapper {

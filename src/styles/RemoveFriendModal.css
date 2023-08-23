@@ -64,6 +64,12 @@
     color: white;
 }
 
+.removeFriendModalBtn.removeFriendLoader:hover {
+    color: rgb(255, 100, 100);
+    background-color: rgb(255, 100, 100);
+    color: white;
+}
+
 .removeFriendModalBtn:hover {
     background-color: black;
     color: white;

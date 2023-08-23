@@ -15,7 +15,6 @@
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
     width: 400px;
     opacity: 0;
-    transition: all 0.5s ease-in-out;
 }
 
 .modalContent.render {
@@ -53,7 +52,8 @@
     justify-content: space-around;
 }
 
-.defaultGroupModalImgWrapper, .groupModalImg {
+.defaultGroupModalImgWrapper,
+.groupModalImg {
     max-height: 80px;
     max-width: 80px;
     min-height: 80px;
@@ -98,17 +98,22 @@
     display: flex;
     gap: 24px;
     justify-content: flex-end;
-}   
+}
 
-.groupModalBtn, .friendRequestsModalBtn, .userIdModalBtn {
+.groupModalBtn,
+.friendRequestsModalBtn,
+.userIdModalBtn {
     cursor: pointer;
     background-color: transparent;
     border: none;
     border-radius: 4px;
     padding: 8px 10px;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
     color: var(--text_color);
 }
@@ -125,7 +130,9 @@
     background-color: black;
 }
 
-.groupModalBtn:hover, .friendRequestsModalBtn:hover, .userIdModalBtn:hover {
+.groupModalBtn:hover,
+.friendRequestsModalBtn:hover,
+.userIdModalBtn:hover {
     background-color: black;
     color: white;
 }
@@ -146,9 +153,12 @@
     background-color: transparent;
     border: 1px solid var(--modal_border_color);
     border-bottom: 2px solid var(--modal_border_color);
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
     transition: all 0.2s ease-in-out;
     color: var(--text_color);
@@ -200,7 +210,8 @@
     background-color: var(--chatWrapper_notInChat_hover_background_color);
 }
 
-.friendRequestModalDefaultProfileImgWrapper, .friendRequestsModalProfileImg {
+.friendRequestModalDefaultProfileImgWrapper,
+.friendRequestsModalProfileImg {
     min-width: 45px;
     min-height: 45px;
     max-width: 45px;
@@ -211,9 +222,12 @@
     color: white;
     background-color: black;
     border-radius: 50%;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
     object-fit: cover;
 }
@@ -239,7 +253,9 @@
     white-space: nowrap;
 }
 
-.friendRequestsModalUnsendBtn, .friendRequestsModalAcceptBtn, .friendRequestsModalDeclineBtn {
+.friendRequestsModalUnsendBtn,
+.friendRequestsModalAcceptBtn,
+.friendRequestsModalDeclineBtn {
     margin-left: auto;
     background-color: transparent;
     border: 2px solid rgb(255, 100, 100);
@@ -247,9 +263,12 @@
     border-radius: 8px;
     padding: 4px 6px;
     cursor: pointer;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
     transition: all 0.2s ease-in-out;
     display: flex;
@@ -267,7 +286,8 @@
     background-color: rgb(255, 100, 100);
 }
 
-.friendRequestsModalUnsendBtn:hover, .friendRequestsModalDeclineBtn:hover {
+.friendRequestsModalUnsendBtn:hover,
+.friendRequestsModalDeclineBtn:hover {
     background-color: rgb(255, 100, 100);
     color: white;
 }
@@ -291,7 +311,7 @@
     display: flex;
     gap: 16px;
     margin-left: auto;
-}  
+}
 
 
 /*  USER ID CSS CODE */
@@ -387,24 +407,69 @@
     padding: 10px 20px 20px 20px;
 }
 
+.friendRequestsModalLoaderWrapper {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 10px;
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.friendRequestsModalLoader {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    position: relative;
+    animation: modalLoader-rotate 1s linear infinite;
+    color: red;
+}
+
+.friendRequestsModalLoader::before {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    border: 4px solid #000000;
+    animation: prixClipFix 2s linear infinite;
+}
+
 @media (max-width: 500px) {
     .modalContent {
         width: calc(400px + (100vw - 500px) / 1.6);
     }
-    .defaultGroupModalImgWrapper, .groupModalImg {
+
+    .defaultGroupModalImgWrapper,
+    .groupModalImg {
         min-width: calc(80px + (100vw - 500px) / 20);
         min-height: calc(80px + (100vw - 500px) / 20);
         max-width: calc(80px + (100vw - 500px) / 20);
         max-height: calc(80px + (100vw - 500px) / 20);
     }
+
     .defaultGroupModalImg {
         width: calc(30px + (100vw - 500px) / 50);
         height: calc(30px + (100vw - 500px) / 50);
     }
+
     .groupModalInput {
         width: calc(186px + (100vw - 500px) / 4);
     }
-    .groupModalBtn, .friendRequestsModalBtn {
+
+    .groupModalBtn,
+    .friendRequestsModalBtn {
         padding-right: calc(10px + (100vw - 500px) / 100);
         padding-left: calc(10px + (100vw - 500px) / 100);
         padding-top: calc(8px + (100vw - 500px) / 100);

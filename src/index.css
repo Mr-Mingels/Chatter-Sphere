@@ -67,6 +67,11 @@ html, body {
   position: relative;
   animation: modalLoader-rotate 1s linear infinite
 }
+
+.modalLoader.black {
+  color: black;
+}
+
 .modalLoader::before {
   content: "";
   box-sizing: border-box;
