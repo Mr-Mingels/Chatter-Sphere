@@ -39,6 +39,7 @@ const Messages = ({
   const [renderedChatMessages, setRenderedChatMessages] = useState(false);
   const [selectedGroupImgFile, setSelectedGroupImgFile] = useState(null);
   const [deleteMsgModal, setDeleteMsgModal] = useState(false);
+  const [deleteMsgModalLoader, setDeleteMsgModalLoader] = useState(false);
   const [selectedMsg, setSelectedMsg] = useState(null);
   const [deleteMsgModalPosition, setDeleteMsgModalPosition] = useState({
     x: 0,
@@ -65,10 +66,9 @@ const Messages = ({
 
   const getChatMessages = async () => {
     try {
-      const response = await axios.get(
-        `/chats/${chatId}/messages`,
-        { withCredentials: true }
-      );
+      const response = await axios.get(`/chats/${chatId}/messages`, {
+        withCredentials: true,
+      });
       if (response.status === 200) {
         setChatMessages(response.data);
         setRenderedChatMessages(true);
@@ -444,16 +444,12 @@ const Messages = ({
     formData.append("groupPicture", selectedGroupImgFile);
     formData.append("chatId", chatId);
     try {
-      const response = await axios.put(
-        `/add-group-picture`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.put(`/add-group-picture`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       if (response.status === 200) {
         setInformModalTxt("Group picture updated!");
         setInformModalColor("green");
@@ -469,6 +465,7 @@ const Messages = ({
 
   const deleteMsg = async () => {
     try {
+      setModalLoader(true);
       const response = await axios.delete(
         "/delete-message",
         { data: { selectedMsg } },
@@ -477,6 +474,7 @@ const Messages = ({
       closeSeveringModal();
     } catch (err) {
       console.log(err);
+      setModalLoader(false);
     }
   };
 
