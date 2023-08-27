@@ -8,6 +8,8 @@
 
 .messagesInformModalWrapper {
     position: fixed;
+    display: flex;
+    align-items: center;
     top: 65px;
     right: 15px;
     padding: 12px;
@@ -15,7 +17,7 @@
     border: 2px solid rgb(0, 170, 0);;
     border-radius: 8px;
     color: white;
-    transform: translateX(500px);
+    transform: translateX(1500px);
     transition: transform 0.5s ease-in-out;
     z-index: 9999;
 }
@@ -35,6 +37,19 @@
 .messagesInformModalTxt {
     font-size: 15px;
     font-weight: 400;
+}
+
+.messagesInformModalIconWrapper {
+    width: 32px;
+    height: 18.4px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.messagesInformModalIcon {
+    width: 8px;
+    height: 8px;
+    cursor: pointer;
 }
 
 .messagesFullPageWrapper {

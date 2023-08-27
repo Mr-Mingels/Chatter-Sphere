@@ -10,6 +10,8 @@
 
 .informModalWrapper {
     position: fixed;
+    display: flex;
+    align-items: center;
     top: 65px;
     right: 15px;
     padding: 12px;
@@ -17,7 +19,7 @@
     border: 2px solid blue;
     border-radius: 8px;
     color: white;
-    transform: translateX(500px);
+    transform: translateX(1500px);
     transition: transform 0.5s ease-in-out;
     z-index: 9999;
 }
@@ -37,6 +39,19 @@
 .informModalTxt {
     font-size: 15px;
     font-weight: 400;
+}
+
+.informModalIconWrapper {
+    width: 32px;
+    height: 18.4px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.informModalIcon {
+    width: 8px;
+    height: 8px;
+    cursor: pointer;
 }
 
 .chatsContent {

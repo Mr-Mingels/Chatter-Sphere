@@ -4,6 +4,8 @@ import axios from "axios";
 import FriendsListModal from "./FriendsListModal";
 import RemoveFriendModal from "./RemoveFriendModal";
 import AddPictureModal from "./AddPictureModal";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faX } from '@fortawesome/free-solid-svg-icons'
 import "../styles/Messages.css";
 import { io } from "socket.io-client";
 
@@ -23,8 +25,6 @@ const Messages = ({
   const [groupOptionsModal, setGroupOptionsModal] = useState(false);
   const [friendsListModal, setFriendsListModal] = useState(false);
   const [addGroupPictureModal, setAddGroupPictureModal] = useState(false);
-  const [addGroupPictureModalTransition, setAddGroupPictureModalTransition] =
-    useState(false);
   const [groupImgModalOption, setGroupImgModalOption] = useState(false);
   const [searchedFriends, setSearchedFriends] = useState([]);
   const [friendsList, setFriendsList] = useState();
@@ -39,13 +39,13 @@ const Messages = ({
   const [renderedChatMessages, setRenderedChatMessages] = useState(false);
   const [selectedGroupImgFile, setSelectedGroupImgFile] = useState(null);
   const [deleteMsgModal, setDeleteMsgModal] = useState(false);
-  const [deleteMsgModalLoader, setDeleteMsgModalLoader] = useState(false);
   const [selectedMsg, setSelectedMsg] = useState(null);
   const [deleteMsgModalPosition, setDeleteMsgModalPosition] = useState({
     x: 0,
     y: 0,
   });
   const [modalLoader, setModalLoader] = useState(false);
+  const [friendsListModalLoader, setFriendsListModalLoader] = useState(true);
 
   const messagesEndRef = useRef(null);
   const location = useLocation();
@@ -66,9 +66,12 @@ const Messages = ({
 
   const getChatMessages = async () => {
     try {
-      const response = await axios.get(`/chats/${chatId}/messages`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `/chats/${chatId}/messages`,
+        {
+          withCredentials: true,
+        }
+      );
       if (response.status === 200) {
         setChatMessages(response.data);
         setRenderedChatMessages(true);
@@ -292,6 +295,7 @@ const Messages = ({
 
   const getFriendsList = async () => {
     try {
+      setFriendsListModalLoader(true);
       const response = await axios.get("/friends-list", {
         withCredentials: true,
       });
@@ -302,8 +306,10 @@ const Messages = ({
         setFriendsList([]);
         setSearchedFriends([]);
       }
+      setFriendsListModalLoader(false);
     } catch (err) {
       console.log(err);
+      setFriendsListModalLoader(false);
     }
   };
 
@@ -328,6 +334,7 @@ const Messages = ({
     setAddMemberOption(false);
     setFriendsList(false);
     setModalLoader(false);
+    setFriendsListModalLoader(false);
   };
 
   const openSeveringModal = (friendId, friendUserName, option) => {
@@ -350,14 +357,10 @@ const Messages = ({
     setAddGroupPictureModal(true);
     setGroupOptionsModal(false);
     setGroupImgModalOption(true);
-    setTimeout(() => {
-      setAddGroupPictureModalTransition(true);
-    }, 50);
   };
 
   const closeAddPictureModal = () => {
     setAddGroupPictureModal(false);
-    setAddGroupPictureModalTransition(false);
     setGroupImgModalOption(false);
     setSelectedGroupImgFile(null);
     setModalLoader(false);
@@ -444,12 +447,16 @@ const Messages = ({
     formData.append("groupPicture", selectedGroupImgFile);
     formData.append("chatId", chatId);
     try {
-      const response = await axios.put(`/add-group-picture`, formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `/add-group-picture`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       if (response.status === 200) {
         setInformModalTxt("Group picture updated!");
         setInformModalColor("green");
@@ -561,6 +568,9 @@ const Messages = ({
           {informModalColor === "red" ? "Error: " : ""}
           {informModalTxt}
         </h3>
+        <div className="messagesInformModalIconWrapper">
+          <FontAwesomeIcon onClick={() => setInformModalOpen(false)} icon={faX} className="messagesInformModalIcon"/>
+        </div>
       </div>
       {friendsListModal && searchedFriends && (
         <div className={`messagesFullPageWrapper`}>
@@ -575,6 +585,7 @@ const Messages = ({
                 currentChatInfo={currentChatInfo}
                 chatListInfoFunction={chatListInfoFunction}
                 modalLoader={modalLoader}
+                friendsListModalLoader={friendsListModalLoader}
               />
             </div>
           )}

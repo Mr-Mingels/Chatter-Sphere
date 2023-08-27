@@ -4,6 +4,8 @@ import axios from "axios";
 import "../styles/Main.css";
 import Modal from "./Modal";
 import ParticleBackGround from "./ParticleBackGround";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faX } from '@fortawesome/free-solid-svg-icons'
 import { io } from "socket.io-client";
 
 const socket = io(window.location.origin);
@@ -272,6 +274,9 @@ const Main = ({
           {informModalColor === "red" ? "Error: " : ""}
           {informModalTxt}
         </h3>
+        <div className="informModalIconWrapper">
+          <FontAwesomeIcon onClick={() => setInformModalOpen(false)} icon={faX} className="informModalIcon"/>
+        </div>
       </div>
       <section className="chatsWrapper">
         <div
