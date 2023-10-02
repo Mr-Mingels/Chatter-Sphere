@@ -88,7 +88,7 @@ const Authenticate = ({ windowWidth }) => {
         setPassword({ ...password, value: "" });
         setUserName({ ...userName, value: "" });
       } else if (!authConfig && response.status === 200) {
-        navigate("/");
+        navigate("/chat/648eeb75f2371f976c3448cc");
       }
       setLoader(false);
     } catch (error) {
