@@ -16,6 +16,7 @@ const Authenticate = ({ windowWidth }) => {
   const [redEmailPlaceHolder, setRedEmailPlaceHolder] = useState(false);
   const [redPasswordPlaceholder, setRedPasswordPlaceholder] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [demoLoader, setDemoLoader] = useState(false);
   const [email, setEmail] = useState({
     value: "",
     placeholder: "Enter your email",
@@ -51,8 +52,9 @@ const Authenticate = ({ windowWidth }) => {
   }, [location]);
 
   const handleFormSubmit = async (event) => {
-    setLoader(true);
     event.preventDefault();
+    if (demoLoader) return;
+    setLoader(true);
     if (userName.value === "") {
       setRedUserNamePlaceHolder(true);
       setUserName({ ...userName, placeholder: "Please Fill Out This Field" });
@@ -75,11 +77,11 @@ const Authenticate = ({ windowWidth }) => {
       username: userName.value.toUpperCase(),
       password: password.value,
     };
-
+    
     try {
       const path = authConfig ? "sign-up-page" : "log-in-page";
 
-      const response = await axios.post(`/${path}`, user, {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/${path}`, user, {
         withCredentials: true,
       });
       if (authConfig && response.status === 200) {
@@ -88,7 +90,7 @@ const Authenticate = ({ windowWidth }) => {
         setPassword({ ...password, value: "" });
         setUserName({ ...userName, value: "" });
       } else if (!authConfig && response.status === 200) {
-        navigate("/chat/648eeb75f2371f976c3448cc");
+        navigate("/chat/652580ab9058ef6cb698e677");
       }
       setLoader(false);
     } catch (error) {
@@ -197,22 +199,24 @@ const Authenticate = ({ windowWidth }) => {
   };
 
   const demoAccountLogIn = async () => {
+    if (loader) return;
+    setDemoLoader(true)
     const user = {
       email: "DEMOACCOUNT@GMAIL.COM",
       username: "DEMOACCOUNT",
       password: "1234",
     };
     try {
-      const response = await axios.post(
-        `/log-in-page`,
-        user,
-        { withCredentials: true }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/log-in-page`, user, {
+        withCredentials: true,
+      });
       if (response.status === 200) {
-        navigate("/");
+        navigate("/chat/652580ab9058ef6cb698e677");
       }
+      setDemoLoader(false)
     } catch (err) {
       console.log(err);
+      setDemoLoader(false)
     }
   };
 
@@ -240,9 +244,18 @@ const Authenticate = ({ windowWidth }) => {
             <h1 className="authCreateAccountTitle">
               {authConfig ? "Create your account" : "Log into your account"}
             </h1>
-            <span className="demoAccountTxt" onClick={() => demoAccountLogIn()}>
-              Use Demo Account
-            </span>
+            {demoLoader ? (
+              <div className="demoAccountLoaderWrapper">
+                <span className="modalLoader demoAccount"></span>
+              </div>
+            ) : (
+              <span
+                className="demoAccountTxt"
+                onClick={() => demoAccountLogIn()}
+              >
+                Use Demo Account
+              </span>
+            )}
             <div className="authFormWrapper">
               <form
                 method="POST"
@@ -295,7 +308,7 @@ const Authenticate = ({ windowWidth }) => {
                   value={password.value}
                 />
                 {loader ? (
-                  <button className="authConfirmBtn authLoader">
+                  <button type="button" className="authConfirmBtn authLoader">
                     <span className="modalLoader"></span>
                   </button>
                 ) : (

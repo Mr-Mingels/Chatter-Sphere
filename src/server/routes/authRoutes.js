@@ -38,7 +38,7 @@ router.post("/sign-up-page", async (req, res) => {
       });
       await user.save();
       await Chat.updateOne(
-        { _id: "648eeb75f2371f976c3448cc" },
+        { _id: "652580ab9058ef6cb698e677" },
         { $push: { members: user._id } }
       );
       return res.status(200).send({ message: "Created new User" });

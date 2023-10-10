@@ -78,6 +78,14 @@ html, body {
   animation: prixClipFix 2s linear infinite ;
 }
 
+.modalLoader.demoAccount {
+  border-color: black !important;
+}
+
+.modalLoader.demoAccount::before {
+  border-color: #1b1b1b;
+}
+
 @keyframes modalLoader-rotate {
   100%   {transform: rotate(360deg)}
 }

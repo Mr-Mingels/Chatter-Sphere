@@ -67,7 +67,7 @@ const Messages = ({
   const getChatMessages = async () => {
     try {
       const response = await axios.get(
-        `/chats/${chatId}/messages`,
+        `${process.env.REACT_APP_SERVER_URL}/chats/${chatId}/messages`,
         {
           withCredentials: true,
         }
@@ -102,7 +102,7 @@ const Messages = ({
         message: messageTxt,
       };
       const response = await axios.post(
-        `/messages`,
+        `${process.env.REACT_APP_SERVER_URL}/messages`,
         { idInfo },
         { withCredentials: true }
       );
@@ -232,7 +232,7 @@ const Messages = ({
     setModalLoader(true);
     try {
       const response = await axios.delete(
-        "/delete-group",
+        `${process.env.REACT_APP_SERVER_URL}/delete-group`,
         { data: { currentChatId, currentChatMembers } },
         { withCredentials: true }
       );
@@ -247,7 +247,7 @@ const Messages = ({
     setModalLoader(true);
     try {
       const response = await axios.put(
-        "/leave-group",
+        `${process.env.REACT_APP_SERVER_URL}/leave-group`,
         { currentChatId },
         { withCredentials: true }
       );
@@ -266,7 +266,7 @@ const Messages = ({
     setModalLoader(true);
     try {
       const response = await axios.put(
-        "/add-member-to-group",
+        `${process.env.REACT_APP_SERVER_URL}/add-member-to-group`,
         { addedMemberIds, currentChatInfoId },
         { withCredentials: true }
       );
@@ -296,7 +296,7 @@ const Messages = ({
   const getFriendsList = async () => {
     try {
       setFriendsListModalLoader(true);
-      const response = await axios.get("/friends-list", {
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/friends-list`, {
         withCredentials: true,
       });
       if (response.status === 200 && response.data) {
@@ -370,7 +370,7 @@ const Messages = ({
     setModalLoader(true);
     try {
       const response = await axios.put(
-        "/remove-friend",
+        `${process.env.REACT_APP_SERVER_URL}/remove-friend`,
         { addedFriendId },
         { withCredentials: true }
       );
@@ -448,7 +448,7 @@ const Messages = ({
     formData.append("chatId", chatId);
     try {
       const response = await axios.put(
-        `/add-group-picture`,
+        `${process.env.REACT_APP_SERVER_URL}/add-group-picture`,
         formData,
         {
           withCredentials: true,
@@ -474,7 +474,7 @@ const Messages = ({
     try {
       setModalLoader(true);
       const response = await axios.delete(
-        "/delete-message",
+        `${process.env.REACT_APP_SERVER_URL}/delete-message`,
         { data: { selectedMsg } },
         { withCredentials: true }
       );
@@ -626,7 +626,7 @@ const Messages = ({
         {currentChatInfo && (
           <div
             className={`messagesHeaderContent ${
-              currentChatInfo._id === "648eeb75f2371f976c3448cc" &&
+              currentChatInfo._id === "652580ab9058ef6cb698e677" &&
               windowWidth <= 500
                 ? "centerGlobal"
                 : ""
@@ -703,7 +703,7 @@ const Messages = ({
                   {currentChatInfo.chatName.charAt(0) +
                     currentChatInfo.chatName.slice(1).toLowerCase()}
                 </h5>
-                {currentChatInfo._id !== "648eeb75f2371f976c3448cc" && (
+                {currentChatInfo._id !== "652580ab9058ef6cb698e677" && (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="verticalEllipsisMenu"

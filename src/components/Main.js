@@ -41,7 +41,7 @@ const Main = ({
 
   const getUserInfo = async () => {
     try {
-      const response = await fetch("/user-info", {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/user-info`, {
         credentials: "include",
       });
       // check for user authentication
@@ -59,12 +59,12 @@ const Main = ({
 
   const getChatListInfo = async () => {
     try {
-      const response = await axios.get("/users/chats", {
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/users/chats`, {
         withCredentials: true,
       });
       const sortedChats = [...response.data].sort((a, b) => {
-        if (a._id === "648eeb75f2371f976c3448cc") return -1;
-        if (b._id === "648eeb75f2371f976c3448cc") return 1;
+        if (a._id === "652580ab9058ef6cb698e677") return -1;
+        if (b._id === "652580ab9058ef6cb698e677") return 1;
         return 0;
       });
       if (response.status === 200 && response.data) {
@@ -99,7 +99,7 @@ const Main = ({
   const logOut = async () => {
     setLogOutLoader(true);
     try {
-      const response = await axios.get("/log-out", {
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/log-out`, {
         withCredentials: true,
       });
       if (response.status === 200) {

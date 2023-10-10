@@ -140,6 +140,12 @@
     justify-content: center;
 }
 
+.demoAccountLoaderWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .authFormQuestion {
     margin-top: 12px;
     font-weight: 400;

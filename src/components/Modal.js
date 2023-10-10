@@ -166,7 +166,7 @@ const Modal = ({
     };
     try {
       const response = await axios.put(
-        "/send-friend-request",
+        `${process.env.REACT_APP_SERVER_URL}/send-friend-request`,
         friendRequestObject,
         { withCredentials: true }
       );
@@ -230,7 +230,7 @@ const Modal = ({
   const getSentRequestUserInfo = async () => {
     try {
       const response = await axios.get(
-        "/sent-friend-requests",
+        `${process.env.REACT_APP_SERVER_URL}/sent-friend-requests`,
         { withCredentials: true }
       );
       if (response.status === 200 && response.data) {
@@ -249,7 +249,7 @@ const Modal = ({
   const getRecievedRequestUserInfo = async () => {
     try {
       const response = await axios.get(
-        "/received-friend-requests",
+        `${process.env.REACT_APP_SERVER_URL}/received-friend-requests`,
         { withCredentials: true }
       );
       if (response.status === 200 && response.data) {
@@ -274,7 +274,7 @@ const Modal = ({
     setAcceptFriendRequestLoaderId(requestedFriendId);
     try {
       const response = await axios.put(
-        "/accept-friend-request",
+        `${process.env.REACT_APP_SERVER_URL}/accept-friend-request`,
         { requestedFriendId },
         { withCredentials: true }
       );
@@ -307,7 +307,7 @@ const Modal = ({
     setDeclineFriendRequestLoaderId(requestedFriendId);
     try {
       const response = await axios.put(
-        "/decline-friend-request",
+        `${process.env.REACT_APP_SERVER_URL}/decline-friend-request`,
         { requestedFriendId },
         { withCredentials: true }
       );
@@ -336,7 +336,7 @@ const Modal = ({
     setUnsendFriendRequestLoaderId(requestedFriendId);
     try {
       const response = await axios.put(
-        "/unsend-friend-request",
+        `${process.env.REACT_APP_SERVER_URL}/unsend-friend-request`,
         { requestedFriendId },
         { withCredentials: true }
       );
@@ -358,7 +358,7 @@ const Modal = ({
   const getFriendsList = async () => {
     try {
       setFriendsListModalLoader(true);
-      const response = await axios.get("/friends-list", {
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/friends-list`, {
         withCredentials: true,
       });
       if (response.status === 200 && response.data) {
@@ -379,7 +379,7 @@ const Modal = ({
     setLoader(true);
     try {
       const response = await axios.put(
-        "/remove-friend",
+        `${process.env.REACT_APP_SERVER_URL}/remove-friend`,
         { addedFriendId },
         { withCredentials: true }
       );
@@ -438,7 +438,7 @@ const Modal = ({
     formData.append("userId", userInfo._id);
     try {
       const response = await axios.put(
-        `/add-profile-picture`,
+        `${process.env.REACT_APP_SERVER_URL}/add-profile-picture`,
         formData,
         {
           withCredentials: true,
@@ -495,7 +495,7 @@ const Modal = ({
 
     try {
       const response = await axios.post(
-        `/create-group`,
+        `${process.env.REACT_APP_SERVER_URL}/create-group`,
         formData,
         {
           withCredentials: true,
